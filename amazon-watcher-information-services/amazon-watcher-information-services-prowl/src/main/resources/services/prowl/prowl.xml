@@ -14,7 +14,7 @@
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
     	<property name="locations">
     		<list>
-        		<value>classpath:prowl.properties</value>
+        		<value>classpath:/services/prowl/prowl.properties</value>
         		<value>file:${catalina.home}/conf/amazon-watcher/services/prowl/prowl.properties</value>
       		</list>
     	</property>
