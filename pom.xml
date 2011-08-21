@@ -69,5 +69,6 @@
 		<module>amazon-watcher-webapp</module>
 		<module>amazon-watcher-database</module>
 		<module>amazon-watcher-updater</module>
+		<module>amazon-watcher-information-services</module>
 	</modules>
 </project>

@@ -1,0 +1,3 @@
+
+syntax: regexp
+^amazon-watcher-webapp/src/main/webapp/WEB-INF/classes$

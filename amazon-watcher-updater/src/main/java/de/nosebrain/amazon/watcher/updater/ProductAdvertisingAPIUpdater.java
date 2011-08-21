@@ -28,7 +28,7 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 	private SignedRequestsHelper helper;
 	
 	@Override
-	public boolean updateItem(Item item) {
+	public void updateItem(final Item item) {
 		try {
 			final HttpGet get = new HttpGet(this.getItemCheckURI(item.getAsin()));
 			final HttpResponse response = this.client.execute(get);
@@ -39,8 +39,6 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 		} catch (final IOException e) {
 			// TODO: log exception
 		}
-		
-		return false;
 	}
 	
 	private String getItemCheckURI(final String asin) {

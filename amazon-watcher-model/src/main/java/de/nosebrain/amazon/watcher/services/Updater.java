@@ -10,7 +10,6 @@ public interface Updater {
 
 	/**
 	 * @param item the item to update
-	 * @return TODO: improve documentation
 	 */
-	public boolean updateItem(final Item item);
+	public void updateItem(final Item item);
 }
