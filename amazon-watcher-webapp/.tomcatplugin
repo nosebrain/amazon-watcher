@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomcatProjectProperties>
+    <rootDir>/src/main/webapp</rootDir>
+    <exportSource>false</exportSource>
+    <reloadable>true</reloadable>
+    <redirectLogger>false</redirectLogger>
+    <updateXml>false</updateXml>
+    <warLocation></warLocation>
+    <extraInfo></extraInfo>
+    <webPath>/amazon-watcher</webPath>
+    <webClassPathEntries>
+        <webClassPathEntry>/amazon-watcher-database/target/classes</webClassPathEntry>
+        <webClassPathEntry>/amazon-watcher-model/target/classes</webClassPathEntry>
+        <webClassPathEntry>/amazon-watcher-webapp/target/classes</webClassPathEntry>
+    </webClassPathEntries>
+</tomcatProjectProperties>
