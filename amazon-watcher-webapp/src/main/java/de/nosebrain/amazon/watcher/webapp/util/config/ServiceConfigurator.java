@@ -3,8 +3,7 @@ package de.nosebrain.amazon.watcher.webapp.util.config;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import de.nosebrain.amazon.watcher.services.InformationService;
 
@@ -21,8 +20,9 @@ public class ServiceConfigurator {
 	 */
 	public void init() {
 		for (String serviceName : this.serviceNames) {
-			final XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource("services/" + serviceName + "/" + serviceName + ".xml"));
-			final InformationService service = factory.getBean(InformationService.class);
+			final String pathToConfig = "services/" + serviceName + "/" + serviceName + ".xml";
+			final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(pathToConfig);			
+			final InformationService service = context.getBean(InformationService.class);
 			this.services.add(service);
 		}
 	}
