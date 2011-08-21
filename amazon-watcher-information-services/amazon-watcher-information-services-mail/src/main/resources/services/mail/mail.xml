@@ -13,7 +13,7 @@
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
     	<property name="locations">
     		<list>
-        		<value>classpath:mail.properties</value>
+        		<value>classpath:services/mail/mail.properties</value>
         		<value>file:${catalina.home}/conf/amazon-watcher/services/mail/mail.properties</value>
       		</list>
     	</property>
