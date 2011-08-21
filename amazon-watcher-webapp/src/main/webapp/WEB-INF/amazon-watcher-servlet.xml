@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans	xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context 
+                          	http://www.springframework.org/schema/context/spring-context.xsd
+                          	http://www.springframework.org/schema/mvc
+			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- properties -->
+	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    	<property name="locations">
+    		<list>
+        		<value>classpath:amazon-watcher.properties</value>
+        		<value>file:${catalina.home}/conf/amazon-watcher/amazon-watcher.properties</value>
+      		</list>
+    	</property>
+    	<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    	<property name="properties" ref="properties" />
+	</bean>
+	
+	<!-- conversion service -->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
+	
+	<bean id="convBeanFactoryPostProcessor" class="de.nosebrain.amazon.watcher.webapp.util.config.ConversionServiceFactoryBeanPostProcessor">
+		<property name="conversionService" ref="conversionService" />
+	</bean>
+	
+	<!-- config -->
+	<mvc:annotation-driven />
+	
+	<context:component-scan base-package="de.nosebrain.amazon.watcher.webapp.controller">
+		<context:include-filter type="annotation" expression="org.aspectj.lang.annotation.Aspect" />
+	</context:component-scan>
+	
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="mediaTypes">
+			<map>
+				<entry key="html" value="text/html" />
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+					<property name="prefix" value="/WEB-INF/jsp/" />
+					<property name="suffix" value=".jsp" />
+					<property name="exposedContextBeanNames">
+						<list>
+							<value>properties</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="mainDataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+	
+	<bean id="mainSqlSessionFactory" class="de.nosebrain.amazon.watcher.webapp.util.factorybean.SqlSessionFactoryFactoryBean">
+		<property name="dataSource" ref="mainDataSource" />
+		<property name="configLocation" value="classpath:de/nosebrain/amazon/watcher/database/amazon-watcher-database.xml" />
+	</bean>
+	
+	<bean id="databaseLogic" class="de.nosebrain.amazon.watcher.database.AmazonWatcherLogic">
+		<property name="sessionFactory" ref="mainSqlSessionFactory" />
+	</bean>
+	
+	<bean id="services" class="java.util.LinkedList" />
+	
+	<bean id="serviceConfig" class="de.nosebrain.amazon.watcher.webapp.util.config.ServiceConfigurator" init-method="init">
+		<property name="serviceNames" value="${information.services}" />
+		<property name="services" ref="services" />
+	</bean>
+</beans>
