@@ -8,6 +8,10 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<typeAlias type="de.nosebrain.amazon.watcher.model.Item" alias="Item"/>
 	</typeAliases>
 	
+	<typeHandlers>
+		<typeHandler javaType="url"								handler="de.nosebrain.amazon.watcher.database.util.typehandler.URLTypeHandler" />
+	</typeHandlers>
+	
 	<mappers>
 		<mapper resource="de/nosebrain/amazon/watcher/database/ItemMapper.xml"/>
 	</mappers>
