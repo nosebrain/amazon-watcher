@@ -70,5 +70,6 @@
 		<module>amazon-watcher-database</module>
 		<module>amazon-watcher-updater</module>
 		<module>amazon-watcher-information-services</module>
+		<module>amazon-watcher-importers</module>
 	</modules>
 </project>

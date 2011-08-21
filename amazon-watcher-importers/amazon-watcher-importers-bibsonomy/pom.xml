@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>amazon-watcher-importers</artifactId>
+		<groupId>de.nosebrain</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>de.nosebrain</groupId>
+	<artifactId>amazon-watcher-importers-bibsonomy</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<properties>
+		<amazon-watcher.version>0.0.1-SNAPSHOT</amazon-watcher.version>
+		<bibsonomy.version>2.0.17</bibsonomy.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>bibsonomy</id>
+			<url>http://dev.bibsonomy.org/maven2/</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.bibsonomy</groupId>
+			<artifactId>bibsonomy-rest-client</artifactId>
+			<version>${bibsonomy.version}</version>
+		</dependency>
+	</dependencies>
+</project>
