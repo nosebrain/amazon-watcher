@@ -26,10 +26,17 @@
     	<property name="placeholderPrefix" value="prowl:{" />
 	</bean>
 	
+	<!-- conversion service -->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
+	
+	<bean id="conversionServiceBeanFactoryPostProcessor" class="de.nosebrain.spring.beans.factory.ConversionServiceFactoryBeanPostProcessor">
+		<property name="conversionService" ref="conversionService" />
+	</bean>
+	
 	<!-- prowl information service -->
 	<bean id="prowl" class="de.nosebrain.amazon.watcher.services.prowl.ProwlInfoService">
 		<property name="apiKeys" value="prowl:{prowl.apiKeys}" />
-		<property name="client" value="prowlClient" />
+		<property name="client" ref="prowlClient" />
 	</bean>
 	
 	<bean id="ProwlClient" class="de.nosebrain.prowl.ProwlClient" />

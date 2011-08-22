@@ -9,7 +9,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	</typeAliases>
 	
 	<typeHandlers>
-		<typeHandler javaType="url"								handler="de.nosebrain.amazon.watcher.database.util.typehandler.URLTypeHandler" />
+		<typeHandler javaType="url" handler="de.nosebrain.amazon.watcher.database.util.typehandler.URLTypeHandler" />
 	</typeHandlers>
 	
 	<mappers>

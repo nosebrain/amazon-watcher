@@ -24,7 +24,8 @@
  				<!-- TODO -->
  			</nav>
  			<header>
- 				<h1><a href="${properties['general.home']}"><c:out value="${projectName}" /></a></h1>
+ 				<c:url var="homeUrl" value="/" />
+ 				<h1><a href="${homeUrl}"><c:out value="${projectName}" /></a></h1>
  			</header>
  			<div id="content">
  				<jsp:invoke fragment="content" />

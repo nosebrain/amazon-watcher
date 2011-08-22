@@ -7,8 +7,16 @@ import java.net.URL;
 
 import org.junit.Test;
 
+/**
+ * 
+ * @author nosebrain
+ */
 public class ItemUtilsTest {
 	
+	/**
+	 * tests {@link ItemUtils#extractASIN(URL)}
+	 * @throws MalformedURLException ignore
+	 */
 	@Test
 	public void extractASIN() throws MalformedURLException {
 		assertEquals("B00411RW82", ItemUtils.extractASIN(new URL("http://www.amazon.de/Firefly-Aufbruch-Serenity-komplette-Serie/dp/B00411RW82/ref=sr_1_1?ie=UTF8&qid=1313960848&sr=8-1")));

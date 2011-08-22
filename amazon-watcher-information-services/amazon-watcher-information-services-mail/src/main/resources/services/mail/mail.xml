@@ -25,5 +25,12 @@
     	<property name="placeholderPrefix" value="mail:{" />
 	</bean>
 	
+	<!-- conversion service -->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
+	
+	<bean id="conversionServiceBeanFactoryPostProcessor" class="de.nosebrain.spring.beans.factory.ConversionServiceFactoryBeanPostProcessor">
+		<property name="conversionService" ref="conversionService" />
+	</bean>
+	
 	<bean id="mailInfoService" class="de.nosebrain.amazon.watcher.services.mail.MailInfoService" />
 </beans>

@@ -4,32 +4,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="de.nosebrain.amazon.watcher.database.ItemMapper">
 
 	<resultMap type="Item" id="itemResult">
-		<result column="asin"		property="asin"			javaType="string" />
-		<result column="name"		property="name"			javaType="string" />
-		<result column="url"		property="url"			javaType="url" />
-		<result column="limit"		property="limit"		javaType="float" />
-		<result column="lastPrice"	property="lastPrice"	javaType="float" />
-		<result column="date"		property="date"			javaType="date" />
-		<result column="changeDate" property="changeDate"	javaType="date" />
+		<result column="asin"			property="asin"			javaType="string" />
+		<result column="name"			property="name"			javaType="string" />
+		<result column="url"			property="url"			javaType="url" />
+		<result column="limit"			property="limit"		javaType="Float" />
+		<result column="currentPrice"	property="currentPrice"	javaType="Float" />
+		<result column="lastPrice"		property="lastPrice"	javaType="Float" />
+		<result column="date"			property="date"			javaType="date" />
+		<result column="changeDate"		property="changeDate"	javaType="date" />
 	</resultMap>
 	
 	<select id="getAllWatchedItems" resultMap="itemResult">
 		SELECT * FROM items
 	</select>
 	
-	<select id="getItemByASIN" parameterType="url" resultMap="itemResult">
-		SELECT * FROM items i WHERE i.asin = ${asin}
+	<select id="getItemByASIN" parameterType="string" resultMap="itemResult">
+		SELECT * FROM items i
+			WHERE i.asin = #{asin}
 	</select>
 	
 	<insert id="insertItem" parameterType="Item">
-		INSERT INTO items (asin, name, url, mode, limit) VALUES (#{item.asin}, #{item.name}, #{item.url}, #{item.mode}, #{item.limit})
+		INSERT INTO items (asin, name, url, mode, `limit`) VALUES (#{asin}, #{name}, #{url}, #{mode}, #{limit})
 	</insert>
 	
-	<delete id="deleteItem" parameterType="url">
-		DELETE FROM items WHERE asin = #{asin}
+	<delete id="deleteItem" parameterType="string">
+		DELETE FROM items
+			WHERE asin = #{asin}
 	</delete>
 	
 	<update id="updateItem" parameterType="Item">
-		UPDATE items SET name = #{item.name}, mode = #{item.mode}, limit = #{item.limit}, lastPrice = #{item.lastPrice}, changeDate = CURRENT_TIMESTAMP
+		UPDATE items
+			SET name = #{name},
+				mode = #{mode},
+				`limit` = #{limit},
+				currentPrice = #{currentPrice},
+				lastPrice = #{lastPrice},
+				changeDate = CURRENT_TIMESTAMP
+		WHERE asin = #{asin}
 	</update>
 </mapper>

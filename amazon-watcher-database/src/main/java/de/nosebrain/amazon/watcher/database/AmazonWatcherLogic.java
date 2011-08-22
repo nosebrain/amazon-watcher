@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.Item;
+import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 
 /**
  * 
@@ -28,14 +29,18 @@ public class AmazonWatcherLogic implements AmazonWatcherService {
 	}
 
 	public boolean watchItem(final Item item) {
+		final String asin = ItemUtils.extractASIN(item.getUrl());
+		item.setAsin(asin);
+		
 		final SqlSession session = sessionFactory.openSession();
 		try {
-			final Item watchedItem = this.getItemByASIN(item.getAsin(), session);
+			final Item watchedItem = this.getItemByASIN(asin, session);
 			if (watchedItem != null) {
 				return false;
 			}
 			
 			session.insert("insertItem", item);
+			session.commit();
 			return true;
 		} finally {
 			session.close();
@@ -55,7 +60,7 @@ public class AmazonWatcherLogic implements AmazonWatcherService {
 			}
 			
 			session.delete("deleteItem", asin);
-			
+			session.commit();
 			return true;
 		} finally {
 			session.close();
@@ -73,7 +78,7 @@ public class AmazonWatcherLogic implements AmazonWatcherService {
 			}
 			
 			session.update("updateItem", item);
-			
+			session.commit();			
 			return true;
 		} finally {
 			session.close();

@@ -24,7 +24,7 @@ public interface AmazonWatcherService {
 	
 	/**
 	 * updates an item (mode, and limit)
-	 * @param url the url of the item to update
+	 * @param asin the asin of the item to update
 	 * @param item the update information
 	 * @return <code>true</code> if item was updated
 	 */

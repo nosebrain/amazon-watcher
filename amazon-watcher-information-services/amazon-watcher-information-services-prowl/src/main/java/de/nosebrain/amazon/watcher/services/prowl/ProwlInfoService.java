@@ -21,8 +21,9 @@ public class ProwlInfoService implements InformationService {
 	@Override
 	public void inform(final List<Item> items) {
 		for (final Item item : items) {
+			// TODO: improve info
 			try {
-				final Notification notification = new NotificationBuilder().application("Amazon Watcher").description(item.getName()).url(item.getUrl().toString()).build();
+				final Notification notification = new NotificationBuilder().application("Amazon Watcher").event(item.getName()).description(String.valueOf(item.getCurrentPrice())).url(item.getUrl().toString()).build();
 				this.client.sendNotification(notification, this.apiKeys);
 			} catch (final IOException e) {
 				// TODO: log exception
