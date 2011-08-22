@@ -3,12 +3,15 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xmlns:context="http://www.springframework.org/schema/context"
 		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xmlns:task="http://www.springframework.org/schema/task"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
 							http://www.springframework.org/schema/context 
                           	http://www.springframework.org/schema/context/spring-context.xsd
                           	http://www.springframework.org/schema/mvc
-			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+			    			http://www.springframework.org/schema/task
+   							http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 	<!-- properties -->
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -28,7 +31,7 @@
 	<!-- conversion service -->
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
 	
-	<bean id="convBeanFactoryPostProcessor" class="de.nosebrain.amazon.watcher.webapp.util.config.ConversionServiceFactoryBeanPostProcessor">
+	<bean id="conversionServiceBeanFactoryPostProcessor" class="de.nosebrain.spring.beans.factory.ConversionServiceFactoryBeanPostProcessor">
 		<property name="conversionService" ref="conversionService" />
 	</bean>
 	
@@ -83,4 +86,31 @@
 		<property name="serviceNames" value="${information.services}" />
 		<property name="services" ref="services" />
 	</bean>
+	
+	<!-- updater -->
+	<bean id="signedRequestsHelper" class="de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper">
+		<property name="awsAccessKeyId" value="${general.amazon.keyId}" />
+		<property name="awsSecretKey" value="${general.amazon.secretKey}" />
+		<property name="endpoint" ref="endpoint" />
+	</bean>
+	
+	<bean id="endpoint" class="de.nosebrain.amazon.watcher.webapp.util.factorybean.EndPointFactoryBean">
+		<property name="amazon" value="${general.amazon}" />
+	</bean>
+	
+	<bean id="apiUpdater" class="de.nosebrain.amazon.watcher.updater.ProductAdvertisingAPIUpdater">
+		<property name="helper" ref="signedRequestsHelper" />
+	</bean>
+	
+	<bean id="updaterService" class="de.nosebrain.amazon.watcher.webapp.services.UpdaterService">
+		<property name="service" ref="databaseLogic" />
+		<property name="updater" ref="apiUpdater" />
+		<property name="informationServices" ref="services" />
+	</bean>
+	
+	<task:scheduler id="myScheduler" />
+	
+	<task:scheduled-tasks scheduler="myScheduler">
+    	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
+	</task:scheduled-tasks>
 </beans>

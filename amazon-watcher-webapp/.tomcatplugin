@@ -10,7 +10,12 @@
     <webPath>/amazon-watcher</webPath>
     <webClassPathEntries>
         <webClassPathEntry>/amazon-watcher-database/target/classes</webClassPathEntry>
+        <webClassPathEntry>/amazon-watcher-information-services-mail/target/classes</webClassPathEntry>
+        <webClassPathEntry>/amazon-watcher-information-services-prowl/target/classes</webClassPathEntry>
         <webClassPathEntry>/amazon-watcher-model/target/classes</webClassPathEntry>
+        <webClassPathEntry>/amazon-watcher-updater/target/classes</webClassPathEntry>
         <webClassPathEntry>/amazon-watcher-webapp/target/classes</webClassPathEntry>
+        <webClassPathEntry>/common/target/classes</webClassPathEntry>
+        <webClassPathEntry>/prowl/target/classes</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>

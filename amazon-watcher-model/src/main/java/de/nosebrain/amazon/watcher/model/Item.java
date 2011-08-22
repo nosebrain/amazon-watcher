@@ -1,7 +1,7 @@
 package de.nosebrain.amazon.watcher.model;
 
 import java.net.URL;
-import java.sql.Date;
+import java.util.Date;
 
 /**
  * 
@@ -15,11 +15,13 @@ public class Item {
 	
 	private URL url;
 	
-	private float limit;
+	private Float limit;
 	
 	private WatchMode mode;
 	
-	private float lastPrice;
+	private Float lastPrice;
+	
+	private Float currentPrice;
 	
 	private Date date;
 	
@@ -56,14 +58,14 @@ public class Item {
 	/**
 	 * @return the lastPrice
 	 */
-	public float getLastPrice() {
+	public Float getLastPrice() {
 		return lastPrice;
 	}
 
 	/**
 	 * @param lastPrice the lastPrice to set
 	 */
-	public void setLastPrice(float lastPrice) {
+	public void setLastPrice(Float lastPrice) {
 		this.lastPrice = lastPrice;
 	}
 
@@ -112,14 +114,14 @@ public class Item {
 	/**
 	 * @return the limit
 	 */
-	public float getLimit() {
+	public Float getLimit() {
 		return limit;
 	}
 
 	/**
 	 * @param limit the limit to set
 	 */
-	public void setLimit(float limit) {
+	public void setLimit(Float limit) {
 		this.limit = limit;
 	}
 
@@ -135,5 +137,19 @@ public class Item {
 	 */
 	public void setAsin(String asin) {
 		this.asin = asin;
+	}
+
+	/**
+	 * @return the currentPrice
+	 */
+	public Float getCurrentPrice() {
+		return currentPrice;
+	}
+
+	/**
+	 * @param currentPrice the currentPrice to set
+	 */
+	public void setCurrentPrice(Float currentPrice) {
+		this.currentPrice = currentPrice;
 	}
 }

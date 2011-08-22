@@ -13,7 +13,7 @@ import de.nosebrain.amazon.watcher.services.Updater;
  * 
  * @author nosebrain
  */
-public class ItemUpdater {
+public class UpdaterService {
 	
 	private AmazonWatcherService service;
 	private List<InformationService> informationServices;
@@ -25,18 +25,45 @@ public class ItemUpdater {
 	public void updateItems() {
 		final List<Item> allItems = this.service.getItems();
 		final List<Item> updatedItems = new LinkedList<Item>();
-		for (Item item : allItems) {
-			final float lastPrice = item.getLastPrice();
-			this.updater.updateItem(item);
+		
+		for (final Item item : allItems) {
+			final String asin = item.getAsin();
+			final Float currentPrice = this.updater.updateItem(asin);
+			final Float lastPrice = item.getCurrentPrice();
 			
-			if (lastPrice != item.getLastPrice()) {
-				/*
-				 * update last price
-				 */
-				this.service.updateItem(item.getAsin(), item);
-				if (item.getMode().equals(WatchMode.PRICE_CHANGE)) {
+			if (currentPrice != null && (lastPrice == null) || lastPrice.compareTo(currentPrice) != 0) {			
+				final WatchMode mode = item.getMode();
+				
+				switch (mode) {
+				case PRICE_CHANGE:
 					updatedItems.add(item);
+					break;
+				case PRICE_LIMIT:
+					// TODO: npe?
+					final float limit = item.getLimit();
+					/*
+					 * current price under limit => inform
+					 */
+					if (currentPrice != null && currentPrice < limit) {
+						updatedItems.add(item);
+					}
+					
+					/*
+					 * current price over limit, but last price was under limit
+					 */
+					if (currentPrice != null && currentPrice >= limit && lastPrice != null && lastPrice < limit) {
+						updatedItems.add(item);
+					}
+					break;
 				}
+				
+				/*
+				 * update current price
+				 */
+				item.setLastPrice(lastPrice);
+				item.setCurrentPrice(currentPrice);
+				
+				this.service.updateItem(asin, item);
 			}
 		}
 		

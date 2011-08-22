@@ -15,7 +15,7 @@
    			<a href="${newItemUrl}">add</a>
    			<ul>
    			<c:forEach var="watchedItem" items="${items}">
-   				<li><a href="${watchedItem.url}"><c:out value="${watchedItem.name}" /></a> (<c:out value="${watchedItem.lastPrice}" />, <c:out value="${watchedItem.changeDate}" />)</li>
+   				<li><a href="${watchedItem.url}"><c:out value="${watchedItem.name}" /></a> (<c:out value="${watchedItem.currentPrice}" />, <c:out value="${watchedItem.changeDate}" />)</li>
    			</c:forEach>
    			</ul>	
    		</jsp:attribute>
