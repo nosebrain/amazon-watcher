@@ -9,17 +9,19 @@ public enum Amazon {
 	/**
 	 * Amazon Germany
 	 */
-	DE("ecs.amazonaws.de"),
+	DE("ecs.amazonaws.de", "€"),
 	
 	/**
 	 * Amazon USA
 	 */
-	USA("ecs.amazonaws.com");
+	USA("ecs.amazonaws.com", "$");
 	
 	private final String url;
+	private final String currency;
 
-	private Amazon(String url) {
+	private Amazon(final String url, final String currency) {
 		this.url = url;
+		this.currency = currency;
 	}
 
 	/**
@@ -27,5 +29,12 @@ public enum Amazon {
 	 */
 	public String getUrl() {
 		return url;
+	}
+
+	/**
+	 * @return the currency
+	 */
+	public String getCurrency() {
+		return this.currency;
 	}
 }

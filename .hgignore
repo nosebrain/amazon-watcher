@@ -1,3 +1,9 @@
 
 syntax: regexp
 ^amazon-watcher-webapp/src/main/webapp/WEB-INF/classes$
+syntax: regexp
+^amazon-watcher-webapp/work$
+syntax: regexp
+^amazon-watcher-webapp/work$
+syntax: regexp
+^amazon-watcher-webapp/src/main/webapp/WEB-INF/lib$

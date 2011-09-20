@@ -31,6 +31,13 @@ public interface AmazonWatcherService {
 	public boolean updateItem(final String asin, final Item item);
 	
 	/**
+	 * @param asin the asin of the item to update price
+	 * @param price the new price
+	 * @return <code>true</code> if item was updated
+	 */
+	public boolean updatePrice(final String asin, final float price);
+	
+	/**
 	 * @param item the item to unwatch
 	 * @return <code>true</code> iff item was removed from list
 	 */
