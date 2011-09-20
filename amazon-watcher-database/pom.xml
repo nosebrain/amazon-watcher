@@ -18,5 +18,9 @@
     	<artifactId>mybatis</artifactId>
    		<version>3.0.5</version>
   	</dependency>
+  	<dependency>
+  		<groupId>de.nosebrain</groupId>
+  		<artifactId>common</artifactId>
+  	</dependency>
   </dependencies>
 </project>

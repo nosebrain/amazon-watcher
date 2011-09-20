@@ -4,12 +4,19 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 
 <configuration>
 	<typeAliases>
+		<!-- base types -->
 		<typeAlias type="java.net.URL" alias="url" />
-		<typeAlias type="de.nosebrain.amazon.watcher.model.Item" alias="Item"/>
+		
+		<!-- model -->
+		<typeAlias type="de.nosebrain.amazon.watcher.model.Item" alias="Item" />
+		<typeAlias type="de.nosebrain.amazon.watcher.model.PriceHistory" alias="priceHistory" />
+	
+		<!-- params -->
+		<typeAlias type="de.nosebrain.amazon.watcher.database.util.PriceParam" alias="priceParam" />
 	</typeAliases>
 	
 	<typeHandlers>
-		<typeHandler javaType="url" handler="de.nosebrain.amazon.watcher.database.util.typehandler.URLTypeHandler" />
+		<typeHandler javaType="url" handler="de.nosebrain.mybatis.typehandler.URLTypeHandler" />
 	</typeHandlers>
 	
 	<mappers>
