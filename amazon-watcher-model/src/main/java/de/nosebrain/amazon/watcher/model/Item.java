@@ -2,6 +2,8 @@ package de.nosebrain.amazon.watcher.model;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 
@@ -10,23 +12,15 @@ import java.util.Date;
 public class Item {
 	
 	private String asin;
+	private URL url;
+	private List<PriceHistory> priceHistories;
 	
 	private String name;
-	
-	private URL url;
-	
 	private Float limit;
-	
 	private WatchMode mode;
-	
-	private Float lastPrice;
-	
-	private Float currentPrice;
-	
 	private Date date;
-	
 	private Date changeDate;
-
+	
 	/**
 	 * @return the url
 	 */
@@ -53,20 +47,6 @@ public class Item {
 	 */
 	public void setMode(WatchMode mode) {
 		this.mode = mode;
-	}
-
-	/**
-	 * @return the lastPrice
-	 */
-	public Float getLastPrice() {
-		return lastPrice;
-	}
-
-	/**
-	 * @param lastPrice the lastPrice to set
-	 */
-	public void setLastPrice(Float lastPrice) {
-		this.lastPrice = lastPrice;
 	}
 
 	/**
@@ -140,16 +120,19 @@ public class Item {
 	}
 
 	/**
-	 * @return the currentPrice
+	 * @return the priceHistories
 	 */
-	public Float getCurrentPrice() {
-		return currentPrice;
+	public List<PriceHistory> getPriceHistories() {
+		if (this.priceHistories == null) {
+			this.priceHistories = new LinkedList<PriceHistory>();
+		}
+		return priceHistories;
 	}
 
 	/**
-	 * @param currentPrice the currentPrice to set
+	 * @param priceHistories the priceHistories to set
 	 */
-	public void setCurrentPrice(Float currentPrice) {
-		this.currentPrice = currentPrice;
+	public void setPriceHistories(List<PriceHistory> priceHistories) {
+		this.priceHistories = priceHistories;
 	}
 }
