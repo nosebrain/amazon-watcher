@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
+import de.nosebrain.amazon.watcher.database.util.PriceParam;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 
@@ -79,6 +80,25 @@ public class AmazonWatcherLogic implements AmazonWatcherService {
 			
 			session.update("updateItem", item);
 			session.commit();			
+			return true;
+		} finally {
+			session.close();
+		}
+	}
+	
+	@Override
+	public boolean updatePrice(String asin, float price) {
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			if (this.getItemByASIN(asin, session) == null) {
+				return false;
+			}
+			final PriceParam priceParam = new PriceParam();
+			priceParam.setPrice(price);
+			priceParam.setAsin(asin);
+			
+			session.insert("insertPrice", priceParam);
+			session.commit();
 			return true;
 		} finally {
 			session.close();

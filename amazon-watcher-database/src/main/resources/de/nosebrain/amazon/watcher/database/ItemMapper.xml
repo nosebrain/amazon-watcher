@@ -8,14 +8,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="name"			property="name"			javaType="string" />
 		<result column="url"			property="url"			javaType="url" />
 		<result column="limit"			property="limit"		javaType="Float" />
-		<result column="currentPrice"	property="currentPrice"	javaType="Float" />
-		<result column="lastPrice"		property="lastPrice"	javaType="Float" />
 		<result column="date"			property="date"			javaType="date" />
 		<result column="changeDate"		property="changeDate"	javaType="date" />
+		<collection property="priceHistories" ofType="PriceHistory" column="asin" select="selectPriceHistoryForItem" />
+	</resultMap>
+	
+	<resultMap type="PriceHistory" id="priceHistoryResult">
+		<result column="price"		property="value"	javaType="float" />
+		<result column="date"		property="date" 	javaType="date" />
 	</resultMap>
 	
 	<select id="getAllWatchedItems" resultMap="itemResult">
-		SELECT * FROM items
+		SELECT * FROM items i ORDER BY i.name
+	</select>
+	
+	<select id="selectPriceHistoryForItem" resultMap="priceHistoryResult">
+		SELECT * FROM history h WHERE h.asin = #{asin} ORDER BY h.date
 	</select>
 	
 	<select id="getItemByASIN" parameterType="string" resultMap="itemResult">
@@ -25,6 +33,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insertItem" parameterType="Item">
 		INSERT INTO items (asin, name, url, mode, `limit`) VALUES (#{asin}, #{name}, #{url}, #{mode}, #{limit})
+	</insert>
+	
+	<insert id="insertPrice" parameterType="priceParam">
+		INSERT INTO history (asin, price) VALUES (#{asin}, #{price})
 	</insert>
 	
 	<delete id="deleteItem" parameterType="string">
@@ -37,8 +49,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			SET name = #{name},
 				mode = #{mode},
 				`limit` = #{limit},
-				currentPrice = #{currentPrice},
-				lastPrice = #{lastPrice},
 				changeDate = CURRENT_TIMESTAMP
 		WHERE asin = #{asin}
 	</update>
