@@ -2,12 +2,15 @@
 <beans	xmlns="http://www.springframework.org/schema/beans"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:util="http://www.springframework.org/schema/util"
 		xmlns:mvc="http://www.springframework.org/schema/mvc"
 		xmlns:task="http://www.springframework.org/schema/task"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
 							http://www.springframework.org/schema/context 
                           	http://www.springframework.org/schema/context/spring-context.xsd
+                          	http://www.springframework.org/schema/util 
+	                    	http://www.springframework.org/schema/util/spring-util-3.0.xsd
                           	http://www.springframework.org/schema/mvc
 			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 			    			http://www.springframework.org/schema/task
@@ -46,6 +49,7 @@
 		<property name="mediaTypes">
 			<map>
 				<entry key="html" value="text/html" />
+				<entry key="json" value="application/json" />
 			</map>
 		</property>
 		<property name="viewResolvers">
@@ -57,11 +61,17 @@
 					<property name="exposedContextBeanNames">
 						<list>
 							<value>properties</value>
+							<value>amazon</value>
 						</list>
 					</property>
 				</bean>
 			</list>
 		</property>
+		<property name="defaultViews">
+    		<list>
+      			<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+    		</list>
+  		</property>
 	</bean>
 	
 	<bean id="mainDataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource">
@@ -87,30 +97,31 @@
 		<property name="services" ref="services" />
 	</bean>
 	
+	<bean id="amazon" class="de.nosebrain.amazon.watcher.model.Amazon" factory-method="valueOf">
+     	<constructor-arg value="${general.amazon}" />
+ 	</bean>
+	
+	<util:property-path path="amazon.url" id="apiUrl"/>
+	
 	<!-- updater -->
 	<bean id="signedRequestsHelper" class="de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper">
 		<property name="awsAccessKeyId" value="${general.amazon.keyId}" />
 		<property name="awsSecretKey" value="${general.amazon.secretKey}" />
-		<property name="endpoint" ref="endpoint" />
-	</bean>
-	
-	<bean id="endpoint" class="de.nosebrain.amazon.watcher.webapp.util.factorybean.EndPointFactoryBean">
-		<property name="amazon" value="${general.amazon}" />
-	</bean>
+		<property name="endpoint" ref="apiUrl" />
+	</bean>	
 	
 	<bean id="apiUpdater" class="de.nosebrain.amazon.watcher.updater.ProductAdvertisingAPIUpdater">
 		<property name="helper" ref="signedRequestsHelper" />
 	</bean>
 	
+	<!-- services -->
 	<bean id="updaterService" class="de.nosebrain.amazon.watcher.webapp.services.UpdaterService">
 		<property name="service" ref="databaseLogic" />
 		<property name="updater" ref="apiUpdater" />
 		<property name="informationServices" ref="services" />
 	</bean>
 	
-	<task:scheduler id="myScheduler" />
-	
-	<task:scheduled-tasks scheduler="myScheduler">
+	<task:scheduled-tasks>
     	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
 	</task:scheduled-tasks>
 </beans>

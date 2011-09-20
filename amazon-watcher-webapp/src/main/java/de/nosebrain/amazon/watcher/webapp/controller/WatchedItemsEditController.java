@@ -3,11 +3,13 @@ package de.nosebrain.amazon.watcher.webapp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.Item;
+import de.nosebrain.amazon.watcher.webapp.view.Views;
 
 /**
  * 
@@ -15,8 +17,6 @@ import de.nosebrain.amazon.watcher.model.Item;
  */
 @Controller
 public class WatchedItemsEditController {
-	private static final String HOME_REDIRECT = "redirect:/";
-	
 	@Autowired
 	private AmazonWatcherService service;	
 	
@@ -40,14 +40,16 @@ public class WatchedItemsEditController {
 		// mode == LIMIT limit set not negative not 0
 		this.service.watchItem(item);
 		
-		return HOME_REDIRECT;
+		return Views.HOME_REDIRECT;
 	}
 	
 	/**
+	 * TODO: method should be DELETE
 	 * @param asin the asin of the item to delete
 	 * @return the view to render
 	 */
-	public String deleteItem(final String asin) {
-		return HOME_REDIRECT;
+	@RequestMapping(value="/items/{asin}", method = RequestMethod.POST)
+	public String deleteItem(@PathVariable final String asin) {
+		return Views.HOME_REDIRECT;
 	}
 }

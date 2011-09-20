@@ -1,10 +1,12 @@
 package de.nosebrain.amazon.watcher.webapp.services;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.Item;
+import de.nosebrain.amazon.watcher.model.PriceHistory;
 import de.nosebrain.amazon.watcher.model.WatchMode;
 import de.nosebrain.amazon.watcher.services.InformationService;
 import de.nosebrain.amazon.watcher.services.Updater;
@@ -19,6 +21,8 @@ public class UpdaterService {
 	private List<InformationService> informationServices;
 	private Updater updater;
 	
+	private Date lastUpdateDate;
+	
 	/**
 	 * updates all items in the service
 	 */
@@ -27,43 +31,59 @@ public class UpdaterService {
 		final List<Item> updatedItems = new LinkedList<Item>();
 		
 		for (final Item item : allItems) {
+			final List<PriceHistory> priceHistories = item.getPriceHistories();
+			final int historySize = priceHistories.size();
+			
 			final String asin = item.getAsin();
 			final Float currentPrice = this.updater.updateItem(asin);
-			final Float lastPrice = item.getCurrentPrice();
+			Float lastPrice = null;
+			if (historySize > 0) {
+				lastPrice = priceHistories.get(historySize - 1).getValue();
+			}
 			
-			if (currentPrice != null && (lastPrice == null) || lastPrice.compareTo(currentPrice) != 0) {			
-				final WatchMode mode = item.getMode();
-				
-				switch (mode) {
-				case PRICE_CHANGE:
-					updatedItems.add(item);
-					break;
-				case PRICE_LIMIT:
-					// TODO: npe?
-					final float limit = item.getLimit();
+			if (currentPrice != null) {
+				if (lastPrice == null) {
 					/*
-					 * current price under limit => inform
+					 * only update the price the first time
 					 */
-					if (currentPrice != null && currentPrice < limit) {
+					this.service.updatePrice(asin, currentPrice);
+				} else if (lastPrice.compareTo(currentPrice) != 0) {
+					final WatchMode mode = item.getMode();
+					
+					switch (mode) {
+					case PRICE_CHANGE:
 						updatedItems.add(item);
+						break;
+					case PRICE_LIMIT:
+						final float limit = item.getLimit();
+						/*
+						 * current price under limit => inform
+						 */
+						if (currentPrice < limit) {
+							updatedItems.add(item);
+						}
+						
+						/*
+						 * current price over limit, but last price was under limit
+						 */
+						if (currentPrice >= limit || lastPrice < limit) {
+							updatedItems.add(item);
+						}
+						break;
 					}
 					
+					final PriceHistory history = new PriceHistory();
+					history.setValue(currentPrice);
+					history.setDate(new Date());
+					priceHistories.add(history);
+					
 					/*
-					 * current price over limit, but last price was under limit
+					 * update current price
 					 */
-					if (currentPrice != null && currentPrice >= limit && lastPrice != null && lastPrice < limit) {
-						updatedItems.add(item);
-					}
-					break;
+					this.service.updatePrice(asin, currentPrice);
 				}
-				
-				/*
-				 * update current price
-				 */
-				item.setLastPrice(lastPrice);
-				item.setCurrentPrice(currentPrice);
-				
-				this.service.updateItem(asin, item);
+			} else {
+				// TODO: log error
 			}
 		}
 		
@@ -73,6 +93,8 @@ public class UpdaterService {
 		for (final InformationService service : this.informationServices) {
 			service.inform(updatedItems);
 		}
+		
+		this.lastUpdateDate = new Date();
 	}
 
 	/**
@@ -94,5 +116,12 @@ public class UpdaterService {
 	 */
 	public void setUpdater(Updater updater) {
 		this.updater = updater;
+	}
+
+	/**
+	 * @return the lastUpdateDate
+	 */
+	public Date getLastUpdateDate() {
+		return lastUpdateDate;
 	}
 }
