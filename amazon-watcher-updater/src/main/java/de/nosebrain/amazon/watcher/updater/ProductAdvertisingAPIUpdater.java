@@ -71,7 +71,7 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 		return Float.NaN;
 	}
 	
-	private Float extractAmazonPrice(final InputStream content) {
+	private Float extractAmazonPrice(final InputStream content) throws IOException {
 		try {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 			final Document dom = db.parse(content);
@@ -90,6 +90,8 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 			}
 		} catch (final Exception e) {
 			// TODO: log exception
+		} finally {
+			content.close();
 		}
 		return null;
 	}
