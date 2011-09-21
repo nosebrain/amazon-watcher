@@ -32,5 +32,14 @@
 		<property name="conversionService" ref="conversionService" />
 	</bean>
 	
-	<bean id="mailInfoService" class="de.nosebrain.amazon.watcher.services.mail.MailInfoService" />
+	<bean id="mailer" class="de.nosebrain.util.Mailer" init-method="init">
+		<property name="username" value="mail:{smtp.username}" />
+		<property name="password" value="mail:{smtp.password}" />
+		<property name="properties" value="mail:{smtp.settings}" />
+	</bean>
+	
+	<bean id="mailInfoService" class="de.nosebrain.amazon.watcher.services.mail.MailInfoService">
+		<property name="address" value="mail:{mail.mail}" />
+		<property name="mailer" ref="mailer" />
+	</bean>
 </beans>
