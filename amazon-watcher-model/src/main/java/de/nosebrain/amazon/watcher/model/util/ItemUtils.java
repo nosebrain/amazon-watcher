@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
  */
 public final class ItemUtils {
 	
+	private static final int ASIN_LENGTH = 10;
+	
 	private ItemUtils() {}
 	
 	/**
@@ -27,7 +29,7 @@ public final class ItemUtils {
 					final String product = tokenizer.nextToken();
 					if ("product".equals(product) && tokenizer.hasMoreTokens()) {
 						final String asin = tokenizer.nextToken();
-						if (asin.length() == 10) {
+						if (asin.length() == ASIN_LENGTH) {
 							return asin;
 						}
 					}					
@@ -38,7 +40,7 @@ public final class ItemUtils {
 					if ("dp".equals(dp) && tokenizer.hasMoreElements()) {
 						final String asin = tokenizer.nextToken();
 						
-						if (asin.length() == 10) {
+						if (asin.length() == ASIN_LENGTH) {
 							return asin;
 						}
 					}
