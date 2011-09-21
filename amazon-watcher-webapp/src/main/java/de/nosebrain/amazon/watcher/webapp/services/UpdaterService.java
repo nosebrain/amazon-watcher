@@ -90,8 +90,11 @@ public class UpdaterService {
 		/*
 		 * inform user with config services
 		 */
-		for (final InformationService service : this.informationServices) {
-			service.inform(updatedItems);
+		if (!updatedItems.isEmpty()) {
+			for (final InformationService service : this.informationServices) {
+				service.inform(updatedItems);
+				
+			}
 		}
 		
 		this.lastUpdateDate = new Date();
