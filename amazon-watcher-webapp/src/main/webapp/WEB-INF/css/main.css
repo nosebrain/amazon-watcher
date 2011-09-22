@@ -1,0 +1,11 @@
+#items ul.history {
+	display: none;
+}
+
+.histogram {
+	margin: 10px;
+}
+
+.price {
+	margin-left: 5px;
+}
