@@ -18,6 +18,17 @@
  		<head>
  			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
  			<title><c:out value="${pageTitle}" /> -- ${projectName}</title>
+ 			
+ 			<c:url var="cssMainUrl" value="/css/main.css" />
+ 			<link href="${cssMainUrl}" type="text/css" rel="stylesheet" />
+ 			
+ 			<c:url var="jqueryUrl" value="/libraries/jquery/jquery.js" />
+ 			<c:url var="flotUrl" value="/libraries/jquery/plugins/flot/jquery.flot.js" />
+ 			<c:url var="mainJSUrl" value="/javascript/main.js" />
+ 			
+ 			<script type="text/javascript" src="${jqueryUrl}"><!-- keep me --></script>
+ 			<script type="text/javascript" src="${flotUrl}"><!-- keep me --></script>
+ 			<script type="text/javascript" src="${mainJSUrl}"><!-- keep me --></script>
  		</head>
  		<body>
  			<nav>
@@ -31,7 +42,7 @@
  				<jsp:invoke fragment="content" />
  			</div>
  			<footer>
- 				Amazon Watcher
+ 				<!-- TODO -->
  			</footer>
  		</body>
  	</html>
