@@ -66,7 +66,7 @@ public class UpdaterService {
 						/*
 						 * current price over limit, but last price was under limit
 						 */
-						if (currentPrice >= limit || lastPrice < limit) {
+						if (currentPrice >= limit && lastPrice < limit) {
 							updatedItems.add(item);
 						}
 						break;
