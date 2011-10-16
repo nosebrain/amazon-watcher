@@ -5,10 +5,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.nosebrain</groupId>
 	<artifactId>amazon-watcher-webapp</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<wtpversion>1.5</wtpversion>
 		<spring.version>3.0.5.RELEASE</spring.version>

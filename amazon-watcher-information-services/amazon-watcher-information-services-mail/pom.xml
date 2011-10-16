@@ -5,10 +5,7 @@
     <groupId>de.nosebrain</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>de.nosebrain</groupId>
   <artifactId>amazon-watcher-information-services-mail</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  
   <dependencies>
   	<dependency>
 		<groupId>javax.mail</groupId>
