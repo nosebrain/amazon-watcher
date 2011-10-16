@@ -6,9 +6,7 @@
 		<groupId>de.nosebrain</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>de.nosebrain</groupId>
 	<artifactId>amazon-watcher-importers-bibsonomy</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<amazon-watcher.version>0.0.1-SNAPSHOT</amazon-watcher.version>
 		<bibsonomy.version>2.0.17</bibsonomy.version>
