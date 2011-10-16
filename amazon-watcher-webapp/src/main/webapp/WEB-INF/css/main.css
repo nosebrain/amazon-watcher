@@ -2,10 +2,19 @@
 	display: none;
 }
 
+#items li {
+	padding-bottom: 20px;
+}
+
 .histogram {
 	margin: 10px;
 }
 
 .price {
 	margin-left: 5px;
+}
+
+ul.watchedActions li {
+	display: inline;
+	padding: 5px;
 }

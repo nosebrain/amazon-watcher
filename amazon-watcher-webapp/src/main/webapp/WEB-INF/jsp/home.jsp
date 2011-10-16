@@ -31,16 +31,18 @@
    				<li><a href="${newItemUrl}">add new item</a></li>
    			</ul>
    			
+   			<c:set var="pattern" value="dd.MM.yyyy HH:mm" />
+   			
    			<ul id="items">
    			<c:forEach var="watchedItem" items="${items}">
-   				<c:url value="/items/edit/${watchedItem.asin}" var="editUrl" />
+   				<c:url value="/items/${watchedItem.asin}/edit" var="editUrl" />
    				<c:url value="/items/${watchedItem.asin}" var="itemUrl" />
    				<li><a href="${watchedItem.url}"><c:out value="${watchedItem.name}" /></a>
    					<c:set var="historyLength" value="${fn:length(watchedItem.priceHistories)}" />
    					<!-- TODO: add style for over/under limit -->
 					<c:if test="${historyLength > 0}">
 						<c:set var="lastItem" value="${watchedItem.priceHistories[historyLength - 1]}" />
-						<span class="price"><fmt:formatNumber value="${lastItem.value}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /></span>	
+						<span class="price"><fmt:formatNumber value="${lastItem.value}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /> (<fmt:formatDate value="${lastItem.date}" pattern="${pattern}" />)</span>	
 					</c:if>   				
    									
    					<div class="histogram" style="width:800px;height:125px;"><!-- keep me --></div>
@@ -48,17 +50,13 @@
    						<c:forEach var="history" items="${watchedItem.priceHistories}">
    							<c:set var="price" value="${history.value}" />
    							<c:set var="date" value="${history.date}" />
-   							<li data-date="${date.time}" data-price="${price}"><fmt:formatNumber value="${price}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /> (<fmt:formatDate value="${date}" pattern="dd.MM.yyyy HH:mm" />)</li>
+   							<li data-date="${date.time}" data-price="${price}"><fmt:formatNumber value="${price}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /> (<fmt:formatDate value="${date}" pattern="${pattern}" />)</li>
    						</c:forEach>
    					</ul>
    					<ul class="watchedActions">
    						<li><a href="#showHistory" class="showHistory">show history</a></li>
    						<li><a href="${editUrl}">edit item</a></li>
-   						<li>
-   							<form action="${itemUrl}" method="POST">
-   								<input type="submit" value="delete" />
-   							</form>
-   						</li>
+   						<li><a href="#deleteItem" data-asin="${watedItem.asin}">delete item</a></li>
    					</ul>
    				</li>
    			</c:forEach>
