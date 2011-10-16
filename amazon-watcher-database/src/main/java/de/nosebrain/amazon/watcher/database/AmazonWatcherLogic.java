@@ -28,6 +28,16 @@ public class AmazonWatcherLogic implements AmazonWatcherService {
 			session.close();
 		}
 	}
+	
+	@Override
+	public Item getItemByAsin(String asin) {
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			return this.getItemByASIN(asin, session);
+		} finally {
+			session.close();
+		}
+	}
 
 	public boolean watchItem(final Item item) {
 		final String asin = ItemUtils.extractASIN(item.getUrl());

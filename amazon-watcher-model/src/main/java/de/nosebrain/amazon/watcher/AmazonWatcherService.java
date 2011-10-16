@@ -17,6 +17,12 @@ public interface AmazonWatcherService {
 	public List<Item> getItems();
 	
 	/**
+	 * @param asin the id of the item
+	 * @return the item with the requested id or null if the item doesn't exists
+	 */
+	public Item getItemByAsin(String asin);
+	
+	/**
 	 * @param item the item to watch
 	 * @return <code>true</code> iff item was added to list
 	 */

@@ -10,7 +10,18 @@
    	
    	<basic:layout pageTitle="Edit item">
    		<jsp:attribute name="content">
-   			<h2>edit item</h2>
+   			<c:set var="newItem" value="${empty item.asin}" />
+   			<h2>
+   				<c:choose>
+   					<c:when test="${newItem}">
+   						create new item
+   					</c:when>
+   					
+   					<c:otherwise>
+   						edit item '<c:out value="${item.name}" />'
+   					</c:otherwise>
+   				</c:choose>
+   			</h2>
    			
    			<form:form method="POST" commandName="item">
    				<div>
