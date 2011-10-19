@@ -21,6 +21,8 @@ public class UpdaterService {
 	private List<InformationService> informationServices;
 	private Updater updater;
 	
+	private double minDelta = 0.0;
+
 	private Date lastUpdateDate;
 	
 	/**
@@ -52,7 +54,9 @@ public class UpdaterService {
 					
 					switch (mode) {
 					case PRICE_CHANGE:
-						updatedItems.add(item);
+						if ((Math.abs(currentPrice - lastPrice) / lastPrice * 100) >= this.minDelta) {
+							updatedItems.add(item);
+						}
 						break;
 					case PRICE_LIMIT:
 						final float limit = item.getLimit();
@@ -119,6 +123,13 @@ public class UpdaterService {
 	 */
 	public void setUpdater(Updater updater) {
 		this.updater = updater;
+	}
+	
+	/**
+	 * @param minDelta the minDelta to set
+	 */
+	public void setMinDelta(double minDelta) {
+		this.minDelta = minDelta;
 	}
 
 	/**

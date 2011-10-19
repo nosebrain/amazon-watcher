@@ -122,6 +122,7 @@
 	<bean id="updaterService" class="de.nosebrain.amazon.watcher.webapp.services.UpdaterService">
 		<property name="service" ref="databaseLogic" />
 		<property name="updater" ref="apiUpdater" />
+		<property name="minDelta" value="${updater.minDelta}" />
 		<property name="informationServices" ref="services" />
 	</bean>
 	
