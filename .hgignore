@@ -1,9 +1,11 @@
+.settings
+.classpath
+.project
 
-syntax: regexp
-^amazon-watcher-webapp/src/main/webapp/WEB-INF/classes$
-syntax: regexp
-^amazon-watcher-webapp/work$
-syntax: regexp
-^amazon-watcher-webapp/work$
-syntax: regexp
-^amazon-watcher-webapp/src/main/webapp/WEB-INF/lib$
+WEB-INF/lib
+WEB-INF/classes
+
+target
+
+amazon-watcher-webapp/work
+.tomcatplugin
