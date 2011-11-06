@@ -75,6 +75,7 @@ public class SignedRequestsHelper {
     private String endpoint = null;
     private String awsAccessKeyId = null;
     private String awsSecretKey = null;
+    private String awsAssociateTag = null;
     
     private Mac mac = null;
 
@@ -90,9 +91,10 @@ public class SignedRequestsHelper {
     	if (this.mac == null) {
     		this.init();
     	}
-        // Let's add the AWSAccessKeyId and Timestamp parameters to the request.
+        // Let's add the AWSAccessKeyId, Timestamp and associate tag parameters to the request.
         params.put("AWSAccessKeyId", this.awsAccessKeyId);
-        params.put("Timestamp", this.timestamp());
+        params.put("AssociateTag", this.awsAssociateTag);
+        params.put("Timestamp", this.createTimestamp());
 
         // The parameters need to be processed in lexicographical order, so we'll
         // use a TreeMap implementation for that.
@@ -144,7 +146,7 @@ public class SignedRequestsHelper {
      *  
      * @return  ISO-8601 format timestamp.
      */
-    private String timestamp() {
+    private String createTimestamp() {
         final Calendar cal = Calendar.getInstance();        
         return DATE_FORMAT.format(cal.getTime());
     }
@@ -209,5 +211,12 @@ public class SignedRequestsHelper {
 	 */
 	public void setAwsSecretKey(String awsSecretKey) {
 		this.awsSecretKey = awsSecretKey;
+	}
+
+	/**
+	 * @param awsAssociateTag the awsAssociateTag to set
+	 */
+	public void setAwsAssociateTag(String awsAssociateTag) {
+		this.awsAssociateTag = awsAssociateTag;
 	}
 }

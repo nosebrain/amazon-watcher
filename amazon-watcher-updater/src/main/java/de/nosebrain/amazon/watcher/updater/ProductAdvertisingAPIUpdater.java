@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,10 +15,12 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,17 +36,12 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	
 	private static final XPathExpression offersExpression;
-	private static final XPathExpression merchantExpression;
 	private static final XPathExpression priceExpression;
-	
-	// TODO: amazon.com = amazon.de?
-	private static final String AMAZON_ID = "A3JWKAKR8XB7XF";
 	
 	static {
 		final XPath xpath = XPathFactory.newInstance().newXPath();
 		try {
 			offersExpression = xpath.compile("/ItemLookupResponse/Items/Item/Offers/Offer");
-			merchantExpression = xpath.compile("Merchant/MerchantId");
 			priceExpression = xpath.compile("OfferListing/Price/Amount");
 		} catch (XPathExpressionException e) {
 			throw new RuntimeException(e);
@@ -58,15 +57,23 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 	
 	@Override
 	public Float updateItem(final String asin) {
+		HttpEntity entity = null;
 		try {
-			final String string = this.getItemCheckUrl(asin);
-			final HttpGet get = new HttpGet(string);
+			final String url = this.getItemCheckUrl(asin);
+			final HttpGet get = new HttpGet(url);
 			final HttpResponse response = this.client.execute(get);
 		
-			final InputStream content = response.getEntity().getContent();
+			entity = response.getEntity();
+			final InputStream content = entity.getContent();
 			return this.extractAmazonPrice(content);
 		} catch (final IOException e) {
 			// TODO: log exception
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				// TODO: handle exception
+			}
 		}
 		return Float.NaN;
 	}
@@ -78,18 +85,22 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 			
 			final NodeList evaluate = (NodeList) offersExpression.evaluate(dom, XPathConstants.NODESET);
 			
+			final SortedSet<Float> prices = new TreeSet<Float>();
 			for (int i = 0; i < evaluate.getLength(); i++) {
 				final Node offer = evaluate.item(i);
 				
 				// TODO: check CurrencyCode?
-				final String merchantId = merchantExpression.evaluate(offer);
-				if (AMAZON_ID.equals(merchantId)) {
-					final String priceString = priceExpression.evaluate(offer);
-					return Integer.parseInt(priceString) / 100f;
-				}
+				final String priceString = priceExpression.evaluate(offer);
+				prices.add(Integer.parseInt(priceString) / 100f);
+			}
+			
+			// FIXME: better heuristic
+			if (prices.size() > 0) {
+				return prices.first();
 			}
 		} catch (final Exception e) {
 			// TODO: log exception
+			e.printStackTrace();
 		} finally {
 			content.close();
 		}
