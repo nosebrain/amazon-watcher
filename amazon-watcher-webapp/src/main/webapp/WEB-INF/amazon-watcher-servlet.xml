@@ -111,6 +111,7 @@
 	<bean id="signedRequestsHelper" class="de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper">
 		<property name="awsAccessKeyId" value="${general.amazon.keyId}" />
 		<property name="awsSecretKey" value="${general.amazon.secretKey}" />
+		<property name="awsAssociateTag" value="${general.amazon.associateTag}" />
 		<property name="endpoint" ref="apiUrl" />
 	</bean>	
 	
@@ -129,4 +130,6 @@
 	<task:scheduled-tasks>
     	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
 	</task:scheduled-tasks>
+	
+	<import resource="amazon-watcher-servlet-security.xml" />
 </beans>

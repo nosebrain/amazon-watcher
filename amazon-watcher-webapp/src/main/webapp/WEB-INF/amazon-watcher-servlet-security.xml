@@ -1,0 +1,23 @@
+<beans xmlns="http://www.springframework.org/schema/beans"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						http://www.springframework.org/schema/security 
+						http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+						http://www.springframework.org/schema/util 
+	                    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	                    	
+	<security:http use-expressions="true">
+		<security:intercept-url pattern="**" access="isAuthenticated()"/>
+		<security:http-basic />
+	</security:http>
+	
+	<security:authentication-manager alias="internal_auth_manager">
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user name="amazon-watcher" authorities="USER" password="${general.password}" />
+			</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager>
+</beans>

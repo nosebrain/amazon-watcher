@@ -45,7 +45,7 @@ $(function() {
 		          // alert("hover");
 		          $("#tooltip").remove();
 		          // TODO: why +1d
-		          var x = $.plot.formatDate(new Date(item.datapoint[0] + 24 * 60 * 60 * 1000), TIME_FORMAT, []);
+		          var x = $.plot.formatDate(new Date(item.datapoint[0]), TIME_FORMAT, []);
 		          var y = item.datapoint[1].toFixed(2);
 		                    
 		          showTooltip(item.pageX, item.pageY, x + "<br />" + y + '€'); // TODO: 
@@ -56,8 +56,6 @@ $(function() {
 		   }
 		});
 		
-		
-
 		histogram.hide();
 		
 		item.find('a.showHistory').click(function() {
@@ -72,7 +70,7 @@ function getHistoryData(historyDataUl, now) {
 	var data = [];
 	$(historyDataUl).find('li').each(function() {
 		var price = $(this).data('price');
-		var date = new Date($(this).data('date'));
+		var date = new Date($(this).data('date') + 24 * 60 * 60 * 1000);
 		data.push({value: price, date: date});
 	});
 	
@@ -80,12 +78,12 @@ function getHistoryData(historyDataUl, now) {
 	
 	var plotData = [];
 	for (var i = 0; i < historyData.length; i++) {
-		var data = historyData[i];
-		plotData.push([data.date.getTime(), data.max]);
+		var hData = historyData[i];
+		plotData.push([hData.date.getTime(), hData.max]);
 	}
 	
-	var last = historyData[historyData.length - 1];
-	plotData.push([now, last.max]);
+	var last = data[data.length - 1];
+	plotData.push([now, last.value]);
 	
 	return plotData;
 }
