@@ -12,6 +12,7 @@ import java.util.List;
 public class Item {
 	
 	private String asin;
+
 	private URL url;
 	private List<PriceHistory> priceHistories;
 	
@@ -134,5 +135,41 @@ public class Item {
 	 */
 	public void setPriceHistories(List<PriceHistory> priceHistories) {
 		this.priceHistories = priceHistories;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((asin == null) ? 0 : asin.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Item)) {
+			return false;
+		}
+		Item other = (Item) obj;
+		if (asin == null) {
+			if (other.asin != null) {
+				return false;
+			}
+		} else if (!asin.equals(other.asin)) {
+			return false;
+		}
+		return true;
 	}
 }
