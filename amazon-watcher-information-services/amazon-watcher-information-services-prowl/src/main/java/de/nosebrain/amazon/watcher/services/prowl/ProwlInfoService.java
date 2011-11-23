@@ -4,39 +4,49 @@ import java.io.IOException;
 import java.util.List;
 
 import de.nosebrain.amazon.watcher.model.Item;
+import de.nosebrain.amazon.watcher.model.Observation;
+import de.nosebrain.amazon.watcher.model.User;
+import de.nosebrain.amazon.watcher.model.UserSettings;
+import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 import de.nosebrain.amazon.watcher.services.InformationService;
 import de.nosebrain.prowl.Notification;
 import de.nosebrain.prowl.Notification.NotificationBuilder;
 import de.nosebrain.prowl.ProwlClient;
 
 /**
- * 
+ * TODO: i18n
  * @author nosebrain
  */
 public class ProwlInfoService implements InformationService {
 
 	private List<String> apiKeys;
 	private ProwlClient client;
-	
+
 	@Override
-	public void inform(final List<Item> items) {
-		for (final Item item : items) {			
+	public void inform(final User user, final List<Observation> observations) {
+		for (final Observation observation : observations) {
 			try {
-				final Notification notification = this.createNotification(item);
-				this.client.sendNotification(notification, this.apiKeys);
+				final Notification notification = this.createNotification(user, observation);
+				if (notification != null) {
+					this.client.sendNotification(notification, this.apiKeys);
+				}
 			} catch (final IOException e) {
 				// TODO: log exception
 			}
 		}
 	}
 
-	/** 
-	 * @param item the item to use to build the notification
+	/**
+	 * @param user
+	 * @param observation the item to use to build the notification
 	 * @return the notification to send
 	 */
-	protected Notification createNotification(final Item item) {
+	protected Notification createNotification(final User user, final Observation observation) {
+		final UserSettings settings = user.getSettings();
+
+		final Item item = observation.getItem();
 		final int size = item.getPriceHistories().size();
-		
+
 		final float currentPrice;
 		if (size > 0) {
 			currentPrice = item.getPriceHistories().get(size - 1).getValue();
@@ -44,21 +54,24 @@ public class ProwlInfoService implements InformationService {
 			// TODO: log illegal state
 			currentPrice = -1.0f;
 		}
-		
+
 		final float lastPrice;
 		if (size > 1) {
 			lastPrice = item.getPriceHistories().get(size - 2).getValue();
 		} else {
 			lastPrice = -1.0f;
 		}
-		
+
 		final String description;
-		
-		switch (item.getMode()) {
+
+		switch (observation.getMode()) {
 		case PRICE_CHANGE:
-			// TODO: i18n
+			if (ItemUtils.getLastDelta(item) < settings.getMinDelta()) {
+				return null;
+			}
+
 			final StringBuilder change = new StringBuilder("Price changed. ");
-			change.append((lastPrice > currentPrice ? "Dropped" : "Increased"));
+			change.append(lastPrice > currentPrice ? "Dropped" : "Increased");
 			change.append(" from ");
 			change.append(lastPrice);
 			change.append(" to ");
@@ -77,10 +90,10 @@ public class ProwlInfoService implements InformationService {
 			break;
 		}
 		return new NotificationBuilder()
-		.application("Amazon Watcher")
-		.event(item.getName())
+		.application("Amazon Watcher") // TODO: config
+		.event(observation.getName())
 		.description(description)
-		.url(item.getUrl().toString()).build();
+		.url(ItemUtils.generateUrlForItem(item)).build();
 	}
 
 	/**

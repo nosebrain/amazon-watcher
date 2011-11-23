@@ -25,6 +25,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.nosebrain.amazon.watcher.model.Amazon;
+import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.services.Updater;
 import de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper;
 
@@ -34,35 +36,35 @@ import de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper;
  */
 public class ProductAdvertisingAPIUpdater implements Updater {
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	
+
 	private static final XPathExpression offersExpression;
 	private static final XPathExpression priceExpression;
-	
+
 	static {
 		final XPath xpath = XPathFactory.newInstance().newXPath();
 		try {
 			offersExpression = xpath.compile("/ItemLookupResponse/Items/Item/Offers/Offer");
 			priceExpression = xpath.compile("OfferListing/Price/Amount");
-		} catch (XPathExpressionException e) {
+		} catch (final XPathExpressionException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * the client to use
 	 */
 	private HttpClient client = new DefaultHttpClient();
-	
+
 	private SignedRequestsHelper helper;
-	
+
 	@Override
-	public Float updateItem(final String asin) {
+	public Float updateItem(final Item item) {
 		HttpEntity entity = null;
 		try {
-			final String url = this.getItemCheckUrl(asin);
+			final String url = this.getItemCheckUrl(item);
 			final HttpGet get = new HttpGet(url);
 			final HttpResponse response = this.client.execute(get);
-		
+
 			entity = response.getEntity();
 			final InputStream content = entity.getContent();
 			return this.extractAmazonPrice(content);
@@ -71,29 +73,29 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 		} finally {
 			try {
 				EntityUtils.consume(entity);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// TODO: handle exception
 			}
 		}
 		return Float.NaN;
 	}
-	
+
 	private Float extractAmazonPrice(final InputStream content) throws IOException {
 		try {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 			final Document dom = db.parse(content);
-			
+
 			final NodeList evaluate = (NodeList) offersExpression.evaluate(dom, XPathConstants.NODESET);
-			
+
 			final SortedSet<Float> prices = new TreeSet<Float>();
 			for (int i = 0; i < evaluate.getLength(); i++) {
 				final Node offer = evaluate.item(i);
-				
+
 				// TODO: check CurrencyCode?
 				final String priceString = priceExpression.evaluate(offer);
 				prices.add(Integer.parseInt(priceString) / 100f);
 			}
-			
+
 			// FIXME: better heuristic
 			if (prices.size() > 0) {
 				return prices.first();
@@ -107,27 +109,27 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 		return null;
 	}
 
-	private String getItemCheckUrl(final String asin) {
+	private String getItemCheckUrl(final Item item) {
 		final Map<String, String> params = new HashMap<String, String>();
 		params.put("Service", "AWSECommerceService");
 		params.put("Operation", "ItemLookup");
-		params.put("ItemId", asin);
+		params.put("ItemId", item.getAsin());
 		params.put("ResponseGroup", "Offers");
-		
-		return this.helper.sign(params);
+
+		return this.helper.sign(Amazon.getEndPoint(item.getSite()), params);
 	}
-	
+
 	/**
 	 * @param helper the helper to set
 	 */
-	public void setHelper(SignedRequestsHelper helper) {
+	public void setHelper(final SignedRequestsHelper helper) {
 		this.helper = helper;
 	}
 
 	/**
 	 * @param client the client to set
 	 */
-	public void setClient(HttpClient client) {
+	public void setClient(final HttpClient client) {
 		this.client = client;
 	}
 }

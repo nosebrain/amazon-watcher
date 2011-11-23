@@ -5,9 +5,7 @@
     <groupId>de.nosebrain</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>de.nosebrain</groupId>
   <artifactId>amazon-watcher-information-services</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <dependencies>
   	<dependency>
@@ -17,7 +15,6 @@
   	<dependency>
   		<groupId>de.nosebrain</groupId>
   		<artifactId>common</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
   <modules>

@@ -1,22 +1,54 @@
 var TIME_FORMAT = "%0d.%0m.%y";
-$(function() {
+var PRICE_COLOR = '#2A5BA1';
+var COLOR_RED = '#cc0000';
+var COLOR_GREEN = '#00cc00';
+
+$(function() {	
 	var now = new Date().getTime();
-	$('#items>li').each(function() {
+	$('.item').each(function() {
 		var item = $(this);
 		var histogram = item.find('.histogram');
-		
+		var currency = item.data('currency');
 		var historyDataSource = item.find('ul.history');
 		var historyData = getHistoryData(historyDataSource, now);
+		var dataToPlot = new Array();
 		
-		$.plot(histogram, [ { 
+		if (item.data('mode') == "PRICE_LIMIT") {
+			var limit = item.data('limit');
+			var firstDate = historyData[0][0];
+			var lastPrice = historyData[historyData.length - 1][1];
+			
+			var colorLimit = COLOR_RED;
+			
+			if (lastPrice < limit) {
+				colorLimit = COLOR_GREEN;
+			}
+			
+			dataToPlot.push({
+				data: [[firstDate, limit], [now, limit]],
+				color: colorLimit,
+				hoverable: false,
+				shadowSize: 0
+			});
+		}
+		
+		dataToPlot.push({ 
 			data: historyData, 
-			color: '#2220F9',
+			color: PRICE_COLOR,
 			shadowSize: 0,
-			hoverable: true
-			} ], {
+			hoverable: true,
+			points: {
+				show: false,
+            	fill: true,
+            	fillColor: PRICE_COLOR
+			}
+		});
+		
+		$.plot(histogram, dataToPlot, {
 			xaxis: {
 				mode: "time",
-		        timeformat: TIME_FORMAT
+		        timeformat: TIME_FORMAT,
+		        alignTicksWithAxis: 1
 			}, 
 			yaxis: {
 				tickDecimals: 2,
@@ -25,17 +57,16 @@ $(function() {
 			series: {
                 lines: {
                 	show: true
-                },
-                points: {
-                	show: true,
-                	fill: true,
-                	fillColor: '#2220F9'
                 }
             },
             grid: {
             	hoverable: true
             }
 		});
+		
+		function currencyFormatter(v, axis) {
+		    return v.toFixed(axis.tickDecimals) + currency;
+		}
 		
 		histogram.bind("plothover", function(event, pos, item) {
 		   if (item) {
@@ -48,15 +79,13 @@ $(function() {
 		          var x = $.plot.formatDate(new Date(item.datapoint[0]), TIME_FORMAT, []);
 		          var y = item.datapoint[1].toFixed(2);
 		                    
-		          showTooltip(item.pageX, item.pageY, x + "<br />" + y + '€'); // TODO: 
+		          showTooltip(item.pageX, item.pageY, x + "<br />" + y + currency);
 		      }
 		   } else {
 		      $("#tooltip").remove();
 		      previousPoint = null;            
 		   }
 		});
-		
-		histogram.hide();
 		
 		item.find('a.showHistory').click(function() {
 			histogram.toggle();
@@ -79,7 +108,7 @@ function getHistoryData(historyDataUl, now) {
 	var plotData = [];
 	for (var i = 0; i < historyData.length; i++) {
 		var hData = historyData[i];
-		plotData.push([hData.date.getTime(), hData.max]);
+		plotData.push([hData.date.getTime(), hData.min]);
 	}
 	
 	var last = data[data.length - 1];
@@ -102,10 +131,6 @@ function showTooltip(x, y, contents) {
         'color' : '#fff',
         opacity: 0.75
     }).appendTo("body").fadeIn(200);
-}
-
-function currencyFormatter(v, axis) {
-    return v.toFixed(axis.tickDecimals) + "€"; // TODO: use config
 }
 
 // source http://stackoverflow.com/questions/3228837/histogram-in-flot-javascript
@@ -133,16 +158,19 @@ function aggregateByDate(source) {
     for (var key in aggregateHash) {
        var sum = 0;
        var max = Number.MIN_VALUE;
+       var min = Number.MAX_VALUE;
 
        for (var i = 0; i < aggregateHash[key].length; i++) {
     	  var value = aggregateHash[key][i].value;
           sum += value;
           max = Math.max(max, value);
+          min = Math.min(min, value);
        }
 
        newSource.push({
           total: sum,
           max: max,
+          min: min,
           count: aggregateHash[key].length,
           items: aggregateHash[key],
           dateString: key,
@@ -151,4 +179,21 @@ function aggregateByDate(source) {
     }
 
     return newSource;
+}
+
+
+// edit form functions
+
+$(function() {
+	modeChange();
+	$('#mode').change(modeChange);
+});
+
+function modeChange() {
+	var limit = $('#limit').parent();
+	if ($('#mode').val() == "PRICE_LIMIT") {
+		limit.show();
+	} else {
+		limit.hide();
+	}
 }

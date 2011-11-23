@@ -38,8 +38,7 @@
 		<property name="properties" value="mail:{smtp.settings}" />
 	</bean>
 	
-	<bean id="mailInfoService" class="de.nosebrain.amazon.watcher.services.mail.MailInfoService">
-		<property name="address" value="mail:{mail.mail}" />
+	<bean id="mailFactory" class="de.nosebrain.amazon.watcher.services.mail.MailInformationServiceFactory">
 		<property name="mailer" ref="mailer" />
 	</bean>
 </beans>

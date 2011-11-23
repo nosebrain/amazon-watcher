@@ -7,38 +7,44 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import de.nosebrain.amazon.watcher.model.Item;
+import de.nosebrain.amazon.watcher.model.Observation;
+import de.nosebrain.amazon.watcher.model.User;
+import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 import de.nosebrain.amazon.watcher.services.InformationService;
 import de.nosebrain.util.Mailer;
 
 
 /**
+ * TODO: i18n
  * sends an mail to the provided address
  * 
  * @author nosebrain
  */
 public class MailInfoService implements InformationService {
-	
+
 	private Mailer mailer;
 	private InternetAddress address;
 
 	@Override
-	public void inform(final List<Item> items) {
+	public void inform(final User user, final List<Observation> observations) {
 		try {
 			final MimeMessage message = this.mailer.createMessage();
-			message.setSubject("Amazon Watcher | Overview");
+			message.setSubject("Amazon Watcher | Overview");
 			final StringBuilder content = new StringBuilder();
-			content.append("<html><body><p>Some of your watched items have changed.</p><ul>");
-			
-			for (final Item item : items) {
+			content.append("<html><body><p>" + "Some of your watched items have changed." + "</p><ul>");
+
+			for (final Observation observation : observations) {
+				final Item item = observation.getItem();
+
 				content.append("<li>");
 				content.append("<a href=\"");
-				content.append(item.getUrl().toString());
+				content.append(ItemUtils.generateUrlForItem(item));
 				content.append("\">");
-				content.append(item.getName());
+				content.append(observation.getName());
 				content.append("</a>");
 				content.append("<div class=\"info\">");
 				final int size = item.getPriceHistories().size();
-				
+
 				final float currentPrice;
 				if (size > 0) {
 					currentPrice = item.getPriceHistories().get(size - 1).getValue();
@@ -46,19 +52,19 @@ public class MailInfoService implements InformationService {
 					// TODO: log illegal state
 					currentPrice = -1.0f;
 				}
-				
+
 				final float lastPrice;
 				if (size > 1) {
 					lastPrice = item.getPriceHistories().get(size - 2).getValue();
 				} else {
 					lastPrice = -1.0f;
 				}
-				
-				switch (item.getMode()) {
+
+				switch (observation.getMode()) {
 				case PRICE_CHANGE:
 					// TODO: i18n
 					content.append("Price changed. ");
-					content.append((lastPrice > currentPrice ? "Dropped" : "Increased"));
+					content.append(lastPrice > currentPrice ? "Dropped" : "Increased");
 					content.append(" from ");
 					content.append(lastPrice);
 					content.append(" to ");
@@ -76,8 +82,8 @@ public class MailInfoService implements InformationService {
 				}
 				content.append("</div></li>");
 			}
-			
-			
+
+
 			content.append("</ul></body></html>");
 			message.setContent(content.toString(), "text/html; charset=utf-8");
 			this.mailer.sendMessage(message, this.address);
@@ -90,14 +96,14 @@ public class MailInfoService implements InformationService {
 	/**
 	 * @param mailer the mailer to set
 	 */
-	public void setMailer(Mailer mailer) {
+	public void setMailer(final Mailer mailer) {
 		this.mailer = mailer;
 	}
-	
+
 	/**
 	 * @param address the address to set
 	 */
-	public void setAddress(InternetAddress address) {
+	public void setAddress(final InternetAddress address) {
 		this.address = address;
 	}
 }

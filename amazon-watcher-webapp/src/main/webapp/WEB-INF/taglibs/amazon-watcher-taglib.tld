@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	<tlibversion>1.1</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>amazon-watcher</shortname>
+	<info>Some helpers</info>
+	
+	<function>
+		<name>getImageUrl</name>
+		<function-class>de.nosebrain.amazon.watcher.webapp.util.Functions</function-class>
+		<function-signature>java.lang.String getImageUrl(de.nosebrain.amazon.watcher.model.Item)</function-signature>
+	</function>
+	
+	<function>
+		<name>getASIN</name>
+		<function-class>de.nosebrain.amazon.watcher.webapp.util.Functions</function-class>
+		<function-signature>java.lang.String getASIN(java.net.URL)</function-signature>
+	</function>
+	
+	<function>
+		<name>getUrl</name>
+		<function-class>de.nosebrain.amazon.watcher.webapp.util.Functions</function-class>
+		<function-signature>java.lang.String getUrl(de.nosebrain.amazon.watcher.model.Item)</function-signature>
+	</function>
+	
+	<function>
+		<name>encodeURI</name>
+		<function-class>de.nosebrain.amazon.watcher.webapp.util.Functions</function-class>
+		<function-signature>java.lang.String encodeURI(java.lang.String)</function-signature>
+	</function>
+</taglib>

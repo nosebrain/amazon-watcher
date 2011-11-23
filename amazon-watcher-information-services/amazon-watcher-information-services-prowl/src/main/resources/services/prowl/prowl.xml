@@ -33,17 +33,12 @@
 		<property name="conversionService" ref="conversionService" />
 	</bean>
 	
-	<!-- prowl information service -->
-	<bean id="prowl" class="de.nosebrain.amazon.watcher.services.prowl.ProwlInfoService">
-		<property name="apiKeys" value="prowl:{prowl.apiKeys}" />
-		<property name="client" ref="prowlClient" />
-	</bean>
-	
-	<bean id="ProwlClient" class="de.nosebrain.prowl.ProwlClient" />
-	
-	<bean id="providerProwlClient" class="de.nosebrain.prowl.ProviderProwlClient">
+	<bean id="prowlClient" class="de.nosebrain.prowl.ProviderProwlClient">
 		<constructor-arg value="prowl:{prowl.providerKey}" />
 	</bean>
 	
-	<alias name="prowl:{prowl.client}ProwlClient" alias="prowlClient" />
+	<!-- factory -->
+	<bean id="prowlFactory" class="de.nosebrain.prowl.ProwlInformationServiceFactory">
+		<property name="client" ref="prowlClient" />
+	</bean>
 </beans>

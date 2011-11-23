@@ -9,26 +9,26 @@ public enum Amazon {
 	/**
 	 * Amazon Germany
 	 */
-	DE("ecs.amazonaws.de", "€"),
-	
+	DE("de", "€"),
+
 	/**
 	 * Amazon USA
 	 */
-	USA("ecs.amazonaws.com", "$");
-	
-	private final String url;
+	US("com", "$");
+
+	private final String tld;
 	private final String currency;
 
-	private Amazon(final String url, final String currency) {
-		this.url = url;
+	private Amazon(final String tld, final String currency) {
+		this.tld = tld;
 		this.currency = currency;
 	}
 
 	/**
-	 * @return the url
+	 * @return the tld
 	 */
-	public String getUrl() {
-		return url;
+	public String getTLD() {
+		return this.tld;
 	}
 
 	/**
@@ -36,5 +36,9 @@ public enum Amazon {
 	 */
 	public String getCurrency() {
 		return this.currency;
+	}
+
+	public static String getEndPoint(final Amazon site) {
+		return "ecs.amazonaws." + site.getTLD();
 	}
 }

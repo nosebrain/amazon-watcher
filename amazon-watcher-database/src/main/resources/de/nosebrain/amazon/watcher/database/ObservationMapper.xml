@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="de.nosebrain.amazon.watcher.database.ObservationMapper">
+
+	<resultMap type="Observation" id="observationResult">
+		<result column="name"			property="name"			javaType="string" />
+		<result column="mode"			property="mode"			javaType="ObservationMode" />
+		<result column="limit"			property="limit"		javaType="Float" />
+		<result column="date"			property="date"			javaType="date" />
+		<result column="changeDate"		property="changeDate"	javaType="date" />
+		
+		<association property="item" resultMap="de.nosebrain.amazon.watcher.database.ItemMapper.itemResult" />
+	</resultMap>
+	
+	<select id="getAllObservationsByUser" resultMap="observationResult">
+		SELECT o.name, o.mode, o.`limit`, o.change_date, o.date, i.id, i.asin, i.site, h.price, h.date AS hDate
+			FROM observations o
+				JOIN items i ON (o.item_id = i.id)
+				LEFT JOIN history h ON (o.item_id = h.item_id)
+			WHERE o.user_name = #{userName}
+		ORDER BY o.name
+	</select>
+	
+	<select id="getObservationByItemForUser" resultMap="observationResult">
+		SELECT o.name, o.mode, o.`limit`, o.change_date, o.date, i.id, i.asin, i.site
+			FROM observations o
+				JOIN items i ON (o.item_id = i.id)
+			WHERE o.user_name = #{userName} AND i.asin = #{item.asin} AND i.site = #{item.site}
+	</select>
+	
+	<insert id="insertNewObservation" parameterType="observationParam">
+		INSERT INTO observations (item_id, name, mode, `limit`, user_name)
+			VALUES (#{itemId}, #{observation.name}, #{observation.mode}, #{observation.limit}, #{userName})
+	</insert>
+	
+	<update id="updateObservation" parameterType="observationParam">
+		UPDATE observations o JOIN items i ON (o.item_id = i.id) 
+			SET o.name = #{observation.name},
+			o.mode = #{observation.mode},
+			o.`limit` = #{observation.limit},
+			o.change_date = CURRENT_TIMESTAMP  
+		WHERE o.user_name = #{userName}
+		AND i.site = #{observation.item.site}
+		AND i.asin = #{observation.item.asin}
+	</update>
+	
+	<delete id="deleteObservation" parameterType="itemParam">
+		DELETE FROM observations o
+			JOIN items i ON (o.item_id = i.id)
+		WHERE o.user_name = #{userName}
+		AND i.asin = #{item.asin}
+		AND i.site = #{item.site}
+	</delete>
+	
+	<delete id="deleteObservationForUser" parameterType="string">
+		DELETE FROM observations o WHERE o.user_name = #{userName}
+	</delete>
+</mapper>

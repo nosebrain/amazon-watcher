@@ -1,0 +1,69 @@
+<jsp:root version="2.0"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:aw="urn:jsptld:/WEB-INF/taglibs/amazon-watcher-taglib.tld">
+	
+	<jsp:directive.attribute name="observation" type="de.nosebrain.amazon.watcher.model.Observation" required="true" />
+   	
+   	<c:set var="pattern" value="dd.MM.yyyy HH:mm" />
+   	
+   	<c:set var="item" value="${observation.item}" />
+   	<c:set var="itemUrl" value="${aw:getUrl(item)}" />
+   	
+	<div class="item" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
+		<a href="${itemUrl}" class="itempicture"><img src="${aw:getImageUrl(item)}" /></a>
+		<div class="iteminfo">
+			<ul class="watchedActions">
+				<fmt:message key="observation.edit" var="editTitle" />
+				<c:url var="editIcon" value="/icons/eye_edit.png" />
+				
+				<c:url var="editUrl" value="/observations/${aw:encodeURI(itemUrl)}/edit" />
+				
+				<li><a href="${editUrl}" title="${editTitle}"><img src="${editIcon}" /></a></li>
+				<c:url var="unwatchIcon" value="/icons/eye_minus.png" />
+				<li>
+					<fmt:message key="observation.unwatch" var="unwatchTitle">
+						<fmt:param value="${observation.name}"/>
+					</fmt:message>
+					<a href="#deleteItem" title="${unwatchTitle}"><img src="${unwatchIcon}" /></a>
+				</li>
+			</ul>
+			<div class="info">
+				<a href="${itemUrl}" class="itemName"><c:out value="${observation.name}" /></a>
+				
+				<c:set var="historyLength" value="${fn:length(item.priceHistories)}" />
+				<c:if test="${historyLength > 0}">
+					<c:set var="lastItem" value="${item.priceHistories[historyLength - 1]}" />
+					<!-- style for over/under limit -->
+					<c:if test="${observation.mode eq 'PRICE_LIMIT'}">
+						<c:choose>
+							<c:when test="${lastItem.value &lt; observation.limit}">
+								<c:set var="limitClass" value=" underLimit" />
+							</c:when>
+							<c:otherwise>
+								<c:set var="limitClass" value=" overLimit" />
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+					
+					<span class="price${limitClass}"><fmt:formatNumber value="${lastItem.value}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /></span><span class="time"> (<fmt:formatDate value="${lastItem.date}" pattern="${pattern}" />)</span>	
+				</c:if>
+			</div>
+					
+			<div class="histogram" style="width:700px;height:130px;"><!-- keep me --></div>
+			
+			<!-- TODO: handle no history -->
+			<ul class="history">
+				<c:forEach var="history" items="${item.priceHistories}">
+					<c:set var="price" value="${history.value}" />
+					<c:set var="date" value="${history.date}" />
+					<li data-date="${date.time}" data-price="${price}"><fmt:formatNumber value="${price}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /> (<fmt:formatDate value="${date}" pattern="${pattern}" />)</li>
+				</c:forEach>
+			</ul>
+		</div> 
+   	</div>
+</jsp:root>

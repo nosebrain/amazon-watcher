@@ -1,0 +1,28 @@
+<jsp:root version="2.0"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:form="http://www.springframework.org/tags/form"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:spring="http://www.springframework.org/tags">
+	
+	<jsp:directive.attribute name="path" required="true" rtexprvalue="true" />
+	
+	<spring:eval expression="'${nestedPath}'.substring(0, '${nestedPath}'.length() - 1)" var="basePath"/>
+	<spring:eval expression="${basePath}" var="baseBean"/>
+	<spring:eval expression="new org.springframework.beans.BeanWrapperImpl(baseBean)" var="beanWrapper"/>
+	<spring:eval expression="beanWrapper.getPropertyType('${path}')" var="pathClass"/>
+	<!-- Create a select option for each of the enum constants. -->
+	<form:select path="${path}">
+		<c:forEach items="${pathClass.enumConstants}" var="enumConst">
+		<!-- Value of option is the enum constant name, which spring knows
+		how to bind using enum.valueOf(). -->
+		<form:option value="${enumConst}">
+			<!-- Label is pulled from propfile as simpleName.constant,
+			e.g Color.RED -->
+			<fmt:message key="${pathClass.simpleName}.${enumConst}"/>
+		</form:option>
+		</c:forEach>
+	</form:select>
+	
+</jsp:root>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans	xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context 
+                          	http://www.springframework.org/schema/context/spring-context.xsd
+                          	http://www.springframework.org/schema/mvc
+			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+	<!-- properties -->
+	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    	<property name="locations">
+    		<list>
+        		<value>classpath:importers/bibsonomy/bibsonomy.properties</value>
+        		<value>file:${catalina.home}/conf/amazon-watcher/importers/bibsonomy/bibsonomy.properties</value>
+      		</list>
+    	</property>
+    	<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+	
+	<bean id="propertyConfigurer"  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    	<property name="properties" ref="properties" />
+    	<property name="placeholderPrefix" value="bibsonomy:{" />
+	</bean>
+	
+	<!-- conversion service -->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
+	
+	<bean id="conversionServiceBeanFactoryPostProcessor" class="de.nosebrain.spring.beans.factory.ConversionServiceFactoryBeanPostProcessor">
+		<property name="conversionService" ref="conversionService" />
+	</bean>
+	
+	<bean id="ownURI" class="java.net.URI">
+		<constructor-arg value="custom://amazon-watcher/bibsonomy:{sync.id}" />
+	</bean>
+	
+	<bean id="restLogic" class="org.bibsonomy.rest.client.RestLogic">
+		<constructor-arg value="bibsonomy:{bibsonomy.api.username}"/>
+		<constructor-arg value="bibsonomy:{bibsonomy,api.key}"/>
+		<constructor-arg value="bibsonomy:{bibsonomy.api.url}"/>
+	</bean>
+	
+	<bean id="bibsonomyImporter" class="de.nosebrain.amazon.watcher.importer.bibsonomy.BibSonomyImporter">
+		<property name="ownURI" ref="ownURI" />
+	</bean>
+	
+</beans>

@@ -1,9 +1,78 @@
+body {
+	color: #2A5BA1;
+	margin: 0px;
+	padding: 0px;
+	font-family: sans, Helvetica, Arial;
+	font-size: 95%;
+}
+
+body a {
+	color: #2A5BA1;
+}
+
+header {
+	background-color: #2A5BA1;
+}
+
+footer {
+	clear: both;
+	color: #909090;
+	font-size: 80%;
+	padding-bottom: 1em;
+}
+
+header, #content, footer {
+	padding-left: 1.5em;
+	padding-right: 1.5em;
+}
+
+header h1 {
+	margin: 0px;
+	padding: 0.25em;
+	text-shadow: #0E3269 2px 2px 2px;
+}
+
+header a {
+	color: #fff;
+	text-decoration: none;
+}
+
+#content {
+	padding-bottom: 2.5em;
+}
+
+#items {
+	padding-top: 2em;
+	padding-bottom: 2em;
+}
+
 #items ul.history {
 	display: none;
 }
 
-#items li {
-	padding-bottom: 20px;
+#items .item {
+	clear: both;
+}
+
+#items .item .itemName {
+	font-weight: bold;
+}
+
+#items .item .itempicture {
+	width: 120px;
+	padding: 1em;
+}
+
+#items .item .iteminfo {
+	padding: 0.25em;
+}
+
+#items .item .iteminfo, #items .item .itempicture {
+	float: left;
+}
+
+#items .item .iteminfo {
+	margin-bottom: 1.5em;
 }
 
 .histogram {
@@ -14,7 +83,38 @@
 	margin-left: 5px;
 }
 
+.price.overLimit {
+	color: red;
+}
+
+.price.underLimit {
+	color: green;
+}
+
+ul.watchedActions {
+	float: right;
+	padding: 0px;
+	margin: 0px;
+}
+
 ul.watchedActions li {
 	display: inline;
 	padding: 5px;
+}
+
+form {
+	display: table;
+}
+
+form > div > p {
+	display: table-row;
+}
+
+form > div > p > * {
+	display: table-cell;
+	margin-bottom: 1em;
+}
+
+form > div > p > label {
+	width: 150px;
 }

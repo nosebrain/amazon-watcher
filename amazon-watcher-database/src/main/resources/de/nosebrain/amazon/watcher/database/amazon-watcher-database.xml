@@ -4,15 +4,27 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 
 <configuration>
 	<typeAliases>
-		<!-- base types -->
+		<!-- java classes -->
 		<typeAlias type="java.net.URL" alias="url" />
 		
+		<!-- common -->
+		<typeAlias type="de.nosebrain.Language" alias="Language" />
+		<typeAlias type="de.nosebrain.authentication.Role" alias="Role" />
+		
 		<!-- model -->
+		<!-- user -->
+		<typeAlias type="de.nosebrain.amazon.watcher.model.User" alias="User" />
+		<typeAlias type="de.nosebrain.amazon.watcher.model.UserSettings" alias="UserSettings" />
+		<!-- item and observation -->
 		<typeAlias type="de.nosebrain.amazon.watcher.model.Item" alias="Item" />
 		<typeAlias type="de.nosebrain.amazon.watcher.model.PriceHistory" alias="priceHistory" />
+		<typeAlias type="de.nosebrain.amazon.watcher.model.Observation" alias="Observation" />
+		<typeAlias type="de.nosebrain.amazon.watcher.model.Amazon" alias="Amazon" />
+		<typeAlias type="de.nosebrain.amazon.watcher.model.ObservationMode" alias="ObservationMode" />
 	
 		<!-- params -->
-		<typeAlias type="de.nosebrain.amazon.watcher.database.util.PriceParam" alias="priceParam" />
+		<typeAlias type="de.nosebrain.amazon.watcher.database.util.ItemParam" alias="itemParam" />
+		<typeAlias type="de.nosebrain.amazon.watcher.database.util.ObservationParam" alias="observationParam" />
 	</typeAliases>
 	
 	<typeHandlers>
@@ -20,6 +32,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	</typeHandlers>
 	
 	<mappers>
+		<mapper resource="de/nosebrain/amazon/watcher/database/UserMapper.xml" />
 		<mapper resource="de/nosebrain/amazon/watcher/database/ItemMapper.xml"/>
+		<mapper resource="de/nosebrain/amazon/watcher/database/ObservationMapper.xml"/>
 	</mappers>
 </configuration>
