@@ -44,4 +44,23 @@
 		<servlet-name>amazon-watcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	
+	<error-page>
+		<error-code>401</error-code>
+		<location>/errors/401</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/errors/404</location>
+	</error-page>
+	<error-page>
+		<error-code>405</error-code>
+		<location>/errors/405</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/errors/500</location>
+	</error-page>
+	
 </web-app>

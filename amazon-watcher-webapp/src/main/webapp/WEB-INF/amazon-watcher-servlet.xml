@@ -4,7 +4,6 @@
 		xmlns:context="http://www.springframework.org/schema/context"
 		xmlns:util="http://www.springframework.org/schema/util"
 		xmlns:mvc="http://www.springframework.org/schema/mvc"
-		xmlns:task="http://www.springframework.org/schema/task"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
 							http://www.springframework.org/schema/context 
@@ -12,9 +11,7 @@
                           	http://www.springframework.org/schema/util 
 	                    	http://www.springframework.org/schema/util/spring-util-3.0.xsd
                           	http://www.springframework.org/schema/mvc
-			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
-			    			http://www.springframework.org/schema/task
-   							http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<!-- properties -->
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -32,18 +29,45 @@
 	</bean>
 	
 	<!-- conversion service -->
-	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="de.nosebrain.amazon.watcher.webapp.util.converter.StringToItemConverter" />
+			</set>
+		</property>
+	</bean>
 	
 	<bean id="conversionServiceBeanFactoryPostProcessor" class="de.nosebrain.spring.beans.factory.ConversionServiceFactoryBeanPostProcessor">
 		<property name="conversionService" ref="conversionService" />
 	</bean>
 	
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages/messages" />
+	</bean>
+	
 	<!-- config -->
-	<mvc:annotation-driven />
+	
+	<bean id="mvchandler" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="urlDecode" value="false" />
+		<property name="alwaysUseFullPath" value="true" />
+		<property name="webBindingInitializer">
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="conversionService" ref="conversionService"/>
+            </bean>
+        </property>
+	</bean>
+	
+	<!--  <mvc:annotation-driven conversion-service="conversionService" /> -->
+	
+	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="urlDecode" value="false" />
+		<property name="alwaysUseFullPath" value="true" />
+	</bean>
 	
 	<mvc:resources mapping="/css/**" location="/WEB-INF/css/" />
 	<mvc:resources mapping="/javascript/**" location="/WEB-INF/javascript/" />
 	<mvc:resources mapping="/libraries/**" location="/WEB-INF/libraries/"/>
+	<mvc:resources mapping="/icons/**" location="/WEB-INF/icons/"/>
 	
 	<context:component-scan base-package="de.nosebrain.amazon.watcher.webapp.controller">
 		<context:include-filter type="annotation" expression="org.aspectj.lang.annotation.Aspect" />
@@ -65,7 +89,6 @@
 					<property name="exposedContextBeanNames">
 						<list>
 							<value>properties</value>
-							<value>amazon</value>
 						</list>
 					</property>
 				</bean>
@@ -78,58 +101,6 @@
   		</property>
 	</bean>
 	
-	<bean id="mainDataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="${database.url}" />
-		<property name="username" value="${database.username}" />
-		<property name="password" value="${database.password}" />
-	</bean>
-	
-	<bean id="mainSqlSessionFactory" class="de.nosebrain.amazon.watcher.webapp.util.factorybean.SqlSessionFactoryFactoryBean">
-		<property name="dataSource" ref="mainDataSource" />
-		<property name="configLocation" value="classpath:de/nosebrain/amazon/watcher/database/amazon-watcher-database.xml" />
-	</bean>
-	
-	<bean id="databaseLogic" class="de.nosebrain.amazon.watcher.database.AmazonWatcherLogic">
-		<property name="sessionFactory" ref="mainSqlSessionFactory" />
-	</bean>
-	
-	<bean id="services" class="java.util.LinkedList" />
-	
-	<bean id="serviceConfig" class="de.nosebrain.amazon.watcher.webapp.util.config.ServiceConfigurator" init-method="init">
-		<property name="serviceNames" value="${information.services}" />
-		<property name="services" ref="services" />
-	</bean>
-	
-	<bean id="amazon" class="de.nosebrain.amazon.watcher.model.Amazon" factory-method="valueOf">
-     	<constructor-arg value="${general.amazon}" />
- 	</bean>
-	
-	<util:property-path path="amazon.url" id="apiUrl"/>
-	
-	<!-- updater -->
-	<bean id="signedRequestsHelper" class="de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper">
-		<property name="awsAccessKeyId" value="${general.amazon.keyId}" />
-		<property name="awsSecretKey" value="${general.amazon.secretKey}" />
-		<property name="awsAssociateTag" value="${general.amazon.associateTag}" />
-		<property name="endpoint" ref="apiUrl" />
-	</bean>	
-	
-	<bean id="apiUpdater" class="de.nosebrain.amazon.watcher.updater.ProductAdvertisingAPIUpdater">
-		<property name="helper" ref="signedRequestsHelper" />
-	</bean>
-	
-	<!-- services -->
-	<bean id="updaterService" class="de.nosebrain.amazon.watcher.webapp.services.UpdaterService">
-		<property name="service" ref="databaseLogic" />
-		<property name="updater" ref="apiUpdater" />
-		<property name="minDelta" value="${updater.minDelta}" />
-		<property name="informationServices" ref="services" />
-	</bean>
-	
-	<task:scheduled-tasks>
-    	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
-	</task:scheduled-tasks>
-	
-	<import resource="amazon-watcher-servlet-security.xml" />
+	<import resource="amazon-watcher-services.xml"/>
+	<import resource="amazon-watcher-security.xml" />
 </beans>

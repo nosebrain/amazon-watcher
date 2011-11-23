@@ -1,136 +1,160 @@
 package de.nosebrain.amazon.watcher.database;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
-import de.nosebrain.amazon.watcher.database.util.PriceParam;
+import de.nosebrain.amazon.watcher.database.util.ItemParam;
+import de.nosebrain.amazon.watcher.database.util.ObservationParam;
+import de.nosebrain.amazon.watcher.model.InfoService;
 import de.nosebrain.amazon.watcher.model.Item;
-import de.nosebrain.amazon.watcher.model.util.ItemUtils;
+import de.nosebrain.amazon.watcher.model.Observation;
+import de.nosebrain.authentication.Authority;
 
 /**
  * 
  * @author nosebrain
  */
-public class AmazonWatcherLogic implements AmazonWatcherService {
-	
-	private SqlSessionFactory sessionFactory;
+public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherService {
 
-	@SuppressWarnings("unchecked")
-	public List<Item> getItems() {
-		final SqlSession session = sessionFactory.openSession();
-		try {
-			return session.selectList("getAllWatchedItems");
-		} finally {
-			session.close();
-		}
-	}
-	
 	@Override
-	public Item getItemByAsin(String asin) {
+	public List<Observation> getObservations() {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			return this.getItemByASIN(asin, session);
+			return this.selectList(session, "getAllObservationsByUser", this.loggedinUser.getName());
 		} finally {
 			session.close();
 		}
 	}
 
-	public boolean watchItem(final Item item) {
-		final String asin = ItemUtils.extractASIN(item.getUrl());
-		item.setAsin(asin);
-		
-		final SqlSession session = sessionFactory.openSession();
-		try {
-			final Item watchedItem = this.getItemByASIN(asin, session);
-			if (watchedItem != null) {
-				return false;
-			}
-			
-			session.insert("insertItem", item);
-			session.commit();
-			return true;
-		} finally {
-			session.close();
-		}
-	}
-	
-	private Item getItemByASIN(final String asin, SqlSession session) {
-		return (Item) session.selectOne("getItemByASIN", asin);
-	}
-
-	public boolean unwatchItem(final Item item) {
-		final String asin = item.getAsin();
-		final SqlSession session = sessionFactory.openSession();
-		try {
-			if (this.getItemByASIN(asin, session) == null) {
-				return false;
-			}
-			
-			session.delete("deleteItem", asin);
-			session.commit();
-			return true;
-		} finally {
-			session.close();
-		}
-	}
-	
 	@Override
-	public boolean updateItem(final String asin, Item item) {
-		// set asign to the asign to update
-		item.setAsin(asin);
-		final SqlSession session = sessionFactory.openSession();
-		try {
-			if (this.getItemByASIN(asin, session) == null) {
-				return false;
-			}
-			
-			session.update("updateItem", item);
-			session.commit();			
-			return true;
-		} finally {
-			session.close();
-		}
-	}
-	
-	@Override
-	public boolean updatePrice(String asin, float price) {
+	public Observation getObservationByItem(final Item item) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			if (this.getItemByASIN(asin, session) == null) {
+			return this.getObservationByItem(item, session);
+		} finally {
+			session.close();
+		}
+	}
+
+	protected Observation getObservationByItem(final Item item, final SqlSession session) {
+		return super.getObservationByItem(item, this.loggedinUser.getName(), session);
+	}
+
+	@Override
+	public boolean addObservation(final Observation observation) {
+		final Item item = observation.getItem();
+		final String loggedInUserName = this.loggedinUser.getName();
+		final SqlSession session = this.sessionFactory.openSession();
+
+		try {
+			if (this.getObservationByItem(item, session) != null) {
 				return false;
 			}
-			final PriceParam priceParam = new PriceParam();
-			priceParam.setPrice(price);
-			priceParam.setAsin(asin);
-			
-			session.insert("insertPrice", priceParam);
+
+			/*
+			 * get item id
+			 */
+			Integer itemId = (Integer) session.selectOne("getItemIdByASINandSite", item);
+
+			/*
+			 * if item doesn't exist, create it
+			 */
+			if (itemId == null) {
+				final ItemParam paramItem = new ItemParam(item);
+				session.insert("insertNewItem", paramItem);
+				itemId = paramItem.getId();
+			}
+
+			final ObservationParam param = new ObservationParam();
+			param.setItemId(itemId);
+
+			param.setUserName(loggedInUserName);
+			param.setObservation(observation);
+			session.insert("insertNewObservation", param);
+
 			session.commit();
 			return true;
 		} finally {
 			session.close();
 		}
 	}
-	
+
 	@Override
-	public Date getLastSyncDate(String importerId) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean updateObservation(final Item item, final Observation observation) {
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			observation.setItem(item);
+			if (this.getObservationByItem(item, session) == null) {
+				return false;
+			}
+
+			final ObservationParam param = new ObservationParam();
+			param.setObservation(observation);
+			param.setUserName(this.loggedinUser.getName());
+
+			session.update("updateObservation", param);
+
+			session.commit();
+			return true;
+		} finally {
+			session.close();
+		}
 	}
-	
+
 	@Override
-	public boolean updateLastSyncDate(String importerId, Date date) {
+	public boolean removeObservation(final Item item) {
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			if (this.getObservationByItem(item, session) == null) {
+				return false;
+			}
+			final ItemParam param = new ItemParam(item);
+			param.setUserName(this.loggedinUser.getName());
+
+			session.delete("deleteObservation", param);
+
+			session.commit();
+			return true;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public boolean addAuthority(final Authority authority) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/**
-	 * @param sessionFactory the sessionFactory to set
-	 */
-	public void setSessionFactory(SqlSessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	@Override
+	public boolean updateAuthority(final Authority authority) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeAuthority(final Authority authority) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addInformationService(final InfoService infoService) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean updateInformationService(final String hash, final InfoService infoService) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeInformationService(final String hash) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

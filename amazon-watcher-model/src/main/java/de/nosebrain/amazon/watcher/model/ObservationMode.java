@@ -4,7 +4,7 @@ package de.nosebrain.amazon.watcher.model;
  * 
  * @author nosebrain
  */
-public enum WatchMode {
+public enum ObservationMode {
 
 	/**
 	 * decrease and increase of a price

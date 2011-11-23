@@ -2,6 +2,7 @@
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:jsp="http://java.sun.com/JSP/Page"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
 	xmlns:sec="http://www.springframework.org/security/tags">
 	
 	<jsp:directive.attribute name="content" fragment="true" required="true" />
@@ -11,7 +12,6 @@
    	<c:set var="projectName" value="${properties['general.name']}" />
    	
    	<!-- start -->
-   	
    	
 	<![CDATA[<!DOCTYPE html>]]>
  	<html>
@@ -42,7 +42,7 @@
  				<jsp:invoke fragment="content" />
  			</div>
  			<footer>
- 				<!-- TODO -->
+ 				<fmt:message key="system.poweredBy" /> <a href="http://bitbucket.org/nosebrain/amazon-watcher">Amazon Watcher</a><small> (${properties['general.version']})</small>
  			</footer>
  		</body>
  	</html>

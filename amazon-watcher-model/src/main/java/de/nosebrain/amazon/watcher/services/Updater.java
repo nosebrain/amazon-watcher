@@ -1,5 +1,7 @@
 package de.nosebrain.amazon.watcher.services;
 
+import de.nosebrain.amazon.watcher.model.Item;
+
 
 /**
  * 
@@ -8,8 +10,8 @@ package de.nosebrain.amazon.watcher.services;
 public interface Updater {
 
 	/**
-	 * @param asin the asin of the item to update
+	 * @param item the item to update
 	 * @return the current price
 	 */
-	public Float updateItem(final String asin);
+	public Float updateItem(final Item item);
 }

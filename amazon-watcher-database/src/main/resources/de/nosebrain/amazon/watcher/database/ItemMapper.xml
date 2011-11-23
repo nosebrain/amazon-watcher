@@ -4,52 +4,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="de.nosebrain.amazon.watcher.database.ItemMapper">
 
 	<resultMap type="Item" id="itemResult">
-		<result column="asin"			property="asin"			javaType="string" />
-		<result column="name"			property="name"			javaType="string" />
-		<result column="url"			property="url"			javaType="url" />
-		<result column="limit"			property="limit"		javaType="Float" />
-		<result column="date"			property="date"			javaType="date" />
-		<result column="changeDate"		property="changeDate"	javaType="date" />
-		<collection property="priceHistories" ofType="PriceHistory" column="asin" select="selectPriceHistoryForItem" />
+		<result column="asin"		property="asin"			javaType="string" />
+		<result column="site"		property="site"			javaType="Amazon" />
+		
+		<collection property="priceHistories" resultMap="priceHistoryResult" />
 	</resultMap>
 	
 	<resultMap type="PriceHistory" id="priceHistoryResult">
 		<result column="price"		property="value"	javaType="float" />
-		<result column="date"		property="date" 	javaType="date" />
+		<result column="hDate"		property="date" 	javaType="date" />
 	</resultMap>
 	
-	<select id="getAllWatchedItems" resultMap="itemResult">
-		SELECT * FROM items i ORDER BY i.name
+	<select id="getItemIdByASINandSite" resultType="int">
+		SELECT i.id FROM items i WHERE i.asin = #{asin} AND i.site = #{site}
 	</select>
 	
-	<select id="selectPriceHistoryForItem" resultMap="priceHistoryResult">
-		SELECT * FROM history h WHERE h.asin = #{asin} ORDER BY h.date
+	<select id="getAllItems" resultMap="itemResult">
+		SELECT i.asin, i.site, h.price, h.date AS hDate FROM items i LEFT JOIN history h ON (i.id = h.item_id);
 	</select>
 	
-	<select id="getItemByASIN" parameterType="string" resultMap="itemResult">
-		SELECT * FROM items i
-			WHERE i.asin = #{asin}
+	<select id="getAllUsersByItem" resultMap="de.nosebrain.amazon.watcher.database.UserMapper.userResult" parameterType="item">
+		SELECT <include refid="userAttributes" />
+			FROM observations o
+			JOIN items i ON (o.item_id = i.id)
+			JOIN users u ON (o.user_name = u.name)
+		WHERE i.asin = #{asin}
+		AND i.site = #{site}
 	</select>
 	
-	<insert id="insertItem" parameterType="Item">
-		INSERT INTO items (asin, name, url, mode, `limit`) VALUES (#{asin}, #{name}, #{url}, #{mode}, #{limit})
+	<insert id="insertNewItem" parameterType="itemParam" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO items (asin, site) VALUES (#{item.asin}, #{item.site})
 	</insert>
 	
-	<insert id="insertPrice" parameterType="priceParam">
-		INSERT INTO history (asin, price) VALUES (#{asin}, #{price})
+	<insert id="insertPrice" parameterType="itemParam">
+		INSERT INTO history (item_id, price) VALUES (#{id}, #{price})
 	</insert>
 	
-	<delete id="deleteItem" parameterType="string">
-		DELETE FROM items
-			WHERE asin = #{asin}
-	</delete>
-	
-	<update id="updateItem" parameterType="Item">
-		UPDATE items
-			SET name = #{name},
-				mode = #{mode},
-				`limit` = #{limit},
-				changeDate = CURRENT_TIMESTAMP
-		WHERE asin = #{asin}
-	</update>
 </mapper>

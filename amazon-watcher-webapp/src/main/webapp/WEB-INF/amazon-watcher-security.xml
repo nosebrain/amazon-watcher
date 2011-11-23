@@ -9,14 +9,13 @@
 	                    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	                    	
 	<security:http use-expressions="true">
-		<security:intercept-url pattern="**" access="isAuthenticated()"/>
 		<security:http-basic />
 	</security:http>
 	
 	<security:authentication-manager alias="internal_auth_manager">
 		<security:authentication-provider>
 			<security:user-service>
-				<security:user name="amazon-watcher" authorities="USER" password="${general.password}" />
+				<security:user name="amazon-watcher" authorities="USER" password="test" />
 			</security:user-service>
 		</security:authentication-provider>
 	</security:authentication-manager>

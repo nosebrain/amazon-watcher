@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans	xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+                          	http://www.springframework.org/schema/util 
+	                    	http://www.springframework.org/schema/util/spring-util-3.0.xsd
+			    			http://www.springframework.org/schema/task
+   							http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+	
+	<bean id="mainDataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+	
+	<bean id="mainSqlSessionFactory" class="de.nosebrain.spring.beans.SqlSessionFactoryFactoryBean">
+		<property name="dataSource" ref="mainDataSource" />
+		<property name="configLocation" value="classpath:de/nosebrain/amazon/watcher/database/amazon-watcher-database.xml" />
+	</bean>
+	
+	<bean id="databaseLogic" class="de.nosebrain.amazon.watcher.database.DatabaseLogic" abstract="true">
+		<property name="sessionFactory" ref="mainSqlSessionFactory" />
+	</bean>
+	
+	<bean id="mainLogic" class="de.nosebrain.amazon.watcher.database.AmazonWatcherLogic" parent="databaseLogic">
+		<!-- TODO: replace -->
+		<property name="loggedinUser" ref="admin" />
+	</bean>
+	
+	<bean id="admin" class="de.nosebrain.amazon.watcher.model.User">
+		<property name="role" value="ADMIN" />
+		<!-- TODO: change -->
+		<property name="name" value="nosebrain" />
+	</bean>
+	
+	<!-- database service -->
+	<bean id="adminDatabaseLogic" class="de.nosebrain.amazon.watcher.database.AdminAmazonWatcherLogic" parent="databaseLogic">
+		<property name="loggedinUser" ref="admin" />
+	</bean>
+
+	<!-- updater -->
+	<bean id="signedRequestsHelper" class="de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper">
+		<property name="awsAccessKeyId" value="${general.amazon.keyId}" />
+		<property name="awsSecretKey" value="${general.amazon.secretKey}" />
+		<property name="awsAssociateTag" value="${general.amazon.associateTag}" />
+	</bean>	
+	
+	<bean id="apiUpdater" class="de.nosebrain.amazon.watcher.updater.ProductAdvertisingAPIUpdater">
+		<property name="helper" ref="signedRequestsHelper" />
+	</bean>
+	
+	<util:map id="infoServiceFactoriesMap" key-type="java.lang.String" value-type="de.nosebrain.amazon.watcher.services.InformationServiceFactory" />
+	
+	<bean id="infoServiceConfigurator" class="de.nosebrain.amazon.watcher.webapp.util.config.InformationServiceConfigurator" init-method="init">
+		<property name="serviceNames" value="${information.services}" />
+	</bean>
+	
+	<bean id="informationServiceService" class="de.nosebrain.amazon.watcher.webapp.services.InformationServiceService">
+		<property name="service" ref="adminDatabaseLogic" />
+		<property name="informationServiceFactories" ref="infoServiceFactoriesMap" />
+	</bean>
+	
+	<!-- services -->
+	<bean id="updaterService" class="de.nosebrain.amazon.watcher.webapp.services.UpdaterService">
+		<property name="service" ref="adminDatabaseLogic" />
+		<property name="updater" ref="apiUpdater" />
+		<property name="informationServiceService" ref="informationServiceService"/>		
+	</bean>
+	
+	<task:scheduled-tasks scheduler="updaterScheduler">
+    	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
+	</task:scheduled-tasks>
+	
+	<task:scheduler id="updaterScheduler" pool-size="1" />
+</beans>

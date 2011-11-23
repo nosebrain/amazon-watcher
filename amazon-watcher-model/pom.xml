@@ -9,10 +9,10 @@
   </parent>
   <artifactId>amazon-watcher-model</artifactId>
   <name>amazon-watcher-model</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <dependencies>
+  <dependency>
+  	<groupId>de.nosebrain</groupId>
+  	<artifactId>common</artifactId>
+  </dependency>
   </dependencies>
 </project>

@@ -3,53 +3,81 @@
 			xmlns="http://www.w3.org/1999/xhtml" 
         	xmlns:jsp="http://java.sun.com/JSP/Page"
         	xmlns:basic="urn:jsptagdir:/WEB-INF/tags/basic"
+        	xmlns:enum="urn:jsptagdir:/WEB-INF/tags/utils/enum"
         	xmlns:form="http://www.springframework.org/tags/form"
-        	xmlns:c="http://java.sun.com/jsp/jstl/core">
+        	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+        	xmlns:c="http://java.sun.com/jsp/jstl/core"
+        	xmlns:aw="urn:jsptld:/WEB-INF/taglibs/amazon-watcher-taglib.tld">
         	
     <jsp:directive.page contentType="text/html; charset=utf-8" language="java" pageEncoding="UTF-8" session="true" />
    	
-   	<basic:layout pageTitle="Edit item">
+   	<c:set var="asin" value="${item.asin}" />
+   	<c:set var="newItem" value="${empty asin}" />
+   	<c:choose>
+		<c:when test="${newItem}">
+			<c:url value="/items" var="actionUrl"/>
+			<fmt:message key="item.create.action" var="actionValue" />
+			<fmt:message key="item.create.header" var="pageTitle" />
+		</c:when>
+		
+		<c:otherwise>
+			<fmt:message key="item.edit.action" var="actionValue" />
+			<fmt:message key="item.edit.header" var="pageTitle" >
+				<fmt:param>
+					${item.name}
+				</fmt:param>
+			</fmt:message>   						
+			<c:url value="/items/${asin}" var="actionUrl" />
+		</c:otherwise>
+	</c:choose>
+   	
+   	<basic:layout pageTitle="${pageTitle}">
    		<jsp:attribute name="content">
-   			<c:set var="newItem" value="${empty item.asin}" />
+   			
+   		
+   			
    			<h2>
-   				<c:choose>
-   					<c:when test="${newItem}">
-   						create new item
-   					</c:when>
-   					
-   					<c:otherwise>
-   						edit item '<c:out value="${item.name}" />'
-   					</c:otherwise>
-   				</c:choose>
+   				<c:out value="${pageTitle}" />
    			</h2>
    			
-   			<form:form method="POST" commandName="item">
+   			<c:set var="new_asin" value="${asin}" />
+   			<c:if test="${newItem and not empty item.url}">
+   				<c:set var="new_asin" value="${aw:getASIN(item.url)}" />
+   			</c:if>
+   			
+   			<c:if test="${not empty new_asin}">
+   				<img src="${aw:getImageUrl(new_asin)}" />
+   			</c:if>
+   			
+   			<form:form method="POST" commandName="item" action="${actionUrl}">
    				<div>
    					<p>
-   						<form:label path="name">name*:</form:label>
+   						<form:label path="name"><fmt:message key="item.name" /> *:</form:label>
    						<form:input path="name" />
    						<form:errors path="name" cssClass="errors" />
    					</p>
-   					<p>
-   						<form:label path="url">url*:</form:label>
+   					<c:if test="${not newItem}">
+   						<c:set var="urlDisplay" value="display:none;" />
+   					</c:if> 					
+   					<p style="${urlDisplay}">
+   						<form:label path="url"><fmt:message key="item.url" /> *:</form:label>
    						<form:input path="url" />
    						<form:errors path="url" cssClass="errors" />
    					</p>
    				</div>
    				<div>
    					<p>
-   						<form:select path="mode">
-   							<form:options />
-   						</form:select>					
+   						<form:label path="mode"><fmt:message key="item.mode" /> *:</form:label>
+   						<enum:select path="mode" />			
    					</p>
    					<p>
-   						<form:label path="limit">limit:</form:label>
+   						<form:label path="limit"><fmt:message key="item.limit" />:</form:label>
    						<form:input path="limit" />
    						<form:errors path="limit" cssClass="errors" />
    					</p>
    				</div>
    				<div>
-   					<input type="submit" value="create new item" />
+   					<input type="submit" value="${actionValue}" />
    				</div>
    			</form:form>
    			
