@@ -50,37 +50,7 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 		}
 	}
 
-	/**
-	 * the client to use
-	 */
-	private HttpClient client = new DefaultHttpClient();
-
-	private SignedRequestsHelper helper;
-
-	@Override
-	public Float updateItem(final Item item) {
-		HttpEntity entity = null;
-		try {
-			final String url = this.getItemCheckUrl(item);
-			final HttpGet get = new HttpGet(url);
-			final HttpResponse response = this.client.execute(get);
-
-			entity = response.getEntity();
-			final InputStream content = entity.getContent();
-			return this.extractAmazonPrice(content);
-		} catch (final IOException e) {
-			// TODO: log exception
-		} finally {
-			try {
-				EntityUtils.consume(entity);
-			} catch (final IOException e) {
-				// TODO: handle exception
-			}
-		}
-		return Float.NaN;
-	}
-
-	private Float extractAmazonPrice(final InputStream content) throws IOException {
+	private static Float extractAmazonPrice(final InputStream content) throws IOException {
 		try {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 			final Document dom = db.parse(content);
@@ -107,6 +77,36 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 			content.close();
 		}
 		return null;
+	}
+
+	/**
+	 * the client to use
+	 */
+	private HttpClient client = new DefaultHttpClient();
+
+	private SignedRequestsHelper helper;
+
+	@Override
+	public Float updateItem(final Item item) {
+		HttpEntity entity = null;
+		try {
+			final String url = this.getItemCheckUrl(item);
+			final HttpGet get = new HttpGet(url);
+			final HttpResponse response = this.client.execute(get);
+
+			entity = response.getEntity();
+			final InputStream content = entity.getContent();
+			return extractAmazonPrice(content);
+		} catch (final IOException e) {
+			// TODO: log exception
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (final IOException e) {
+				// TODO: handle exception
+			}
+		}
+		return Float.NaN;
 	}
 
 	private String getItemCheckUrl(final Item item) {

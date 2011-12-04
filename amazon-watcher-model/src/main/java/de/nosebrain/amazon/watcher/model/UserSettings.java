@@ -2,8 +2,7 @@ package de.nosebrain.amazon.watcher.model;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import de.nosebrain.Language;
+import java.util.Locale;
 
 /**
  * 
@@ -15,14 +14,14 @@ public class UserSettings {
 	public static UserSettings getDefaultSettings() {
 		final UserSettings settings = new UserSettings();
 		settings.setMinDelta(0.25f);
-		settings.setLanguage(Language.DE);
+		settings.setLanguage(Locale.GERMAN);
 		return settings;
 	}
 
 
 	private float minDelta;
 	private List<InfoService> infoServices;
-	private Language language;
+	private Locale language;
 
 	/**
 	 * @return the minDelta
@@ -58,14 +57,14 @@ public class UserSettings {
 	/**
 	 * @return the language
 	 */
-	public Language getLanguage() {
+	public Locale getLanguage() {
 		return this.language;
 	}
 
 	/**
 	 * @param language the language to set
 	 */
-	public void setLanguage(final Language language) {
+	public void setLanguage(final Locale language) {
 		this.language = language;
 	}
 

@@ -10,9 +10,7 @@
         	
     <jsp:directive.page contentType="text/html; charset=utf-8" language="java" pageEncoding="UTF-8" session="true" />
    	
-   	<fmt:message key="home.title" var="pageTitle" />
-   	
-   	<basic:layout pageTitle="${pageTitle}">
+   	<basic:layout>
    		<jsp:attribute name="content">
    			<c:url value="/observations/edit" var="newItemUrl" />
    			<h2><fmt:message key="home.header" /> (<a href="${newItemUrl}">+</a>)</h2>

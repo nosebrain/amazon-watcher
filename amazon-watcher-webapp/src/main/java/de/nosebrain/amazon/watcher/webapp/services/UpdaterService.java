@@ -26,7 +26,7 @@ public class UpdaterService {
 	 * updates all items in the service
 	 */
 	public void updateItems() {
-		final Date lastUpdateDate = new Date();
+		final Date now = new Date();
 		final List<Item> allItems = this.service.getItems();
 		final List<Item> updatedItems = new LinkedList<Item>();
 
@@ -47,14 +47,14 @@ public class UpdaterService {
 					 */
 					this.service.updatePrice(item, currentPrice);
 					final PriceHistory history = new PriceHistory();
-					history.setDate(lastUpdateDate);
+					history.setDate(now);
 					history.setValue(currentPrice);
 					item.getPriceHistories().add(history);
 					updatedItems.add(item);
 				}
 			}
 		}
-		this.lastUpdateDate = lastUpdateDate;
+		this.lastUpdateDate = now;
 
 		this.informationServiceService.informUsers(updatedItems);
 	}

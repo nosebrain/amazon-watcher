@@ -38,7 +38,7 @@
 	</bean>
 	
 	<!-- factory -->
-	<bean id="prowlFactory" class="de.nosebrain.prowl.ProwlInformationServiceFactory">
+	<bean id="prowlFactory" class="de.nosebrain.amazon.watcher.services.prowl.ProwlInformationServiceFactory">
 		<property name="client" ref="prowlClient" />
 	</bean>
 </beans>

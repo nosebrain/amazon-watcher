@@ -10,7 +10,7 @@ public interface InformationServiceFactory {
 	/**
 	 * 
 	 * @param settings
-	 * @return
+	 * @return the information service
 	 */
 	public InformationService createInformationService(final String settings);
 }

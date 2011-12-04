@@ -72,6 +72,57 @@ public class SignedRequestsHelper {
 	 */
 	private static final String REQUEST_METHOD = "GET";
 
+	/**
+	 * Generate a ISO-8601 format timestamp as required by Amazon.
+	 * 
+	 * @return  ISO-8601 format timestamp.
+	 */
+	private static String createTimestamp() {
+		final Calendar cal = Calendar.getInstance();
+		return DATE_FORMAT.format(cal.getTime());
+	}
+
+	/**
+	 * Percent-encode values according the RFC 3986. The built-in Java
+	 * URLEncoder does not encode according to the RFC, so we make the
+	 * extra replacements.
+	 * 
+	 * @param s decoded string
+	 * @return  encoded string per RFC 3986
+	 */
+	private static String percentEncodeRfc3986(final String s) {
+		try {
+			return URLEncoder.encode(s, UTF8_CHARSET).replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
+		} catch (final UnsupportedEncodingException e) {
+			return s;
+		}
+	}
+
+	/**
+	 * Canonicalize the query string as required by Amazon.
+	 * 
+	 * @param sortedParamMap    Parameter name-value pairs in lexicographical order.
+	 * @return                  Canonical form of query string.
+	 */
+	private static String canonicalize(final SortedMap<String, String> sortedParamMap) {
+		if (sortedParamMap.isEmpty()) {
+			return "";
+		}
+
+		final StringBuilder buffer = new StringBuilder();
+		final Iterator<Map.Entry<String, String>> iter = sortedParamMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			final Map.Entry<String, String> kvpair = iter.next();
+			buffer.append(percentEncodeRfc3986(kvpair.getKey()));
+			buffer.append("=");
+			buffer.append(percentEncodeRfc3986(kvpair.getValue()));
+			if (iter.hasNext()) {
+				buffer.append("&");
+			}
+		}
+		return buffer.toString();
+	}
+
 	private String awsAccessKeyId = null;
 	private String awsSecretKey = null;
 	private String awsAssociateTag = null;
@@ -83,6 +134,7 @@ public class SignedRequestsHelper {
 	 * be used to fetch the response. The URL returned should not be modified in
 	 * any way, doing so will invalidate the signature and Amazon will reject
 	 * the request.
+	 * @param endpoint the end point to use
 	 * @param params the params to use
 	 * @return the signed request url
 	 */
@@ -93,20 +145,20 @@ public class SignedRequestsHelper {
 		// Let's add the AWSAccessKeyId, Timestamp and associate tag parameters to the request.
 		params.put("AWSAccessKeyId", this.awsAccessKeyId);
 		params.put("AssociateTag", this.awsAssociateTag);
-		params.put("Timestamp", this.createTimestamp());
+		params.put("Timestamp", createTimestamp());
 
 		// The parameters need to be processed in lexicographical order, so we'll
 		// use a TreeMap implementation for that.
 		final SortedMap<String, String> sortedParamMap = new TreeMap<String, String>(params);
 
 		// get the canonical form the query string
-		final String canonicalQS = this.canonicalize(sortedParamMap);
+		final String canonicalQS = canonicalize(sortedParamMap);
 
 		// create the string upon which the signature is calculated
 		final String toSign = REQUEST_METHOD + "\n" + endpoint + "\n" + REQUEST_URI + "\n" + canonicalQS;
 
 		// get the signature
-		final String sig = this.percentEncodeRfc3986(this.hmac(toSign));
+		final String sig = percentEncodeRfc3986(this.hmac(toSign));
 
 		// construct the URL
 		return "http://" + endpoint + REQUEST_URI + "?" + canonicalQS + "&Signature=" + sig;
@@ -137,57 +189,6 @@ public class SignedRequestsHelper {
 			return new String(encoder.encode(rawHmac));
 		} catch (final UnsupportedEncodingException e) {
 			throw new RuntimeException(UTF8_CHARSET + " is unsupported!", e);
-		}
-	}
-
-	/**
-	 * Generate a ISO-8601 format timestamp as required by Amazon.
-	 * 
-	 * @return  ISO-8601 format timestamp.
-	 */
-	private String createTimestamp() {
-		final Calendar cal = Calendar.getInstance();
-		return DATE_FORMAT.format(cal.getTime());
-	}
-
-	/**
-	 * Canonicalize the query string as required by Amazon.
-	 * 
-	 * @param sortedParamMap    Parameter name-value pairs in lexicographical order.
-	 * @return                  Canonical form of query string.
-	 */
-	private String canonicalize(final SortedMap<String, String> sortedParamMap) {
-		if (sortedParamMap.isEmpty()) {
-			return "";
-		}
-
-		final StringBuilder buffer = new StringBuilder();
-		final Iterator<Map.Entry<String, String>> iter = sortedParamMap.entrySet().iterator();
-		while (iter.hasNext()) {
-			final Map.Entry<String, String> kvpair = iter.next();
-			buffer.append(this.percentEncodeRfc3986(kvpair.getKey()));
-			buffer.append("=");
-			buffer.append(this.percentEncodeRfc3986(kvpair.getValue()));
-			if (iter.hasNext()) {
-				buffer.append("&");
-			}
-		}
-		return buffer.toString();
-	}
-
-	/**
-	 * Percent-encode values according the RFC 3986. The built-in Java
-	 * URLEncoder does not encode according to the RFC, so we make the
-	 * extra replacements.
-	 * 
-	 * @param s decoded string
-	 * @return  encoded string per RFC 3986
-	 */
-	private String percentEncodeRfc3986(final String s) {
-		try {
-			return URLEncoder.encode(s, UTF8_CHARSET).replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
-		} catch (final UnsupportedEncodingException e) {
-			return s;
 		}
 	}
 

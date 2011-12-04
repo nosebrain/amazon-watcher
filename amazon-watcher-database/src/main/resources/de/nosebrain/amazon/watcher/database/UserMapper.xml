@@ -7,10 +7,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="name"		property="name"		javaType="string" />
 		<result column="mail"		property="mail"		javaType="string" />
 		<result column="role"		property="role"		javaType="Role" />
-		<association property="settings">
+		<!-- <association property="settings">
 			<result column="min_delta"		property="minDelta" 	javaType="float" />
 			<result column="language"		property="language"		javaType="Language"/>
-		</association>
+		</association> -->
 	</resultMap>
 	
 	<resultMap type="User" id="userFullResult" extends="userResult">

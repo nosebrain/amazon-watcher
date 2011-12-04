@@ -9,33 +9,33 @@ import java.util.Date;
 public class PriceHistory {
 	private Date date;
 	private float value;
-	
+
 	/**
 	 * @return the date
 	 */
 	public Date getDate() {
-		return date;
+		return this.date;
 	}
-	
+
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(Date date) {
+	public void setDate(final Date date) {
 		this.date = date;
 	}
-	
+
 	/**
 	 * @return the value
 	 */
 	public float getValue() {
-		return value;
+		return this.value;
 	}
-	
+
 	/**
 	 * @param value the value to set
 	 */
-	public void setValue(float value) {
+	public void setValue(final float value) {
 		this.value = value;
 	}
-	
+
 }

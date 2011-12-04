@@ -15,16 +15,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="hDate"		property="date" 	javaType="date" />
 	</resultMap>
 	
+	<sql id="itemDetailsColumns">
+		i.asin, i.site, h.price, h.date AS hDate
+	</sql>
+	
+	<sql id="itemHistoryJoin">
+		items i LEFT JOIN history h ON (i.id = h.item_id)
+	</sql>
+	
+	<select id="getItemDetails" resultMap="itemResult" parameterType="Item">
+		SELECT <include refid="itemDetailsColumns" /> FROM
+			<include refid="itemHistoryJoin" />
+		WHERE i.asin = #{item} AND i.site = #{site}
+	</select>
+	
 	<select id="getItemIdByASINandSite" resultType="int">
 		SELECT i.id FROM items i WHERE i.asin = #{asin} AND i.site = #{site}
 	</select>
 	
 	<select id="getAllItems" resultMap="itemResult">
-		SELECT i.asin, i.site, h.price, h.date AS hDate FROM items i LEFT JOIN history h ON (i.id = h.item_id);
+		SELECT <include refid="itemDetailsColumns" /> FROM <include refid="itemHistoryJoin" />
 	</select>
 	
 	<select id="getAllUsersByItem" resultMap="de.nosebrain.amazon.watcher.database.UserMapper.userResult" parameterType="item">
-		SELECT <include refid="userAttributes" />
+		SELECT <include refid="de.nosebrain.amazon.watcher.database.UserMapper.userAttributes" />
 			FROM observations o
 			JOIN items i ON (o.item_id = i.id)
 			JOIN users u ON (o.user_name = u.name)

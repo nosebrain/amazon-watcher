@@ -4,6 +4,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.nosebrain.amazon.watcher.model.Amazon;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.PriceHistory;
@@ -13,10 +16,13 @@ import de.nosebrain.amazon.watcher.model.PriceHistory;
  * @author nosebrain
  */
 public final class ItemUtils {
-
-	private static final int ASIN_LENGTH = 10;
-
 	private ItemUtils() {}
+
+	private static final Logger log = LoggerFactory.getLogger(ItemUtils.class);
+
+	private static final String AMAZON_DOMAIN = "amazon.";
+	private static final int AMAZON_DOMAIN_LENGTH = AMAZON_DOMAIN.length();
+	private static final int ASIN_LENGTH = 10;
 
 	/**
 	 * extracts the ASIN from the url
@@ -56,19 +62,19 @@ public final class ItemUtils {
 			}
 		}
 
-		// TODO: log
+		log.error("can't get ASIN from url '{}'", url);
 		return null;
 	}
 
 	/**
 	 * 
 	 * @param url
-	 * @return
+	 * @return the {@link Amazon} site of the url
 	 */
 	public static Amazon extractAmazon(final URL url) {
 		final String host = url.getHost();
 		// extract tld
-		final String tld = host.substring(host.indexOf("amazon.") + "amazon.".length());
+		final String tld = host.substring(host.indexOf(AMAZON_DOMAIN) + AMAZON_DOMAIN_LENGTH);
 
 		for (final Amazon amazon : Amazon.values()) {
 			if (amazon.getTLD().equals(tld)) {
@@ -80,7 +86,7 @@ public final class ItemUtils {
 	}
 
 	public static String generateUrlForItem(final Item item) {
-		return "http://amazon." + item.getSite().getTLD() + "/gp/product/" + item.getAsin();
+		return "http://" + AMAZON_DOMAIN + item.getSite().getTLD() + "/gp/product/" + item.getAsin();
 	}
 
 	public static float getLastDelta(final Item item) {

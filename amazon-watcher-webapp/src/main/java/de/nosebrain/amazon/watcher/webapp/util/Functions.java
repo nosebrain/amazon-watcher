@@ -15,7 +15,7 @@ import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 public class Functions {
 
 	/**
-	 * @param asin amazon id
+	 * @param item the item
 	 * @return the image url for the provided asin
 	 */
 	public static String getImageUrl(final Item item) {

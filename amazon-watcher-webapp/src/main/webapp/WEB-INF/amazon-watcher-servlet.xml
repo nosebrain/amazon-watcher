@@ -33,6 +33,7 @@
 		<property name="converters">
 			<set>
 				<bean class="de.nosebrain.amazon.watcher.webapp.util.converter.StringToItemConverter" />
+				<bean class="de.nosebrain.amazon.watcher.webapp.util.converter.ItemToStringConverter" />
 			</set>
 		</property>
 	</bean>

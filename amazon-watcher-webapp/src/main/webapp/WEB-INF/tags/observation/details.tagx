@@ -21,7 +21,10 @@
 				<fmt:message key="observation.edit" var="editTitle" />
 				<c:url var="editIcon" value="/icons/eye_edit.png" />
 				
-				<c:url var="editUrl" value="/observations/${aw:encodeURI(itemUrl)}/edit" />
+				<c:set var="encodedItemUrl" value="${aw:encodeURI(itemUrl)}" />
+				<c:url var="observationUrl" value="/observations/${encodedItemUrl}" />
+				
+				<c:set var="editUrl" value="${observationUrl}/edit" />
 				
 				<li><a href="${editUrl}" title="${editTitle}"><img src="${editIcon}" /></a></li>
 				<c:url var="unwatchIcon" value="/icons/eye_minus.png" />
@@ -29,7 +32,7 @@
 					<fmt:message key="observation.unwatch" var="unwatchTitle">
 						<fmt:param value="${observation.name}"/>
 					</fmt:message>
-					<a href="#deleteItem" title="${unwatchTitle}"><img src="${unwatchIcon}" /></a>
+					<a href="${observationUrl}?_method=DELETE" title="${unwatchTitle}" class="deleteObservation"><img src="${unwatchIcon}" /></a>
 				</li>
 			</ul>
 			<div class="info">

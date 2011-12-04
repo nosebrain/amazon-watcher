@@ -15,29 +15,20 @@
    	<c:choose>
 		<c:when test="${newItem}">
 			<c:url value="/observations" var="actionUrl"/>
-			<fmt:message key="item.create.action" var="actionValue" />
-			<fmt:message key="item.create.header" var="pageTitle" />
+			<fmt:message key="observation.create.action" var="actionValue" />
+			<fmt:message key="observation.create.header" var="pageTitle" />
 		</c:when>
 		
 		<c:otherwise>
-			<fmt:message key="item.edit.action" var="actionValue" />
-			<fmt:message key="item.edit.header" var="pageTitle" >
-				<fmt:param>
-					${item.name}
-				</fmt:param>
-			</fmt:message>   						
-			<c:url value="/observations/${asin}" var="actionUrl" />
+			<fmt:message key="observation.edit.action" var="actionValue" />
+			<c:set var="pageTitle" value="${observation.name}" />  						
+			<c:url value="/observations/${aw:encodeURI(aw:getUrl(observation.item))}" var="actionUrl" />
 		</c:otherwise>
 	</c:choose>
    	
    	<basic:layout pageTitle="${pageTitle}">
    		<jsp:attribute name="content">
-   			
-   		
-   			
-   			<h2>
-   				<c:out value="${pageTitle}" />
-   			</h2>
+   			<h2><c:out value="${pageTitle}" /></h2>
    			
    			<c:set var="new_asin" value="${asin}" />
    			<c:if test="${newItem and not empty item.url}">
@@ -49,6 +40,9 @@
    			</c:if>
    			
    			<form:form method="POST" commandName="observation" action="${actionUrl}">
+   				<c:if test="${not newItem}">
+   					<input type="hidden" name="_method" value="PUT" />
+   				</c:if>
    				<div>
    					<p>
    						<form:label path="name"><fmt:message key="observation.name" /> *:</form:label>
