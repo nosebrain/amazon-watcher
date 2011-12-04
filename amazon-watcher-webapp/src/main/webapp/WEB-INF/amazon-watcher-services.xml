@@ -57,6 +57,7 @@
 	
 	<bean id="infoServiceConfigurator" class="de.nosebrain.amazon.watcher.webapp.util.config.InformationServiceConfigurator" init-method="init">
 		<property name="serviceNames" value="${information.services}" />
+		<property name="serviceFactories" ref="infoServiceFactoriesMap" />
 	</bean>
 	
 	<bean id="informationServiceService" class="de.nosebrain.amazon.watcher.webapp.services.InformationServiceService">
@@ -71,9 +72,7 @@
 		<property name="informationServiceService" ref="informationServiceService"/>		
 	</bean>
 	
-	<task:scheduled-tasks scheduler="updaterScheduler">
+	<task:scheduled-tasks>
     	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
 	</task:scheduled-tasks>
-	
-	<task:scheduler id="updaterScheduler" pool-size="1" />
 </beans>

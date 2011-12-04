@@ -1,18 +1,24 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>amazon-watcher</artifactId>
-    <groupId>de.nosebrain</groupId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>amazon-watcher-model</artifactId>
-  <name>amazon-watcher-model</name>
-  <dependencies>
-  <dependency>
-  	<groupId>de.nosebrain</groupId>
-  	<artifactId>common</artifactId>
-  </dependency>
-  </dependencies>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>amazon-watcher</artifactId>
+		<groupId>de.nosebrain</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>amazon-watcher-model</artifactId>
+	<name>amazon-watcher-model</name>
+	<dependencies>
+		<dependency>
+			<groupId>de.nosebrain</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>

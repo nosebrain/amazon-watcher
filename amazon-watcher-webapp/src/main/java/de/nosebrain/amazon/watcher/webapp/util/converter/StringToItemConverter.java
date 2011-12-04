@@ -20,32 +20,7 @@ import de.nosebrain.amazon.watcher.model.util.ItemUtils;
  */
 public class StringToItemConverter implements Converter<String, Item> {
 
-	@Override
-	public Item convert(final String source) {
-		if (!present(source)) {
-			return null;
-		}
-
-		try {
-			final URL url = new URL(source);
-			return this.convertToItem(url);
-		} catch (Exception e) {
-			/*
-			 * FIXME: annoted handler doesn't url decode parameters!
-			 */
-			try {
-				final URL url = new URL(URLDecoder.decode(source, "UTF-8"));
-				return this.convertToItem(url);
-			} catch (final Exception ex) {
-				e = ex;
-			}
-
-			// TODO: log
-			throw new ConversionFailedException(TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(Item.class), source, e);
-		}
-	}
-
-	private Item convertToItem(final URL url) {
+	private static Item convertToItem(final URL url) {
 		final Item item = new Item();
 		final String asin = ItemUtils.extractASIN(url);
 		if (!present(asin)) {
@@ -59,5 +34,32 @@ public class StringToItemConverter implements Converter<String, Item> {
 		item.setSite(site);
 		return item;
 	}
+
+	@Override
+	public Item convert(final String source) {
+		if (!present(source)) {
+			return null;
+		}
+
+		try {
+			final URL url = new URL(source);
+			return convertToItem(url);
+		} catch (Exception e) {
+			/*
+			 * FIXME: annoted handler doesn't url decode parameters!
+			 */
+			try {
+				final URL url = new URL(URLDecoder.decode(source, "UTF-8"));
+				return convertToItem(url);
+			} catch (final Exception ex) {
+				e = ex;
+			}
+
+			// TODO: log
+			throw new ConversionFailedException(TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(Item.class), source, e);
+		}
+	}
+
+
 
 }

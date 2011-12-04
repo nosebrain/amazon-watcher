@@ -6,7 +6,7 @@
 	xmlns:sec="http://www.springframework.org/security/tags">
 	
 	<jsp:directive.attribute name="content" fragment="true" required="true" />
-	<jsp:directive.attribute name="pageTitle" type="java.lang.String" required="true" />
+	<jsp:directive.attribute name="pageTitle" type="java.lang.String" required="false" />
    	
    	
    	<c:set var="projectName" value="${properties['general.name']}" />
@@ -17,7 +17,7 @@
  	<html>
  		<head>
  			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
- 			<title><c:out value="${pageTitle}" /> -- ${projectName}</title>
+ 			<title><c:out value="${pageTitle}" /><c:if test="${not empty pageTitle}"> | </c:if>${projectName}</title>
  			
  			<c:url var="cssMainUrl" value="/css/main.css" />
  			<link href="${cssMainUrl}" type="text/css" rel="stylesheet" />
@@ -38,6 +38,22 @@
  				<c:url var="homeUrl" value="/" />
  				<h1><a href="${homeUrl}"><c:out value="${projectName}" /></a></h1>
  			</header>
+ 			<c:set var="systemMessage" value="${properties['general.message']}" />
+ 			
+ 			<c:if test="${not empty systemMessage}">
+				<div id="systemMessage">
+					<p>${systemMessage}</p>
+				</div>
+ 			</c:if>
+ 			<c:if test="${not empty message}">
+				<div id="message">
+					<p>
+						<fmt:message key="${message}">
+							<fmt:param value="${messageParam}" />
+						</fmt:message>
+					</p>
+				</div>
+ 			</c:if>
  			<div id="content">
  				<jsp:invoke fragment="content" />
  			</div>

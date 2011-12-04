@@ -19,7 +19,7 @@ public interface AdminAmazonWatcherService {
 	public List<Item> getItems();
 
 	/**
-	 * @param asin the asin of the item to update price
+	 * @param item  the item to update price
 	 * @param price the new price
 	 * @return <code>true</code> if item was updated
 	 */

@@ -37,6 +37,17 @@ header a {
 	text-decoration: none;
 }
 
+#message, #systemMessage {
+	background-color: #92C1FF;
+	text-align: center;
+	color: white;
+}
+
+#message p, #systemMessage p {
+	margin: 0;
+	padding: 0.15em;
+}
+
 #content {
 	padding-bottom: 2.5em;
 }
@@ -100,6 +111,15 @@ ul.watchedActions {
 ul.watchedActions li {
 	display: inline;
 	padding: 5px;
+}
+
+img.iconSelector {
+	border: 1px solid white;
+	padding: 0.25em;
+}
+
+img.iconSelector:hover {
+	border: 1px solid #2A5BA1;
 }
 
 form {

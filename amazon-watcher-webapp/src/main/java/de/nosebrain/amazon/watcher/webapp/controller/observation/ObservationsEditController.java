@@ -1,5 +1,8 @@
 package de.nosebrain.amazon.watcher.webapp.controller.observation;
 
+import static de.nosebrain.util.ValidationUtils.present;
+
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
+import de.nosebrain.amazon.watcher.webapp.controller.HomepageController;
 import de.nosebrain.amazon.watcher.webapp.validation.ObservationValidator;
 import de.nosebrain.amazon.watcher.webapp.view.Views;
 import de.nosebrain.common.exception.ResourceNotFoundException;
@@ -48,6 +52,7 @@ public class ObservationsEditController {
 
 	/**
 	 * @param observation the observation to create
+	 * @param result the validation result
 	 * @return the view to render
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS, method = RequestMethod.POST)
@@ -61,7 +66,7 @@ public class ObservationsEditController {
 
 		if (observationInDB != null) {
 			// TODO: display error message
-			return "redirect:items/" + ItemUtils.generateUrlForItem(item) + "/edit";
+			return "redirect:observations/" + ItemUtils.generateUrlForItem(item) + "/edit";
 		}
 
 		this.service.addObservation(observation);
@@ -70,43 +75,78 @@ public class ObservationsEditController {
 
 	/**
 	 * edit an existing item (view)
-	 * @param asin the asin of the item
+	 * @param item the item
 	 * @param model the model to use
 	 * @return the item form
+	 * @throws ResourceNotFoundException if the observation could not be found
 	 */
 	@RequestMapping(value="/observations/{item}/edit", method = RequestMethod.GET)
 	public String editObservationForm(@PathVariable final Item item, final Model model) throws ResourceNotFoundException {
-		final Observation observation = this.service.getObservationByItem(item);
-
-		if (observation == null) {
-			throw new ResourceNotFoundException();
-		}
-
+		final Observation observation = this.getObservationByItem(item);
 		return this.observationEditForm(observation, model);
 	}
 
-	/**
-	 * edit an existing item (view)
-	 * @param asin the asin of the item
-	 * @param item the item to update
-	 * @param model the model to use
-	 * @return the item form
-	 */
-	@RequestMapping(value="/observations/{item}", method = { RequestMethod.POST, RequestMethod.PUT })
-	public String updateItem(@PathVariable final Item item, @Valid final Observation observation, final Model model) {
-		// FIXME: item and validation
-		// TODO: implement method
-		// TODO: validation
-		return "TODO";
+	private Observation getObservationByItem(final Item item) throws ResourceNotFoundException {
+		final Observation observation = this.service.getObservationByItem(item);
+		if (observation == null) {
+			throw new ResourceNotFoundException();
+		}
+		return observation;
 	}
 
 	/**
-	 * @param asin the asin of the item to delete
-	 * @return the view to render
+	 * TODO: add / to end
+	 * edit an existing item (view)
+	 * @param item the item
+	 * @param model the model to use
+	 * @return the item form
+	 * @throws ResourceNotFoundException
 	 */
-	@RequestMapping(value="/observations/{item}", method = RequestMethod.DELETE)
-	public String deleteItem(@PathVariable final Item item) {
-		// TODO: implement me
+	@RequestMapping(value="/observations/{item:.*}", method = RequestMethod.GET)
+	public String getItem(@PathVariable final Item item, final Model model) throws ResourceNotFoundException {
+		final Item itemDetails = this.service.getItemDetails(item);
+
+		if (!present(itemDetails)) {
+			throw new ResourceNotFoundException();
+		}
+
+		model.addAttribute(itemDetails);
+		return Views.HOME_REDIRECT;
+	}
+
+	/**
+	 * TODO: add / to end
+	 * edit an existing item (view)
+	 * @param item the item to update
+	 * @param observation
+	 * @param session the session to store the message
+	 * @return the item form
+	 * @throws ResourceNotFoundException
+	 */
+	@RequestMapping(value="/observations/{item:.*}", method = RequestMethod.PUT)
+	public String updateItem(@PathVariable final Item item, @Valid final Observation observation, final HttpSession session) throws ResourceNotFoundException {
+		/*
+		 * check if user has observation for item
+		 */
+		this.getObservationByItem(item);
+		this.service.updateObservation(item, observation);
+
+		HomepageController.setMessage(session, "observation.edit.success", observation.getName());
+		return Views.HOME_REDIRECT;
+	}
+
+	/**
+	 * TODO: add / to end
+	 * @param item the item of the observation to delete
+	 * @return the view to render
+	 * @throws ResourceNotFoundException
+	 */
+	@RequestMapping(value="/observations/{item:.*}", method = RequestMethod.DELETE)
+	public String deleteItem(@PathVariable final Item item) throws ResourceNotFoundException {
+		this.getObservationByItem(item);
+		this.service.removeObservation(item);
+
+		// TODO: success message
 		return Views.HOME_REDIRECT;
 	}
 }

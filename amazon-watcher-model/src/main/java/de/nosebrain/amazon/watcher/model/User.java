@@ -14,6 +14,7 @@ import de.nosebrain.authentication.Role;
 public class User {
 	private String name;
 	private String mail;
+	private String apiKey;
 
 	private Role role = Role.DEFAULT;
 
@@ -75,6 +76,20 @@ public class User {
 	 */
 	public void setSettings(final UserSettings settings) {
 		this.settings = settings;
+	}
+
+	/**
+	 * @return the apiKey
+	 */
+	public String getApiKey() {
+		return this.apiKey;
+	}
+
+	/**
+	 * @param apiKey the apiKey to set
+	 */
+	public void setApiKey(final String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 	/**

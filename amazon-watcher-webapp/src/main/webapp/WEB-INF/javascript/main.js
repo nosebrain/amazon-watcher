@@ -3,13 +3,41 @@ var PRICE_COLOR = '#2A5BA1';
 var COLOR_RED = '#cc0000';
 var COLOR_GREEN = '#00cc00';
 
-$(function() {	
+$(function() {
+	$('#message').show().delay(2000).slideUp(1000);
+	
+	/*
+	 * delete function
+	 */
+	$('a.deleteObservation').click(function() {
+		var link = $(this);
+		var deleteUrl = link.attr('href');
+		console.debug(deleteUrl);
+		$.ajax({
+			url:		deleteUrl,
+			type:		'POST',
+			success:	function(data) {
+							link.parents('div.item').remove();
+						}
+		});
+		return false;
+	});
+	
+	/*
+	 * plot graphs
+	 */
 	var now = new Date().getTime();
 	$('.item').each(function() {
 		var item = $(this);
 		var histogram = item.find('.histogram');
 		var currency = item.data('currency');
 		var historyDataSource = item.find('ul.history');
+		
+		if (historyDataSource.find('li').length == 0) {
+			histogram.text("no history found"); // TODO: i18n
+			return;
+		}
+		
 		var historyData = getHistoryData(historyDataSource, now);
 		var dataToPlot = new Array();
 		

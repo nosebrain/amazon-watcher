@@ -10,6 +10,7 @@ import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.amazon.watcher.model.UserSettings;
+import de.nosebrain.mybatis.MyBatisUtils;
 
 /**
  * 
@@ -22,7 +23,7 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 	public List<Item> getItems() {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			return this.selectList(session, "getAllItems");
+			return MyBatisUtils.selectList(session, "getAllItems");
 		} finally {
 			session.close();
 		}
@@ -32,7 +33,7 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 	public boolean updatePrice(final Item item, final float price) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			final Integer itemId = this.selectOne(session, "getItemIdByASINandSite", item);
+			final Integer itemId = MyBatisUtils.selectOne(session, "getItemIdByASINandSite", item);
 			if (itemId == null) {
 				return false;
 			}
@@ -53,21 +54,21 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 	public User getUserByName(final String name) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			return this.getUserByName(name, session);
+			return getUserByName(name, session);
 		} finally {
 			session.close();
 		}
 	}
 
-	private User getUserByName(final String name, final SqlSession session) {
-		return this.selectOne(session, "getUserByName", name);
+	private static User getUserByName(final String name, final SqlSession session) {
+		return MyBatisUtils.selectOne(session, "getUserByName", name);
 	}
 
 	@Override
 	public boolean createUser(final User user) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			if (this.getUserByName(user.getName(), session) != null) {
+			if (getUserByName(user.getName(), session) != null) {
 				return false;
 			}
 
@@ -85,7 +86,7 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 	public boolean deleteUser(final String name) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			if (this.getUserByName(name, session) == null) {
+			if (getUserByName(name, session) == null) {
 				return false;
 			}
 
@@ -103,7 +104,7 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 	public List<User> getUsersForItem(final Item item) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			return this.selectList(session, "getAllUsersByItem", item);
+			return MyBatisUtils.selectList(session, "getAllUsersByItem", item);
 		} finally {
 			session.close();
 		}

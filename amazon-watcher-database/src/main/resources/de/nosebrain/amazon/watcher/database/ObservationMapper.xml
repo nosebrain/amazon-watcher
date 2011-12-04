@@ -46,11 +46,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<delete id="deleteObservation" parameterType="itemParam">
-		DELETE FROM observations o
-			JOIN items i ON (o.item_id = i.id)
-		WHERE o.user_name = #{userName}
-		AND i.asin = #{item.asin}
-		AND i.site = #{item.site}
+		DELETE FROM observations
+			WHERE o.user_name = #{userName}
+			AND o.item_id IN (SELECT id FROM items WHERE i.asin = #{item.asin} AND i.site = #{item.site})
 	</delete>
 	
 	<delete id="deleteObservationForUser" parameterType="string">

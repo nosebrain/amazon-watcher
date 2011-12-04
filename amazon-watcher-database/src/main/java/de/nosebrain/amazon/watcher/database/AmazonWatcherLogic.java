@@ -10,7 +10,9 @@ import de.nosebrain.amazon.watcher.database.util.ObservationParam;
 import de.nosebrain.amazon.watcher.model.InfoService;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
+import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.authentication.Authority;
+import de.nosebrain.mybatis.MyBatisUtils;
 
 /**
  * 
@@ -19,10 +21,20 @@ import de.nosebrain.authentication.Authority;
 public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherService {
 
 	@Override
+	public Item getItemDetails(final Item item) {
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			return MyBatisUtils.selectOne(session, "getItemDetails", item);
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
 	public List<Observation> getObservations() {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			return this.selectList(session, "getAllObservationsByUser", this.loggedinUser.getName());
+			return MyBatisUtils.selectList(session, "getAllObservationsByUser", this.loggedinUser.getName());
 		} finally {
 			session.close();
 		}
@@ -156,5 +168,10 @@ public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherSe
 	public boolean removeInformationService(final String hash) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public User getLoggedInUser() {
+		return this.loggedinUser;
 	}
 }

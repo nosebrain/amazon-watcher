@@ -31,7 +31,7 @@ public class InformationServiceConfigurator {
 	/**
 	 * @param serviceFactories the services to set
 	 */
-	public void setServices(final Map<String, InformationServiceFactory> serviceFactories) {
+	public void setServiceFactories(final Map<String, InformationServiceFactory> serviceFactories) {
 		this.serviceFactories = serviceFactories;
 	}
 
