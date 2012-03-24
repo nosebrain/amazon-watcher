@@ -4,27 +4,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="de.nosebrain.amazon.watcher.database.UserMapper">
 
 	<resultMap type="User" id="userResult">
-		<result column="name"		property="name"		javaType="string" />
+		<id 	column="name"		property="name"		javaType="string" />
 		<result column="mail"		property="mail"		javaType="string" />
 		<result column="role"		property="role"		javaType="Role" />
-		<!-- <association property="settings">
-			<result column="min_delta"		property="minDelta" 	javaType="float" />
-			<result column="language"		property="language"		javaType="Language"/>
-		</association> -->
+		<association property="settings"	javaType="UserSettings">
+			<result 	column="min_delta"		property="minDelta" 	javaType="float" />
+			<result 	column="language"		property="language"		javaType="Locale"/>
+			<collection	property="infoServices" resultMap="infoServiceResult" />
+		</association>
 	</resultMap>
 	
-	<resultMap type="User" id="userFullResult" extends="userResult">
-		<collection property="authorities">
-			<!-- TODO -->
-		</collection>
+	<resultMap type="User" id="fullUserResult" extends="userResult">
+		<collection 	property="authorities" resultMap="authority" />
+	</resultMap>
+	
+	<resultMap type="InfoService" id="infoServiceResult">
+		<id		column="info_service_id"	property="infoServiceKey" />
+		<result	column="settings"			property="settings" />
+	</resultMap>
+	
+	<resultMap type="Authority" id="authority">
+		<discriminator javaType="int" column="kind">
+			<case value="1" resultMap="passwordAuthority" />
+		</discriminator>
+	</resultMap>
+	
+	<resultMap type="PasswordAuthority" id="passwordAuthority">
+		<result	column="info"		property="password" />
 	</resultMap>
 	
 	<sql id="userAttributes">
 		u.name, u.role, u.mail, u.min_delta, u.language
 	</sql>
 	
-	<select id="getUserByName" resultMap="userResult" parameterType="string">
-		SELECT <include refid="userAttributes" /> FROM users u WHERE u.name = #{userName}
+	<select id="getUserByName" resultMap="fullUserResult" parameterType="string">
+		SELECT <include refid="userAttributes" />, i.info_service_id, i.settings, a.kind, a.info
+			FROM users u
+			LEFT JOIN information_services i ON (u.name = i.user_name)
+			LEFT JOIN authorities a ON (u.name = a.user_name)
+			WHERE u.name = #{userName}
 	</select>
 	
 	<insert id="insertUser" parameterType="User">

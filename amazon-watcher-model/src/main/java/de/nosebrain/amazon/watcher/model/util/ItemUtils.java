@@ -85,6 +85,11 @@ public final class ItemUtils {
 		return null;
 	}
 
+	/**
+	 * generates a url for the provided item
+	 * @param item
+	 * @return the url of the item
+	 */
 	public static String generateUrlForItem(final Item item) {
 		return "http://" + AMAZON_DOMAIN + item.getSite().getTLD() + "/gp/product/" + item.getAsin();
 	}
@@ -92,11 +97,42 @@ public final class ItemUtils {
 	public static float getLastDelta(final Item item) {
 		final List<PriceHistory> priceHistories = item.getPriceHistories();
 
-		if (priceHistories.size() >= 2) {
-			return priceHistories.get(1).getValue() - priceHistories.get(0).getValue();
+		final int size = priceHistories.size();
+		if (size >= 2) {
+			return priceHistories.get(size - 2).getValue() - priceHistories.get(size - 1).getValue();
 		}
 
 		// TODO: log
 		return Float.MAX_VALUE;
+	}
+
+	public static boolean limit(final Item item, final float limit) {
+		return belowLimit(item, limit) || overLimit(item, limit);
+	}
+
+	public static boolean belowLimit(final Item item, final float limit) {
+		final List<PriceHistory> priceHistories = item.getPriceHistories();
+		final int size = priceHistories.size();
+		if (size < 2) {
+			return false;
+		}
+
+		final float current = priceHistories.get(size - 1).getValue();
+		final float before = priceHistories.get(size - 2).getValue();
+
+		return before >= limit && current < limit;
+	}
+
+	public static boolean overLimit(final Item item, final float limit) {
+		final List<PriceHistory> priceHistories = item.getPriceHistories();
+		final int size = priceHistories.size();
+		if (size < 2) {
+			return false;
+		}
+
+		final float current = priceHistories.get(size - 1).getValue();
+		final float before = priceHistories.get(size - 2).getValue();
+
+		return before < limit && current >= limit;
 	}
 }

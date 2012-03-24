@@ -12,13 +12,14 @@ $(function() {
 	$('a.deleteObservation').click(function() {
 		var link = $(this);
 		var deleteUrl = link.attr('href');
-		console.debug(deleteUrl);
 		$.ajax({
 			url:		deleteUrl,
 			type:		'POST',
 			success:	function(data) {
+							// TODO: add success message
 							link.parents('div.item').remove();
 						}
+			// TODO: add error method
 		});
 		return false;
 	});
@@ -138,10 +139,8 @@ function getHistoryData(historyDataUl, now) {
 		var hData = historyData[i];
 		plotData.push([hData.date.getTime(), hData.min]);
 	}
-	
 	var last = data[data.length - 1];
 	plotData.push([now, last.value]);
-	
 	return plotData;
 }
 
@@ -209,12 +208,38 @@ function aggregateByDate(source) {
     return newSource;
 }
 
+function keys(obj) {
+    var keys = [];
+    for(var key in obj) {
+        keys.push(key);
+    }
+    return keys;
+}
 
 // edit form functions
 
 $(function() {
 	modeChange();
 	$('#mode').change(modeChange);
+	
+	$('#item').change(function() {
+		var self = $(this);
+		
+		var url = self.val();
+		var amazonUrl = encodeURIComponent(url.substring(0, url.indexOf('?')));
+		
+		$('#img').empty().append($('<img></img>').attr('src', '/amazon-watcher/items/' + amazonUrl + "/image"));
+		
+		$.ajax({
+			// TODO: remove! amazon-watcher
+			url: "/amazon-watcher/items/" + amazonUrl + "/recommandation.json",
+			datatype: "json",
+			success: function(data) {
+				console.debug(data);
+			}
+		});
+		alert('change');
+	});
 });
 
 function modeChange() {

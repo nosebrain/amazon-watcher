@@ -38,6 +38,11 @@ public enum Amazon {
 		return this.currency;
 	}
 
+
+	/**
+	 * @param site
+	 * @return the amazon aws site for the amazon site
+	 */
 	public static String getEndPoint(final Amazon site) {
 		return "ecs.amazonaws." + site.getTLD();
 	}

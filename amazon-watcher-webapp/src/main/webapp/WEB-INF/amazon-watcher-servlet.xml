@@ -90,6 +90,7 @@
 					<property name="exposedContextBeanNames">
 						<list>
 							<value>properties</value>
+							<value>authServices</value>
 						</list>
 					</property>
 				</bean>

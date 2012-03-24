@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,12 +27,24 @@ public class HomepageController {
 	private static final String SESSION_MESSAGE = "message";
 	private static final String SESSION_MESSAGE_PARAM = "messageParam";
 
-
+	/**
+	 * TODO: refactor (list of message Params and optional)
+	 * 
+	 * @param session
+	 * @param message
+	 * @param messageParam
+	 */
 	public static void setMessage(final HttpSession session, final String message, final String messageParam) {
 		session.setAttribute(SESSION_MESSAGE, message);
 		session.setAttribute(SESSION_MESSAGE_PARAM, messageParam);
 	}
 
+	/**
+	 * TODO: refactor
+	 * 
+	 * @param model
+	 * @param session
+	 */
 	public static void copyMessage(final Model model, final HttpSession session) {
 		final String message = (String) session.getAttribute(SESSION_MESSAGE);
 		if (present(message)) {
@@ -47,7 +60,7 @@ public class HomepageController {
 
 
 	@Autowired
-	protected AmazonWatcherService service;
+	private AmazonWatcherService service;
 
 	@Autowired
 	private UpdaterService updaterService;
@@ -55,16 +68,19 @@ public class HomepageController {
 	/**
 	 * @param model the model to fill
 	 * @param session the session to get the message
+	 * @param principal the logged in user
 	 * @return the homepage
 	 */
 	@RequestMapping(value = {"/", "/index"})
-	public String home(final Model model, final HttpSession session) {
-		final List<Observation> observations = this.service.getObservations();
-		model.addAttribute("observations", observations);
-		// TODO: inform about next update
-		model.addAttribute("lastUpdateDate", this.updaterService.getLastUpdateDate());
+	public String home(final Model model, final HttpSession session, final Authentication principal) {
+		if (present(principal)) {
+			final List<Observation> observations = this.service.getObservations();
+			model.addAttribute("observations", observations);
+			// TODO: inform about next update
+			model.addAttribute("lastUpdateDate", this.updaterService.getLastUpdateDate());
 
-		copyMessage(model, session);
+			copyMessage(model, session);
+		}
 
 		return Views.HOME;
 	}

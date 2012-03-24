@@ -14,7 +14,15 @@
    	<c:set var="item" value="${observation.item}" />
    	<c:set var="itemUrl" value="${aw:getUrl(item)}" />
    	
-	<div class="item" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
+   	<c:set var="historyLength" value="${fn:length(item.priceHistories)}" />
+   	<c:set var="lastUpdated" value="0" />
+   	<c:if test="${historyLength > 0}">
+   		<c:set var="lastUpdated" value="${item.priceHistories[historyLength - 1].date.time}" />
+   	</c:if>
+   	
+   	<c:set var="observationName" value="${observation.name}" />
+   	
+	<div class="item" data-lastUpdate="${lastUpdated}" data-name="${fn:escapeXml(observationName)}" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
 		<a href="${itemUrl}" class="itempicture"><img src="${aw:getImageUrl(item)}" /></a>
 		<div class="iteminfo">
 			<ul class="watchedActions">
@@ -30,15 +38,15 @@
 				<c:url var="unwatchIcon" value="/icons/eye_minus.png" />
 				<li>
 					<fmt:message key="observation.unwatch" var="unwatchTitle">
-						<fmt:param value="${observation.name}"/>
+						<fmt:param value="${observationName}"/>
 					</fmt:message>
 					<a href="${observationUrl}?_method=DELETE" title="${unwatchTitle}" class="deleteObservation"><img src="${unwatchIcon}" /></a>
 				</li>
 			</ul>
 			<div class="info">
-				<a href="${itemUrl}" class="itemName"><c:out value="${observation.name}" /></a>
+				<a href="${itemUrl}" class="itemName"><c:out value="${observationName}" /></a>
 				
-				<c:set var="historyLength" value="${fn:length(item.priceHistories)}" />
+				
 				<c:if test="${historyLength > 0}">
 					<c:set var="lastItem" value="${item.priceHistories[historyLength - 1]}" />
 					<!-- style for over/under limit -->

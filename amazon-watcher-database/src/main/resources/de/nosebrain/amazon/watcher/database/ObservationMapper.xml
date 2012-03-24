@@ -19,14 +19,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				JOIN items i ON (o.item_id = i.id)
 				LEFT JOIN history h ON (o.item_id = h.item_id)
 			WHERE o.user_name = #{userName}
-		ORDER BY o.name
+		ORDER BY o.name, h.date
 	</select>
 	
+	<!-- TODO: merge with select getAllObservationsByUser -->
 	<select id="getObservationByItemForUser" resultMap="observationResult">
-		SELECT o.name, o.mode, o.`limit`, o.change_date, o.date, i.id, i.asin, i.site
+		SELECT o.name, o.mode, o.`limit`, o.change_date, o.date, i.id, i.asin, i.site, h.price, h.date AS hDate
 			FROM observations o
 				JOIN items i ON (o.item_id = i.id)
+				LEFT JOIN history h ON (o.item_id = h.item_id)
 			WHERE o.user_name = #{userName} AND i.asin = #{item.asin} AND i.site = #{item.site}
+		ORDER BY h.date
 	</select>
 	
 	<insert id="insertNewObservation" parameterType="observationParam">
@@ -47,8 +50,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<delete id="deleteObservation" parameterType="itemParam">
 		DELETE FROM observations
-			WHERE o.user_name = #{userName}
-			AND o.item_id IN (SELECT id FROM items WHERE i.asin = #{item.asin} AND i.site = #{item.site})
+			WHERE user_name = #{userName}
+			AND item_id IN (SELECT id FROM items WHERE asin = #{item.asin} AND site = #{item.site})
 	</delete>
 	
 	<delete id="deleteObservationForUser" parameterType="string">

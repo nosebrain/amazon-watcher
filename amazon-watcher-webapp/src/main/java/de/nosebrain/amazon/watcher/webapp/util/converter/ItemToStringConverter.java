@@ -5,6 +5,10 @@ import org.springframework.core.convert.converter.Converter;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 
+/**
+ * Converts {@link Item} to {@link String}
+ * @author nosebrain
+ */
 public class ItemToStringConverter implements Converter<Item, String> {
 
 	@Override

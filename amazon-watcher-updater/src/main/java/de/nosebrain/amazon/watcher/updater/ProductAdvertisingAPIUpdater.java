@@ -113,7 +113,9 @@ public class ProductAdvertisingAPIUpdater implements Updater {
 		final Map<String, String> params = new HashMap<String, String>();
 		params.put("Service", "AWSECommerceService");
 		params.put("Operation", "ItemLookup");
+		params.put("MerchantId", "All");
 		params.put("ItemId", item.getAsin());
+		params.put("Condition", "New");
 		params.put("ResponseGroup", "Offers");
 
 		return this.helper.sign(Amazon.getEndPoint(item.getSite()), params);

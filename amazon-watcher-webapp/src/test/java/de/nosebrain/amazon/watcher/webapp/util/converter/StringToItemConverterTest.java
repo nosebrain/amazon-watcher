@@ -23,11 +23,11 @@ public class StringToItemConverterTest {
 		final Item convert2 = CONVERTER.convert("http%3A%2F%2Famazon.com%2Fgp%2Fproduct%2FB0051VVOB2");
 
 		assertNotNull(convert2);
-		final Item convert3 = CONVERTER.convert("http://amamzon.de/gp/product/2FB0051VVOB2");
+		final Item convert3 = CONVERTER.convert("http://amazon.de/gp/product/B0051VVOB2");
 
 		assertNotNull(convert3);
 		assertEquals(Amazon.DE, convert3.getSite());
-		assertEquals("2FB0051VVOB2", convert3.getAsin());
+		assertEquals("B0051VVOB2", convert3.getAsin());
 	}
 
 

@@ -8,7 +8,6 @@ import javax.mail.internet.MimeMessage;
 
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
-import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 import de.nosebrain.amazon.watcher.services.InformationService;
 import de.nosebrain.util.Mailer;
@@ -26,10 +25,10 @@ public class MailInfoService implements InformationService {
 	private InternetAddress address;
 
 	@Override
-	public void inform(final User user, final List<Observation> observations) {
+	public void inform(final List<Observation> observations) {
 		try {
 			final MimeMessage message = this.mailer.createMessage();
-			message.setSubject("Amazon Watcher | Overview");
+			message.setSubject("Amazon Watcher | Overview"); // TODO: name
 			final StringBuilder content = new StringBuilder();
 			content.append("<html><body><p>" + "Some of your watched items have changed." + "</p><ul>");
 

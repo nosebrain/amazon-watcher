@@ -3,7 +3,6 @@ package de.nosebrain.amazon.watcher.services;
 import java.util.List;
 
 import de.nosebrain.amazon.watcher.model.Observation;
-import de.nosebrain.amazon.watcher.model.User;
 
 /**
  * 
@@ -12,8 +11,7 @@ import de.nosebrain.amazon.watcher.model.User;
 public interface InformationService {
 
 	/**
-	 * @param user the user to inform
 	 * @param observations inform the user about the changes
 	 */
-	public void inform(final User user, final List<Observation> observations);
+	public void inform(final List<Observation> observations);
 }
