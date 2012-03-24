@@ -34,6 +34,10 @@ public class ObservationsEditController {
 	@Autowired
 	private AmazonWatcherService service;
 
+	/**
+	 * adds {@link ObservationValidator} to the binder
+	 * @param binder
+	 */
 	@InitBinder
 	protected void initBinder(final WebDataBinder binder) {
 		binder.setValidator(new ObservationValidator());
@@ -53,10 +57,11 @@ public class ObservationsEditController {
 	/**
 	 * @param observation the observation to create
 	 * @param result the validation result
+	 * @param session the session for the message to set
 	 * @return the view to render
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS, method = RequestMethod.POST)
-	public String saveItem(@Valid final Observation observation, final BindingResult result) {
+	public String saveItem(@Valid final Observation observation, final BindingResult result, final HttpSession session) {
 		if (result.hasErrors()) {
 			return Views.OBSERVATION_EDIT;
 		}
@@ -70,6 +75,7 @@ public class ObservationsEditController {
 		}
 
 		this.service.addObservation(observation);
+		HomepageController.setMessage(session, "observation.create.success", observation.getName());
 		return Views.HOME_REDIRECT;
 	}
 
@@ -115,8 +121,8 @@ public class ObservationsEditController {
 	}
 
 	/**
-	 * TODO: add / to end
 	 * edit an existing item (view)
+	 * 
 	 * @param item the item to update
 	 * @param observation
 	 * @param session the session to store the message
@@ -138,15 +144,17 @@ public class ObservationsEditController {
 	/**
 	 * TODO: add / to end
 	 * @param item the item of the observation to delete
+	 * @param session the session to store messages
 	 * @return the view to render
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value="/observations/{item:.*}", method = RequestMethod.DELETE)
-	public String deleteItem(@PathVariable final Item item) throws ResourceNotFoundException {
+	public String deleteItem(@PathVariable final Item item, final HttpSession session) throws ResourceNotFoundException {
 		this.getObservationByItem(item);
 		this.service.removeObservation(item);
 
-		// TODO: success message
+		// TODO: refactor
+		HomepageController.setMessage(session, "observation.delete.success", "");
 		return Views.HOME_REDIRECT;
 	}
 }

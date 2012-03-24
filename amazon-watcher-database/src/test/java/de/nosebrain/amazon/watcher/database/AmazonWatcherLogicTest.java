@@ -1,16 +1,11 @@
 package de.nosebrain.amazon.watcher.database;
 
-import java.util.List;
-
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.springframework.core.io.InputStreamResource;
 
 import de.nosebrain.amazon.watcher.model.Amazon;
 import de.nosebrain.amazon.watcher.model.Item;
-import de.nosebrain.amazon.watcher.model.Observation;
-import de.nosebrain.amazon.watcher.model.ObservationMode;
-import de.nosebrain.amazon.watcher.model.PriceHistory;
 import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.spring.beans.SqlSessionFactoryFactoryBean;
 
@@ -35,22 +30,12 @@ public class AmazonWatcherLogicTest {
 		final SqlSessionFactory sessionFactory = bean.getObject();
 		logic.setSessionFactory(sessionFactory);
 
-		final List<Observation> observations = logic.getObservations();
-
-		observations.size();
-		final List<PriceHistory> priceHistories = observations.get(0).getItem().getPriceHistories();
-		final int size = priceHistories.size();
-		final float firstValue = priceHistories.get(0).getValue();
-
-		final Observation observation = new Observation();
-		observation.setMode(ObservationMode.PRICE_LIMIT);
-		observation.setLimit(10.55f);
-		observation.setName("Qnap 410");
+		final AdminAmazonWatcherLogic adminLogic = new AdminAmazonWatcherLogic();
+		adminLogic.setSessionFactory(sessionFactory);
 		final Item item = new Item();
+		item.setAsin("B005S6JMB4");
 		item.setSite(Amazon.DE);
-		item.setAsin("B002PML096");
-		observation.setItem(item);
-
-		logic.addObservation(observation);
+		final User nosebrain = adminLogic.getUserByName("nosebrain");
+		nosebrain.setApiKey("");
 	}
 }

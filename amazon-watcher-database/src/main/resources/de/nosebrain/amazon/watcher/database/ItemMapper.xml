@@ -13,7 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<resultMap type="PriceHistory" id="priceHistoryResult">
 		<result column="price"		property="value"	javaType="float" />
 		<result column="hDate"		property="date" 	javaType="date" />
-	</resultMap>
+	</resultMap>	
 	
 	<sql id="itemDetailsColumns">
 		i.asin, i.site, h.price, h.date AS hDate
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getItemDetails" resultMap="itemResult" parameterType="Item">
 		SELECT <include refid="itemDetailsColumns" /> FROM
 			<include refid="itemHistoryJoin" />
-		WHERE i.asin = #{item} AND i.site = #{site}
+		WHERE i.asin = #{asin} AND i.site = #{site}
 	</select>
 	
 	<select id="getItemIdByASINandSite" resultType="int">
@@ -38,10 +38,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="getAllUsersByItem" resultMap="de.nosebrain.amazon.watcher.database.UserMapper.userResult" parameterType="item">
-		SELECT <include refid="de.nosebrain.amazon.watcher.database.UserMapper.userAttributes" />
+		SELECT <include refid="de.nosebrain.amazon.watcher.database.UserMapper.userAttributes" />, info_service_id, settings
 			FROM observations o
 			JOIN items i ON (o.item_id = i.id)
 			JOIN users u ON (o.user_name = u.name)
+			JOIN information_services s ON (s.user_name = u.name)
 		WHERE i.asin = #{asin}
 		AND i.site = #{site}
 	</select>

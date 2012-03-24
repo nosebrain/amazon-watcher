@@ -1,14 +1,18 @@
 package de.nosebrain.amazon.watcher.model.util;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.junit.Test;
 
 import de.nosebrain.amazon.watcher.model.Amazon;
 import de.nosebrain.amazon.watcher.model.Item;
+import de.nosebrain.amazon.watcher.model.PriceHistory;
 
 /**
  * 
@@ -41,5 +45,24 @@ public class ItemUtilsTest {
 		final String asin = "123123123";
 		item.setAsin(asin);
 		assertEquals("http://amazon." + site.getTLD() + "/gp/product/" + asin, ItemUtils.generateUrlForItem(item));
+	}
+
+	@Test
+	public void testOverLimit() {
+		final Item item = new Item();
+		final PriceHistory history1 = new PriceHistory();
+		history1.setValue(9.99f);
+
+		final PriceHistory history2 = new PriceHistory();
+		history2.setValue(12);
+
+		item.setPriceHistories(Arrays.asList(history2, history1));
+
+		assertFalse(ItemUtils.overLimit(item, 11));
+		assertTrue(ItemUtils.belowLimit(item, 11));
+
+		item.setPriceHistories(Arrays.asList(history1, history2));
+		assertTrue(ItemUtils.overLimit(item, 11));
+		assertFalse(ItemUtils.belowLimit(item, 11));
 	}
 }

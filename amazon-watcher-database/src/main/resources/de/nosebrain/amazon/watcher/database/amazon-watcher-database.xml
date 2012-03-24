@@ -5,30 +5,35 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 <configuration>
 	<typeAliases>
 		<!-- java classes -->
-		<typeAlias type="java.net.URL" alias="url" />
+		<typeAlias	type="java.net.URL"			alias="url" />
+		<typeAlias	type="java.util.Locale" 	alias="Locale" />
 		
 		<!-- common -->
-		<typeAlias type="de.nosebrain.Language" alias="Language" />
-		<typeAlias type="de.nosebrain.authentication.Role" alias="Role" />
+		<typeAlias	type="de.nosebrain.authentication.Role" 				alias="Role" />
+		<typeAlias	type="de.nosebrain.authentication.Authority" 			alias="Authority" />
+		<typeAlias 	type="de.nosebrain.authentication.PasswordAuthority"	alias="PasswordAuthority" />
+		<typeAlias	type="de.nosebrain.authentication.OpenIDAuthority" 		alias="OpenIDAuthority" />
 		
 		<!-- model -->
 		<!-- user -->
-		<typeAlias type="de.nosebrain.amazon.watcher.model.User" alias="User" />
-		<typeAlias type="de.nosebrain.amazon.watcher.model.UserSettings" alias="UserSettings" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.User"				alias="User" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.UserSettings"		alias="UserSettings" />
 		<!-- item and observation -->
-		<typeAlias type="de.nosebrain.amazon.watcher.model.Item" alias="Item" />
-		<typeAlias type="de.nosebrain.amazon.watcher.model.PriceHistory" alias="priceHistory" />
-		<typeAlias type="de.nosebrain.amazon.watcher.model.Observation" alias="Observation" />
-		<typeAlias type="de.nosebrain.amazon.watcher.model.Amazon" alias="Amazon" />
-		<typeAlias type="de.nosebrain.amazon.watcher.model.ObservationMode" alias="ObservationMode" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.Item"				alias="Item" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.PriceHistory"		alias="priceHistory" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.Observation"		alias="Observation" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.Amazon"				alias="Amazon" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.ObservationMode"	alias="ObservationMode" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.InfoService"		alias="InfoService" />
 	
 		<!-- params -->
-		<typeAlias type="de.nosebrain.amazon.watcher.database.util.ItemParam" alias="itemParam" />
-		<typeAlias type="de.nosebrain.amazon.watcher.database.util.ObservationParam" alias="observationParam" />
+		<typeAlias 	type="de.nosebrain.amazon.watcher.database.util.ItemParam"			alias="itemParam" />
+		<typeAlias 	type="de.nosebrain.amazon.watcher.database.util.ObservationParam"	alias="observationParam" />
 	</typeAliases>
 	
 	<typeHandlers>
-		<typeHandler javaType="url" handler="de.nosebrain.mybatis.typehandler.URLTypeHandler" />
+		<typeHandler javaType="url"			handler="de.nosebrain.mybatis.typehandler.URLTypeHandler" />
+		<typeHandler javaType="Locale"		handler="de.nosebrain.mybatis.typehandler.LocaleTypeHandler" />
 	</typeHandlers>
 	
 	<mappers>

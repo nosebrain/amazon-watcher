@@ -75,4 +75,17 @@
 	<task:scheduled-tasks>
     	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
 	</task:scheduled-tasks>
+	
+	<!-- authservices -->
+	<util:list id="authServices">
+		<bean class="de.nosebrain.amazon.watcher.webapp.util.AuthService">
+			<property name="name" value="Google" />
+			<property name="url" value="https://www.google.com/accounts/o8/id" />
+		</bean>
+		
+		<bean class="de.nosebrain.amazon.watcher.webapp.util.AuthService">
+			<property name="name" value="Yahoo" />
+			<property name="url" value="http://me.yahoo.com/" />
+		</bean>
+	</util:list>
 </beans>

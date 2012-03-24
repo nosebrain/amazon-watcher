@@ -19,5 +19,4 @@ public interface Views {
 	public static final String OBSERVATIONS = "observations";
 
 	public static final String OBSERVATION_EDIT = OBSERVATIONS + "/edit";
-
 }

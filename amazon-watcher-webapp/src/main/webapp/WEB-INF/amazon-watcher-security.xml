@@ -7,16 +7,78 @@
 						http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
 						http://www.springframework.org/schema/util 
 	                    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-	                    	
-	<security:http use-expressions="true">
+	
+	<security:global-method-security pre-post-annotations="enabled"/>
+	           	
+	<security:http use-expressions="true" entry-point-ref="entryPoint" auto-config="false" security-context-repository-ref="contextRepository">
+		<!-- static resources -->
+		<security:intercept-url pattern="/css/**" filters="none" />
+		<security:intercept-url pattern="/javascript/**" filters="none" />
+		<security:intercept-url pattern="/libraries/**" filters="none" />
+		<security:intercept-url pattern="/icons/**" filters="none" />
+		
+		<security:intercept-url pattern="/login" access="isAnonymous()" />
+		<security:intercept-url pattern="/register" access="isAnonymous()" />
+		
+		<!-- restrict admin pages to admins -->
+		<security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')" />
+		<!-- everything else -->
+		<security:intercept-url pattern="/" access="permitAll" />
+		<security:intercept-url pattern="/**" access="isAuthenticated()" />
+		
+		<security:custom-filter ref="form-login" position="FORM_LOGIN_FILTER"/>
+		
+		<!-- TODO: use api key as password -->
 		<security:http-basic />
+		
+		<security:logout logout-url="/logout" logout-success-url="/" />
 	</security:http>
 	
-	<security:authentication-manager alias="internal_auth_manager">
-		<security:authentication-provider>
-			<security:user-service>
-				<security:user name="amazon-watcher" authorities="USER" password="test" />
-			</security:user-service>
-		</security:authentication-provider>
+	<security:authentication-manager alias="internalAuthenticationManager">
+		<security:authentication-provider ref="databaseAuthenticator" />
 	</security:authentication-manager>
+	
+	<bean id="loginUrl" class="java.lang.String">
+		<constructor-arg value="/login" />
+	</bean>
+	
+	<bean id="targetUrlParameter" class="java.lang.String">
+		<constructor-arg value="referer" />
+	</bean>
+	
+	<bean id="form-login" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="filterProcessesUrl" value="/login_internal" />
+		<property name="authenticationManager" ref="internalAuthenticationManager" />
+		<property name="authenticationFailureHandler" ref="failureHandler" />
+		<property name="authenticationSuccessHandler" ref="successHandler" />
+		<property name="usernameParameter" value="name" />
+		<property name="passwordParameter" value="secret" />
+	</bean>
+	
+	<bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+		<property name="targetUrlParameter" ref="targetUrlParameter" />
+	</bean>
+	
+	<bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" ref="loginUrl" />
+	</bean>
+	
+	<bean id="databaseUserService" class="de.nosebrain.amazon.watcher.webapp.util.spring.security.DatabaseAdapter">
+		<property name="adminService" ref="adminDatabaseLogic" />
+	</bean>
+	
+	<bean id="contextRepository" class="de.nosebrain.spring.security.UsernameContextRepository">
+		<property name="service" ref="databaseUserService" />
+	</bean>
+	
+	<bean id="databaseAuthenticator" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="databaseUserService" />
+		<property name="passwordEncoder">
+			<bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
+		</property>
+	</bean>
+	
+	<bean id="entryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<property name="loginFormUrl" ref="loginUrl" />
+	</bean>
 </beans>

@@ -5,6 +5,7 @@
         	xmlns:observations="urn:jsptagdir:/WEB-INF/tags/observation"
         	xmlns:basic="urn:jsptagdir:/WEB-INF/tags/basic"
         	xmlns:form="http://www.springframework.org/tags/form"
+        	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
         	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
         	xmlns:c="http://java.sun.com/jsp/jstl/core">
         	
@@ -16,7 +17,28 @@
    		<jsp:attribute name="content">
    			<h2><c:out value="${pageTitle}" /></h2>
    			
-   			TODO
+   			<ul id="loginServices">
+   				<li><a href="#normal" class="login selected">Amazon Watcher</a></li>
+   				
+   				<c:forEach var="service" items="${authServices}">
+   					<c:set var="serviceId" value="${fn:toLowerCase(service.name)}" />
+   					<c:url var="iconUrl" value="/icons/authorities/${serviceId}.png" />
+   					<li><a href="#" data-serviceId="${serviceId}" data-url="${service.url}" title="${service.name}"><img src="${iconUrl}" /></a></li>
+   				</c:forEach>
+   			</ul>
+   			
+   			<ul id="loginExtras">
+   				<li id="normal">
+   					<div>
+   					<c:url var="loginUrl" value="/login_internal" />
+   					<form action="${loginUrl}" method="post">
+   						<p><label>username *:</label><input type="text" name="name"/><br />
+   						<label>password *:</label><input type="password" name="secret" /></p>
+   						<p><input type="submit" value="login" /></p>
+   					</form>
+   					</div>
+				</li>
+   			</ul>
    		</jsp:attribute>
    	</basic:layout>
 </jsp:root>

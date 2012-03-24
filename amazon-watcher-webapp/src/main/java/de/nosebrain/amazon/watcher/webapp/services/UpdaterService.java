@@ -1,5 +1,7 @@
 package de.nosebrain.amazon.watcher.webapp.services;
 
+import static de.nosebrain.util.ValidationUtils.present;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +52,9 @@ public class UpdaterService {
 					history.setDate(now);
 					history.setValue(currentPrice);
 					item.getPriceHistories().add(history);
-					updatedItems.add(item);
+					if (present(lastPrice)) {
+						updatedItems.add(item);
+					}
 				}
 			}
 		}

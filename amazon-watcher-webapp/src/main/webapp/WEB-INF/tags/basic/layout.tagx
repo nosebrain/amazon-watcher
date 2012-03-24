@@ -31,12 +31,30 @@
  			<script type="text/javascript" src="${mainJSUrl}"><!-- keep me --></script>
  		</head>
  		<body>
- 			<nav>
- 				<!-- TODO -->
- 			</nav>
+ 			
  			<header>
  				<c:url var="homeUrl" value="/" />
  				<h1><a href="${homeUrl}"><c:out value="${projectName}" /></a></h1>
+ 				<nav>
+	 				<ul>
+	 					<sec:authorize access="isAnonymous()">
+	 						<c:url var="loginUrl" value="/login" />
+	 						<li><a href="${loginUrl}"><fmt:message key="action.login" /></a></li>
+	 						<c:url var="registerUrl" value="/register" />
+	 						<li><a href="${registerUrl}"><fmt:message key="action.register" /></a></li>
+	 					</sec:authorize>
+	 					<sec:authorize access="hasRole('ADMIN')">
+	 						<c:url var="adminMainUrl" value="/admin" />
+	 						<li><a href="${adminMainUrl}"><fmt:message key="action.admin" /></a></li>
+	 					</sec:authorize>
+	 					<sec:authorize access="isAuthenticated()">
+	 						<c:url var="settingsUrl" value="/settings" />
+	 						<li><a href="${settingsUrl}"><fmt:message key="action.settings" /></a></li>
+	 						<c:url var="logoutUrl" value="/logout" />
+	 						<li><a href="${logoutUrl}"><fmt:message key="action.logout" /></a></li>
+	 					</sec:authorize>
+	 				</ul>
+ 				</nav>
  			</header>
  			<c:set var="systemMessage" value="${properties['general.message']}" />
  			

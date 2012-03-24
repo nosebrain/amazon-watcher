@@ -18,6 +18,24 @@ public class ErrorController {
 
 	/**
 	 * @param model the model
+	 * @return ?
+	 */
+	@RequestMapping("/errors/401")
+	public String error_401(final Model model) {
+		return showError(model, 401);
+	}
+
+	/**
+	 * @param model the model
+	 * @return the error page
+	 */
+	@RequestMapping("/errors/403")
+	public String error_403(final Model model) {
+		return showError(model, 403);
+	}
+
+	/**
+	 * @param model the model
 	 * @return page not found
 	 */
 	@RequestMapping("/errors/404")
@@ -32,15 +50,6 @@ public class ErrorController {
 	@RequestMapping("/errors/405")
 	public String error_405(final Model model) {
 		return showError(model, 405);
-	}
-
-	/**
-	 * @param model the model
-	 * @return ?
-	 */
-	@RequestMapping("/errors/401")
-	public String error_401(final Model model) {
-		return showError(model, 401);
 	}
 
 	/**

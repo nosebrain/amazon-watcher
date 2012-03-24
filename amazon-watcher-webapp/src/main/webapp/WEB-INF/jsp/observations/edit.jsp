@@ -74,6 +74,9 @@
    				</div>
    			</form:form>
    			
+   			<div id="img">
+   				<!-- fill me -->
+   			</div>
    		</jsp:attribute>
    	</basic:layout>
 </jsp:root>
