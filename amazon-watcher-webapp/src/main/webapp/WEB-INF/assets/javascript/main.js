@@ -4,6 +4,8 @@ var COLOR_RED = '#cc0000';
 var COLOR_GREEN = '#00cc00';
 
 $(function() {
+	$(".alert").alert();
+	
 	$('#message').show().delay(2000).slideUp(1000);
 	
 	/*
@@ -219,6 +221,17 @@ function keys(obj) {
 // edit form functions
 
 $(function() {
+	$('.nav-toggle').each(function() {
+		var links = $(this).find('a');
+		links.click(function() {
+			links.parent().removeClass('active');
+			var id = $(this).attr('href');
+			$('section').hide();
+			$(id).show();
+			$(this).parent().addClass('active');
+		});
+	});
+	
 	modeChange();
 	$('#mode').change(modeChange);
 	
@@ -245,8 +258,8 @@ $(function() {
 function modeChange() {
 	var limit = $('#limit').parent();
 	if ($('#mode').val() == "PRICE_LIMIT") {
-		limit.show();
+		limit.parent().show();
 	} else {
-		limit.hide();
+		limit.parent().hide();
 	}
 }

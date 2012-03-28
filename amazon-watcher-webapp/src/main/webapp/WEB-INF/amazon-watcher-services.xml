@@ -15,6 +15,13 @@
 		<property name="url" value="${database.url}" />
 		<property name="username" value="${database.username}" />
 		<property name="password" value="${database.password}" />
+		<property name="validationQuery" value="select 42" />
+		<property name="minEvictableIdleTimeMillis" value="3600000" />
+		<property name="timeBetweenEvictionRunsMillis" value="1800000" />
+		<property name="numTestsPerEvictionRun" value="10" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="true" />
+		<property name="testOnReturn" value="false" />
 	</bean>
 	
 	<bean id="mainSqlSessionFactory" class="de.nosebrain.spring.beans.SqlSessionFactoryFactoryBean">

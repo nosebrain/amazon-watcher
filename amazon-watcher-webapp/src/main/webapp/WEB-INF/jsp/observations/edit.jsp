@@ -3,6 +3,7 @@
 			xmlns="http://www.w3.org/1999/xhtml" 
         	xmlns:jsp="http://java.sun.com/JSP/Page"
         	xmlns:basic="urn:jsptagdir:/WEB-INF/tags/basic"
+        	xmlns:bootstrap="urn:jsptagdir:/WEB-INF/tags/utils/bootstrap"
         	xmlns:enum="urn:jsptagdir:/WEB-INF/tags/utils/enum"
         	xmlns:form="http://www.springframework.org/tags/form"
         	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
@@ -27,9 +28,7 @@
 	</c:choose>
    	
    	<basic:layout pageTitle="${pageTitle}">
-   		<jsp:attribute name="content">
-   			<h2><c:out value="${pageTitle}" /></h2>
-   			
+   		<jsp:attribute name="content">   			
    			<c:set var="new_asin" value="${asin}" />
    			<c:if test="${newItem and not empty item.url}">
    				<c:set var="new_asin" value="${aw:getASIN(item.url)}" />
@@ -38,44 +37,58 @@
    			<c:if test="${not empty new_asin}">
    				<img src="${aw:getImageUrl(new_asin)}" />
    			</c:if>
+   			<div class="page-header">
+   				<h1>
+   			<c:choose>
+   				<c:when test="${newItem}">
+   					observe new item
+   				</c:when>
+   				<c:otherwise>
+   					edit observation
+   				</c:otherwise>
+   			</c:choose>
+   				</h1>
+   			</div>
    			
-   			<form:form method="POST" commandName="observation" action="${actionUrl}">
+   			<div class="row">
+   			
+   			<div id="img" class="span2">
+   				<!-- fill me -->
+   			</div>
+   			
+   			<div class="span6">
+   			<form:form method="POST" commandName="observation" action="${actionUrl}" cssClass="form-horizontal">
    				<c:if test="${not newItem}">
    					<input type="hidden" name="_method" value="PUT" />
    				</c:if>
-   				<div>
-   					<p>
-   						<form:label path="name"><fmt:message key="observation.name" /> *:</form:label>
-   						<form:input path="name" />
-   						<form:errors path="name" cssClass="errors" />
-   					</p>
-   					<c:if test="${not newItem}">
-   						<c:set var="urlDisplay" value="display:none;" />
-   					</c:if> 					
-   					<p style="${urlDisplay}">
-   						<form:label path="item"><fmt:message key="observation.item" /> *:</form:label>
-   						<form:input path="item" />
-   						<form:errors path="item" cssClass="errors" />
-   					</p>
-   				</div>
-   				<div>
-   					<p>
-   						<form:label path="mode"><fmt:message key="observation.mode" /> *:</form:label>
-   						<enum:select path="mode" />			
-   					</p>
-   					<p>
-   						<form:label path="limit"><fmt:message key="observation.limit" />:</form:label>
-   						<form:input path="limit" />
-   						<form:errors path="limit" cssClass="errors" />
-   					</p>
-   				</div>
-   				<div>
-   					<input type="submit" value="${actionValue}" />
+   				
+   				<bootstrap:input labelMessageKey="observation.name" path="name" required="${true}" />
+   				
+   				<c:if test="${not newItem}">
+   					<c:set var="itemCssClass" value="hidden" />
+   				</c:if>
+   				
+   				<bootstrap:input labelMessageKey="observation.item" path="item" required="${true}" extraCssClass="${itemCssClass}" />
+   				
+   				<bootstrap:enumSelect labelMessageKey="observation.mode" path="mode" required="${true}"/>   				
+   				
+				<bootstrap:input path="limit" labelMessageKey="observation.limit" required="${true}" />
+				
+   				<div class="form-actions">
+   					<!-- TODO: referer -->
+   					<c:url var="homeurl" value="/" />
+   					<button href="${homeurl}" class="btn">Cancel</button>
+   					
+   					<input type="submit" value="${actionValue}" class="btn btn-primary" />
    				</div>
    			</form:form>
+   			</div>
    			
-   			<div id="img">
-   				<!-- fill me -->
+   				<div class="span4">
+   					<div class="alert alert-warning">
+   						Why not using the bookmarklet for your browser?
+   					</div>
+   				</div>
    			</div>
    		</jsp:attribute>
    	</basic:layout>

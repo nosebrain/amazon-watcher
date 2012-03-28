@@ -1,0 +1,22 @@
+<jsp:root version="2.0"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:form="http://www.springframework.org/tags/form"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:spring="http://www.springframework.org/tags">
+	
+	<jsp:directive.attribute name="content" fragment="true" required="true" />
+	<jsp:directive.attribute name="extraCssClass" type="java.lang.String" required="false" />
+	<jsp:directive.attribute name="hasError" type="java.lang.Boolean" required="false"/>
+	
+	<c:set var="cssClass" value="control-group ${extraCssClass}" />
+	<c:if test="${hasError}">
+		<c:set var="cssClass" value="${cssClass} error" />
+	</c:if>
+	
+	<div class="${cssClass}">
+		<jsp:invoke fragment="content" />
+	</div>
+	
+</jsp:root>

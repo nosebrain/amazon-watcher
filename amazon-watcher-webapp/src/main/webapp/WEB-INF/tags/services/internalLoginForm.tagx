@@ -1,0 +1,27 @@
+<jsp:root version="2.0"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+	<c:url var="loginUrl" value="/login_internal" />
+   	<form action="${loginUrl}" method="post" class="form-horizontal">
+   						
+    	<div class="control-group">
+    		<label class="control-label">username *:</label>
+	   		<div class="controls">
+	   			<input type="text" name="name"/>
+	   		</div>
+   		</div>
+   		<div class="control-group">
+   			<label class="control-label">password *:</label>
+   			<div class="controls">
+   				<input type="password" name="secret" />
+   			</div>
+   		</div>
+   		<div class="form-actions">
+   			<input type="submit" value="login" class="btn btn-primary" />
+   		</div>					
+   	</form>
+   					
+</jsp:root>

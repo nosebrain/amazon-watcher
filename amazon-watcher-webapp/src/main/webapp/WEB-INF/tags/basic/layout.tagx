@@ -7,77 +7,103 @@
 	
 	<jsp:directive.attribute name="content" fragment="true" required="true" />
 	<jsp:directive.attribute name="pageTitle" type="java.lang.String" required="false" />
+   	<jsp:directive.attribute name="hideLogin" type="java.lang.Boolean" required="false" />
+   	
+   	<c:set var="projectName" value="${properties['general.name']}" scope="request" />
    	
    	
-   	<c:set var="projectName" value="${properties['general.name']}" />
+   	<c:set var="javascriptPath" value="/assets/javascript" scope="request" />
+   	<c:set var="iconPath" value="/assets/icons" scope="request" />
+   	<c:set var="libraryPath" value="/assets/libraries" scope="request" />
+   	<c:set var="cssPath" value="/assets/css" scope="request" />
    	
-   	<!-- start -->
-   	
+   	   	
 	<![CDATA[<!DOCTYPE html>]]>
  	<html>
  		<head>
  			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
  			<title><c:out value="${pageTitle}" /><c:if test="${not empty pageTitle}"> | </c:if>${projectName}</title>
  			
- 			<c:url var="cssMainUrl" value="/css/main.css" />
+ 			<c:url var="bootstrapUrl" value="${libraryPath}/bootstrap/css/bootstrap.css" />
+ 			<link href="${bootstrapUrl}" type="text/css" rel="stylesheet" />
+ 			
+ 			<c:url var="cssMainUrl" value="${cssPath}/main.css" />
  			<link href="${cssMainUrl}" type="text/css" rel="stylesheet" />
  			
- 			<c:url var="jqueryUrl" value="/libraries/jquery/jquery.js" />
- 			<c:url var="flotUrl" value="/libraries/jquery/plugins/flot/jquery.flot.js" />
- 			<c:url var="mainJSUrl" value="/javascript/main.js" />
+ 			<c:url var="jqueryUrl" value="${libraryPath}/jquery/jquery.js" />
+ 			<c:url var="flotUrl" value="${libraryPath}/jquery/plugins/flot/jquery.flot.js" />
+ 			<c:url var="mainJSUrl" value="${javascriptPath}/main.js" />
+ 			<c:url var="bootstrapJS" value="${libraryPath}/bootstrap/js/bootstrap.js" />
  			
  			<script type="text/javascript" src="${jqueryUrl}"><!-- keep me --></script>
  			<script type="text/javascript" src="${flotUrl}"><!-- keep me --></script>
+ 			<script type="text/javascript" src="${bootstrapJS}"><!-- keep me --></script>
  			<script type="text/javascript" src="${mainJSUrl}"><!-- keep me --></script>
+ 			
  		</head>
  		<body>
- 			
- 			<header>
- 				<c:url var="homeUrl" value="/" />
- 				<h1><a href="${homeUrl}"><c:out value="${projectName}" /></a></h1>
- 				<nav>
-	 				<ul>
-	 					<sec:authorize access="isAnonymous()">
-	 						<c:url var="loginUrl" value="/login" />
-	 						<li><a href="${loginUrl}"><fmt:message key="action.login" /></a></li>
-	 						<c:url var="registerUrl" value="/register" />
-	 						<li><a href="${registerUrl}"><fmt:message key="action.register" /></a></li>
-	 					</sec:authorize>
-	 					<sec:authorize access="hasRole('ADMIN')">
-	 						<c:url var="adminMainUrl" value="/admin" />
-	 						<li><a href="${adminMainUrl}"><fmt:message key="action.admin" /></a></li>
-	 					</sec:authorize>
-	 					<sec:authorize access="isAuthenticated()">
-	 						<c:url var="settingsUrl" value="/settings" />
-	 						<li><a href="${settingsUrl}"><fmt:message key="action.settings" /></a></li>
-	 						<c:url var="logoutUrl" value="/logout" />
-	 						<li><a href="${logoutUrl}"><fmt:message key="action.logout" /></a></li>
-	 					</sec:authorize>
-	 				</ul>
- 				</nav>
- 			</header>
- 			<c:set var="systemMessage" value="${properties['general.message']}" />
- 			
- 			<c:if test="${not empty systemMessage}">
-				<div id="systemMessage">
-					<p>${systemMessage}</p>
-				</div>
- 			</c:if>
- 			<c:if test="${not empty message}">
-				<div id="message">
-					<p>
-						<fmt:message key="${message}">
-							<fmt:param value="${messageParam}" />
-						</fmt:message>
-					</p>
-				</div>
- 			</c:if>
- 			<div id="content">
- 				<jsp:invoke fragment="content" />
+ 			<div class="container">
+ 				<div class="navbar navbar-fixed-top">
+  					<div class="navbar-inner">
+    					<div class="container">
+    						<c:url var="homeUrl" value="/" />
+    						<a class="brand" href="${homeUrl}"><c:out value="${projectName}" /></a>
+    						
+    						
+    						<ul class="nav pull-right">
+    							<c:if test="${not hideLogin}">
+	    							<sec:authorize access="isAnonymous()">
+		 								<c:url var="loginUrl" value="/login" />
+		 								<li><a href="${loginUrl}"><fmt:message key="action.login" /></a></li>
+		 								<c:url var="registerUrl" value="/register" />
+		 								<li><a href="${registerUrl}"><fmt:message key="action.register" /></a></li>
+		 							</sec:authorize>
+	 							</c:if>
+	 							<sec:authorize access="isAuthenticated()">
+	 								<sec:authentication property="principal.username" var="username" />
+	 								<c:url var="userIconUrl" value="${iconPath}/user.png" />
+	 								<li class="dropdown">
+	 									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	 										<i class="icon-user icon-white"><!-- keep me --></i>
+	 										<b class="caret"><!-- keep me --></b>
+	 									</a>
+	 									<ul class="dropdown-menu">
+    										<li class="nav-header">logged in as <c:out value="${username}" /></li>
+    										<li class="divider"><!-- keep me --></li>
+    										<c:url var="settingsUrl" value="/settings" />
+	 										<li><a href="${settingsUrl}"><fmt:message key="action.settings" /></a></li>
+    										<li class="divider"><!-- keep me --></li>
+    										<c:url var="logoutUrl" value="/logout" />
+	 										<li><a href="${logoutUrl}"><fmt:message key="action.logout" /></a></li>
+  										</ul>
+	 								</li>	 								
+	 							</sec:authorize>
+    						</ul>
+    					</div>
+    				</div>
+    			</div>
+	 			<c:set var="systemMessage" value="${properties['general.message']}" />
+	 			
+	 			<c:if test="${not empty systemMessage}">
+					<div id="systemMessage" class="alert alert-info">
+						<strong>Please note:</strong>
+						${systemMessage}
+						
+						<a class="close" data-dismiss="alert" href="#">&amp;times<!-- keep me --></a>
+					</div>
+	 			</c:if>
+	 			<c:if test="${not empty message}">
+					<div id="message" class="alert alert-success">
+							<fmt:message key="${message}">
+								<fmt:param value="${messageParam}" />
+							</fmt:message>
+					</div>
+	 			</c:if>
+	 			
+	 			<div id="content">
+	 				<jsp:invoke fragment="content" />
+	 			</div>
  			</div>
- 			<footer>
- 				<fmt:message key="system.poweredBy" /> <a href="http://bitbucket.org/nosebrain/amazon-watcher">Amazon Watcher</a><small> (${properties['general.version']})</small>
- 			</footer>
  		</body>
  	</html>
 	
