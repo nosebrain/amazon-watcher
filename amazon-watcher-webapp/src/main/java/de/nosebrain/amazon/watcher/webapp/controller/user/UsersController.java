@@ -2,9 +2,11 @@ package de.nosebrain.amazon.watcher.webapp.controller.user;
 
 import static de.nosebrain.util.ValidationUtils.present;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +41,13 @@ public class UsersController {
 	}
 
 	@RequestMapping("/login")
-	public String login() {
+	public String login(final Model model, final HttpSession session) {
+		final Exception lastException = (Exception) session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		if (present(lastException)) {
+			model.addAttribute("lastException", lastException.getClass().getSimpleName());
+			session.setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, null);
+		}
+
 		return "services/login";
 	}
 

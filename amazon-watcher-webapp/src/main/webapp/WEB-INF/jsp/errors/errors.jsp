@@ -14,8 +14,11 @@
    	
    	<basic:layout pageTitle="${pageTitle}">
    		<jsp:attribute name="content">
-   			<h2><c:out value="${pageTitle}" /></h2>
-   			<fmt:message key="system.errors.${status}.description"></fmt:message>
+   			
+   			<div class="hero-unit">
+   				<h1><c:out value="${pageTitle}" /></h1>
+   				<p><fmt:message key="system.errors.${status}.description"></fmt:message></p>
+   			</div>
    		</jsp:attribute>
    	</basic:layout>
 </jsp:root>

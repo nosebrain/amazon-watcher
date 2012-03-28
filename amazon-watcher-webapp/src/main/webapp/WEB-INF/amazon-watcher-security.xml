@@ -12,10 +12,7 @@
 	           	
 	<security:http use-expressions="true" entry-point-ref="entryPoint" auto-config="false" security-context-repository-ref="contextRepository">
 		<!-- static resources -->
-		<security:intercept-url pattern="/css/**" filters="none" />
-		<security:intercept-url pattern="/javascript/**" filters="none" />
-		<security:intercept-url pattern="/libraries/**" filters="none" />
-		<security:intercept-url pattern="/icons/**" filters="none" />
+		<security:intercept-url pattern="/assets/**" filters="none" />
 		
 		<security:intercept-url pattern="/login" access="isAnonymous()" />
 		<security:intercept-url pattern="/register" access="isAnonymous()" />

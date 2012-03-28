@@ -65,10 +65,7 @@
 		<property name="alwaysUseFullPath" value="true" />
 	</bean>
 	
-	<mvc:resources mapping="/css/**" location="/WEB-INF/css/" />
-	<mvc:resources mapping="/javascript/**" location="/WEB-INF/javascript/" />
-	<mvc:resources mapping="/libraries/**" location="/WEB-INF/libraries/"/>
-	<mvc:resources mapping="/icons/**" location="/WEB-INF/icons/"/>
+	<mvc:resources mapping="/assets/**" location="/WEB-INF/assets/" />
 	
 	<context:component-scan base-package="de.nosebrain.amazon.watcher.webapp.controller">
 		<context:include-filter type="annotation" expression="org.aspectj.lang.annotation.Aspect" />

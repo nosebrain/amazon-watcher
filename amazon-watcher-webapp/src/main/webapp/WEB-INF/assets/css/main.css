@@ -1,0 +1,46 @@
+body {
+	padding-top: 45px;
+}
+
+.navbar a.brand {
+	text-shadow: #0E3269 2px 2px 2px;
+	font-weight: bold !important;
+}
+
+#introduction {
+	margin-top: 25px;	
+}
+
+ul.history {
+	display: none;
+}
+
+.item {
+	padding-top: 35px;
+}
+
+.item .info {
+	padding-bottom: 5px;
+}
+
+.item .itempicture {
+	padding-top: 15px;
+}
+
+.item .itemName {
+	font-weight: bold;
+	font-size: 120%;
+	padding-right: 20px;
+}
+
+.hidden {
+	display: none;
+}
+
+.icon {
+	margin-right: 5px;
+}
+
+#systemMessage {
+	margin-top: 15px;
+}

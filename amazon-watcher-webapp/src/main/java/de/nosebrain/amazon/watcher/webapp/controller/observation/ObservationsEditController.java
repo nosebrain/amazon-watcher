@@ -125,12 +125,16 @@ public class ObservationsEditController {
 	 * 
 	 * @param item the item to update
 	 * @param observation
+	 * @param errors the validation errors
 	 * @param session the session to store the message
 	 * @return the item form
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value="/observations/{item:.*}", method = RequestMethod.PUT)
-	public String updateItem(@PathVariable final Item item, @Valid final Observation observation, final HttpSession session) throws ResourceNotFoundException {
+	public String updateItem(@PathVariable final Item item, @Valid final Observation observation, final BindingResult errors, final HttpSession session) throws ResourceNotFoundException {
+		if (errors.hasErrors()) {
+			return Views.OBSERVATION_EDIT;
+		}
 		/*
 		 * check if user has observation for item
 		 */
