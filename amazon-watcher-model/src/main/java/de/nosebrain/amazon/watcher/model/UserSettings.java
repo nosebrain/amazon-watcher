@@ -15,25 +15,40 @@ public class UserSettings {
 		final UserSettings settings = new UserSettings();
 		settings.setMinDelta(0.25f);
 		settings.setLanguage(Locale.GERMAN);
+		settings.setViewMode(ItemViewMode.GALLERY);
 		return settings;
 	}
 
-
+	private ItemViewMode viewMode;
 	private float minDelta;
 	private List<InfoService> infoServices;
 	private Locale language;
 
 	/**
+	 * @return the viewMode
+	 */
+	public ItemViewMode getViewMode() {
+		return this.viewMode;
+	}
+
+	/**
+	 * @param viewMode the viewMode to set
+	 */
+	public void setViewMode(final ItemViewMode viewMode) {
+		this.viewMode = viewMode;
+	}
+
+	/**
 	 * @return the minDelta
 	 */
-	public Float getMinDelta() {
+	public float getMinDelta() {
 		return this.minDelta;
 	}
 
 	/**
 	 * @param minDelta the minDelta to set
 	 */
-	public void setMinDelta(final Float minDelta) {
+	public void setMinDelta(final float minDelta) {
 		this.minDelta = minDelta;
 	}
 
