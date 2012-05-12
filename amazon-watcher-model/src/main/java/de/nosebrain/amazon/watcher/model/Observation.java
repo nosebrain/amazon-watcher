@@ -13,6 +13,8 @@ public class Observation {
 	private String name;
 	private Float limit;
 	private ObservationMode mode;
+	private ItemCondition itemCondition;
+	private Seller seller;
 	private Date date;
 	private Date changeDate;
 
@@ -70,6 +72,34 @@ public class Observation {
 	 */
 	public void setMode(final ObservationMode mode) {
 		this.mode = mode;
+	}
+
+	/**
+	 * @return the itemCondition
+	 */
+	public ItemCondition getItemCondition() {
+		return this.itemCondition;
+	}
+
+	/**
+	 * @param itemCondition the itemCondition to set
+	 */
+	public void setItemCondition(final ItemCondition itemCondition) {
+		this.itemCondition = itemCondition;
+	}
+
+	/**
+	 * @return the seller
+	 */
+	public Seller getSeller() {
+		return this.seller;
+	}
+
+	/**
+	 * @param seller the seller to set
+	 */
+	public void setSeller(final Seller seller) {
+		this.seller = seller;
 	}
 
 	/**
