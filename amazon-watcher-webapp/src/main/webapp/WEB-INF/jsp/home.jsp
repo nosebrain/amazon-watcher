@@ -7,6 +7,7 @@
         	xmlns:form="http://www.springframework.org/tags/form"
         	xmlns:services="urn:jsptagdir:/WEB-INF/tags/services"
         	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+        	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
         	xmlns:c="http://java.sun.com/jsp/jstl/core"
         	xmlns:sec="http://www.springframework.org/security/tags">
 	<jsp:useBean id="now" class="java.util.Date" />
@@ -14,9 +15,15 @@
    	
    	<basic:layout hideLogin="${true}">
    		<jsp:attribute name="content">
-   			<sec:authorize access="isAuthenticated()">
-   				<c:url value="/observations/edit" var="newItemUrl" />
-   				<a href="${newItemUrl}" class="btn pull-right"><i class="icon-plus"><!-- keep me --></i></a>
+   			<sec:authorize access="isAuthenticated()">   				
+   				<sec:authentication property="principal.user.settings.viewMode" var="viewMode" />
+   				
+   				<c:if test="${not empty requestedViewMode}">
+   					<c:set var="viewMode" value="${requestedViewMode}" />
+   				</c:if>
+   				<c:set var="viewMode" value="${fn:toLowerCase(viewMode) }" />
+   				
+   				<!-- 
    				<div class="page-header">
    					<h1>
    						<fmt:message key="home.header" /><c:out value=" " />
@@ -35,23 +42,31 @@
 			 				<c:otherwise>
 			 					<fmt:message key="updater.notupdated" />
 			 				</c:otherwise>
-		 					<!-- TODO: next update -->
+		 					
 						</c:choose>
 	   					</small>
    					</h1>
+   				</div>-->
+   				<div class="row itemmenu">
+   					<div class="span2 offset9">
+   						<div class="btn-group pull-right" data-toggle="buttons-radio" id="viewMode">
+   							<button class="btn ${viewMode == 'gallery' ? 'active' : '' }"><i class="icon-th-large"><!-- keep me --></i></button>
+  							<button class="btn ${viewMode == 'detail' ? 'active' : '' }"><i class=" icon-th-list"><!-- keep me --></i></button>
+   						</div>
+   					</div>
+   					
+   					<div class="span1">
+   						<c:url value="/observations/edit" var="newItemUrl" />
+   						<a href="${newItemUrl}" class="btn pull-right"><i class="icon-plus"><!-- keep me --></i></a>
+   					</div>
    				</div>
-   			
-	   			<div id="items">
-	   				<!--
-	   				<ul class="sortMenu">
-	   					<li>Name (<a href="?sortBy=name">asc</a> | <a href="?sortBy=name">desc</a>)</li>
-	   					<li>Last update (<a href="?sortBy=lastupdate">asc</a> | <a href="?sortBy=lastupdate">desc</a>)</li>
-	   				</ul>
-	   				-->
+   				<c:if test="${viewMode eq 'gallery' }">
+   					<c:set var="cssClass" value="row" />
+   				</c:if>
+	   			<div id="items" class="${cssClass}" data-viewmode="${viewMode}">
 		   			<c:forEach var="watchedItem" items="${observations}">
-		   				<observations:details observation="${watchedItem}" />
+		   				<observations:details observation="${watchedItem}" viewMode="${viewMode}" />
 		   			</c:forEach>
-		   			
 	   			</div>
    			</sec:authorize>
    			

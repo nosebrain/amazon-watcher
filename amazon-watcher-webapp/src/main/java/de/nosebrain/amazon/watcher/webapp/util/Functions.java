@@ -20,7 +20,7 @@ public class Functions {
 	 */
 	public static String getImageUrl(final Item item) {
 		final Amazon site = item.getSite();
-		return "http://ws.assoc-amazon." + site.getTLD() + "/widgets/q?_encoding=UTF8&Format=_SL110_&ASIN=" + item.getAsin() + "&MarketPlace=" + site.toString() + "&ID=AsinImage&WS=1&ServiceVersion=20070822";
+		return "http://ws.assoc-amazon." + site.getTLD() + "/widgets/q?_encoding=UTF8&Format=_SL160_&ASIN=" + item.getAsin() + "&MarketPlace=" + site.toString() + "&ID=AsinImage&WS=1&ServiceVersion=20070822";
 	}
 
 	/**

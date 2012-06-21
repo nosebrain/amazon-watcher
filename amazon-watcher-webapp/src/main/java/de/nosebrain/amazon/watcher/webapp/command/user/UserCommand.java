@@ -7,7 +7,7 @@ import de.nosebrain.amazon.watcher.model.User;
  * @author nosebrain
  */
 public class UserCommand {
-	private User user;
+	private User user = new User();
 
 	private String password;
 

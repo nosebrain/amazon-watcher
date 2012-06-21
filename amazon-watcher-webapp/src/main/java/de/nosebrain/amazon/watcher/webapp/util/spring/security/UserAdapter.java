@@ -74,4 +74,10 @@ public class UserAdapter implements UserDetails {
 		return true;
 	}
 
+	/**
+	 * @return the user
+	 */
+	public User getUser() {
+		return this.user;
+	}
 }

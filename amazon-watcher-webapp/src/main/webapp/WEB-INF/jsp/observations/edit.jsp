@@ -9,7 +9,7 @@
         	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
         	xmlns:c="http://java.sun.com/jsp/jstl/core"
         	xmlns:aw="urn:jsptld:/WEB-INF/taglibs/amazon-watcher-taglib.tld">
-        	
+	<!-- TODO: global errors -->
     <jsp:directive.page contentType="text/html; charset=utf-8" language="java" pageEncoding="UTF-8" session="true" />
    	
    	<c:set var="newItem" value="${empty observation.item}" />

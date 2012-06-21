@@ -8,6 +8,7 @@
 	xmlns:aw="urn:jsptld:/WEB-INF/taglibs/amazon-watcher-taglib.tld">
 	
 	<jsp:directive.attribute name="observation" type="de.nosebrain.amazon.watcher.model.Observation" required="true" />
+   	<jsp:directive.attribute name="viewMode" type="java.lang.String" required="false" />
    	
    	<c:set var="pattern" value="dd.MM.yyyy HH:mm" />
    	
@@ -20,22 +21,25 @@
    		<c:set var="lastUpdated" value="${item.priceHistories[historyLength - 1].date.time}" />
    	</c:if>
    	
+   	<c:set var="cssClassMain" value="row" />
+   	<c:if test="${viewMode eq 'gallery' }">
+		<c:set var="cssClassMain" value="gallery span3" />
+	</c:if>  	
+   	
    	<c:set var="observationName" value="${observation.name}" />
    	
-	<div class="item row" data-lastUpdate="${lastUpdated}" data-name="${fn:escapeXml(observationName)}" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
+	<div class="item ${cssClassMain}" data-lastUpdate="${lastUpdated}" data-name="${fn:escapeXml(observationName)}" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
 		<div class="span2">
-			<a href="${itemUrl}" class="itempicture pull-right"><img src="${aw:getImageUrl(item)}" /></a>
+			<a href="${itemUrl}" rel="tooltip" class="itempicture" title="${observationName}"><img src="${aw:getImageUrl(item)}" /></a>
 		</div>
 		<div class="iteminfo span10">
-			
 			<div class="info row">
-				<div class="span4">
+				<div class="span5">
 					<a href="${itemUrl}" class="itemName"><c:out value="${observationName}" /></a>
 				</div>
 				
-				
 				<c:if test="${historyLength > 0}">
-					<div class="span3">
+					<div class="span2 price">
 						<c:set var="lastItem" value="${item.priceHistories[historyLength - 1]}" />
 						<!-- style for over/under limit -->
 						<c:if test="${observation.mode eq 'PRICE_LIMIT'}">
@@ -50,32 +54,41 @@
 						</c:if>
 						<span class="label ${limitClass}">
 							<fmt:formatNumber value="${lastItem.value}" maxFractionDigits="2" minFractionDigits="2" /><c:out value="${item.site.currency}" />
-							(<fmt:formatDate value="${lastItem.date}" pattern="${pattern}" />)
+							<span class="lastUpdateDate"> (<fmt:formatDate value="${lastItem.date}" pattern="${pattern}" />)</span>
 						</span>	
 					</div>
 				</c:if>
 				
 				<div class="span2">
-					<div class="watchedActions btn-group pull-right">
+					<div class="watchedActions btn-group">
 						<fmt:message key="observation.edit" var="editTitle" />
-						<c:url var="editIcon" value="${iconPath}/eye_edit.png" />
+						<c:set var="id" value="${item.asin}${item.site}" />
 						
 						<c:set var="encodedItemUrl" value="${aw:encodeURI(itemUrl)}" />
 						<c:url var="observationUrl" value="/observations/${encodedItemUrl}" />
 						
 						<c:set var="editUrl" value="${observationUrl}/edit" />
-						
-						<a href="${editUrl}" class="btn btn-mini" title="${editTitle}"><i class="icon-pencil"><!-- keep me --></i> edit</a>
-						<c:url var="unwatchIcon" value="${iconPath}/eye_minus.png" />
+						<a class="btn btn-mini btn-details" data-toggle="modal" href="${'#'}${id}"><i class="icon-list-alt"><!-- keep me --></i></a>
+						<a href="${editUrl}" class="btn btn-mini btn-first" title="${editTitle}"><i class="icon-pencil"><!-- keep me --></i><span class="btn-title"> edit</span></a>
 						<fmt:message key="observation.unwatch" var="unwatchTitle">
 							<fmt:param value="${observationName}"/>
 						</fmt:message>
-						<a href="${observationUrl}?_method=DELETE" title="${unwatchTitle}" class="btn btn-mini deleteObservation"><i class="icon-trash"><!-- keep me --></i> delete</a>
+						<a href="${observationUrl}?_method=DELETE" title="${unwatchTitle}" class="btn btn-mini deleteObservation"><i class="icon-trash"><!-- keep me --></i><span class="btn-title"> delete</span></a>
 					</div>
 				</div>
 			</div>
-					
+			
 			<div class="histogram" style="width:700px;height:130px;"><!-- keep me --></div>
+			
+			<div class="item_modal modal hidden" id="${id}">
+				<div class="modal-header">
+    				<a class="close" data-dismiss="modal">x</a>
+    				<h3><c:out value="${observationName}" /></h3>
+  				</div>
+				<div class="modal-body">
+					<div class="gallery_histogram" style="width:520px;height:130px;"><!-- keep me --></div>
+				</div>
+			</div>
 			
 			<!-- TODO: handle no history -->
 			<ul class="history">

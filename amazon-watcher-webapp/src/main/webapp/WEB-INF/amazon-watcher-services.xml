@@ -3,12 +3,15 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xmlns:util="http://www.springframework.org/schema/util"
 		xmlns:task="http://www.springframework.org/schema/task"
+		xmlns:aop="http://www.springframework.org/schema/aop"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans.xsd
                           	http://www.springframework.org/schema/util 
 	                    	http://www.springframework.org/schema/util/spring-util-3.0.xsd
 			    			http://www.springframework.org/schema/task
-   							http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+   							http://www.springframework.org/schema/task/spring-task-3.0.xsd
+   							http://www.springframework.org/schema/aop
+							http://www.springframework.org/schema/aop/spring-aop.xsd">
 	
 	<bean id="mainDataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -34,14 +37,12 @@
 	</bean>
 	
 	<bean id="mainLogic" class="de.nosebrain.amazon.watcher.database.AmazonWatcherLogic" parent="databaseLogic">
-		<!-- TODO: replace -->
-		<property name="loggedinUser" ref="admin" />
+		<property name="loggedinUser" ref="loginUser" />
 	</bean>
 	
 	<bean id="admin" class="de.nosebrain.amazon.watcher.model.User">
 		<property name="role" value="ADMIN" />
-		<!-- TODO: change -->
-		<property name="name" value="nosebrain" />
+		<property name="name" value="amazon_watcher_admin" />
 	</bean>
 	
 	<!-- database service -->
@@ -59,6 +60,8 @@
 	<bean id="apiUpdater" class="de.nosebrain.amazon.watcher.updater.ProductAdvertisingAPIUpdater">
 		<property name="helper" ref="signedRequestsHelper" />
 	</bean>
+	
+	<bean id="websiteUpdater" class="de.nosebrain.amazon.watcher.updater.WebSiteUpdater" />
 	
 	<util:map id="infoServiceFactoriesMap" key-type="java.lang.String" value-type="de.nosebrain.amazon.watcher.services.InformationServiceFactory" />
 	
@@ -79,8 +82,13 @@
 		<property name="informationServiceService" ref="informationServiceService"/>		
 	</bean>
 	
+	<bean id="loginUser" class="de.nosebrain.amazon.watcher.webapp.util.spring.LoginUserFactory" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+	
 	<task:scheduled-tasks>
-    	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="600000"/>
+	    <!-- check every 30 mins -->
+    	<task:scheduled ref="updaterService" method="updateItems" fixed-delay="300000"/>
 	</task:scheduled-tasks>
 	
 	<!-- authservices -->

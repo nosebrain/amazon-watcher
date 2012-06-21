@@ -67,7 +67,7 @@
 	 										<i class="icon-user icon-white"><!-- keep me --></i>
 	 										<b class="caret"><!-- keep me --></b>
 	 									</a>
-	 									<ul class="dropdown-menu">
+	 									<ul class="dropdown-menu usermenu">
     										<li class="nav-header">logged in as <c:out value="${username}" /></li>
     										<li class="divider"><!-- keep me --></li>
     										<c:url var="settingsUrl" value="/settings" />
@@ -95,7 +95,9 @@
 	 			<c:if test="${not empty message}">
 					<div id="message" class="alert alert-success">
 							<fmt:message key="${message}">
-								<fmt:param value="${messageParam}" />
+								<c:forEach var="messageParam" items="${messageParams}">
+									<fmt:param value="${messageParam}" />
+								</c:forEach>
 							</fmt:message>
 					</div>
 	 			</c:if>
