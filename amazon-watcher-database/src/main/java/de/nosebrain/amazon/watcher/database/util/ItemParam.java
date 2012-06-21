@@ -5,7 +5,6 @@ import de.nosebrain.amazon.watcher.model.Item;
 /**
  * 
  * @author nosebrain
- *
  */
 public class ItemParam {
 
@@ -14,10 +13,17 @@ public class ItemParam {
 	private int id;
 	private String userName;
 
+	/**
+	 * default constructor
+	 */
 	public ItemParam() {
 		this.item = null;
 	}
 
+	/**
+	 * constructor with item param
+	 * @param item
+	 */
 	public ItemParam(final Item item) {
 		this.item = item;
 	}

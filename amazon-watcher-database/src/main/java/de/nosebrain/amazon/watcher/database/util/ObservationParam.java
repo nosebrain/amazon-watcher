@@ -2,6 +2,10 @@ package de.nosebrain.amazon.watcher.database.util;
 
 import de.nosebrain.amazon.watcher.model.Observation;
 
+/**
+ * 
+ * @author nosebrain
+ */
 public class ObservationParam {
 	private Observation observation;
 	private String userName;

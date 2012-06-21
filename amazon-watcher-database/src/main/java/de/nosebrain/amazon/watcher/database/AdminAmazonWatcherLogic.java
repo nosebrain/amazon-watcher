@@ -5,11 +5,13 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 
 import de.nosebrain.amazon.watcher.AdminAmazonWatcherService;
+import de.nosebrain.amazon.watcher.database.util.AuthorityParam;
 import de.nosebrain.amazon.watcher.database.util.ItemParam;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.amazon.watcher.model.UserSettings;
+import de.nosebrain.authentication.Authority;
 import de.nosebrain.mybatis.MyBatisUtils;
 
 /**
@@ -68,12 +70,19 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 	public boolean createUser(final User user) {
 		final SqlSession session = this.sessionFactory.openSession();
 		try {
-			if (getUserByName(user.getName(), session) != null) {
+			final String name = user.getName();
+			if (getUserByName(name, session) != null) {
 				return false;
 			}
 
 			user.setSettings(UserSettings.getDefaultSettings());
 			session.insert("insertUser", user);
+			final AuthorityParam param = new AuthorityParam();
+			param.setUserName(name);
+			for (final Authority authority : user.getAuthorities()) {
+				param.setAuthority(authority);
+				session.insert("insertAuthority", param);
+			}
 			session.commit();
 
 			return true;
