@@ -34,6 +34,7 @@ import de.nosebrain.amazon.watcher.updater.util.SignedRequestsHelper;
  * 
  * @author nosebrain
  */
+@Deprecated // please use the web site updater
 public class ProductAdvertisingAPIUpdater implements Updater {
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
