@@ -1,0 +1,74 @@
+<jsp:root version="2.0"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:aw="urn:jsptld:/WEB-INF/taglibs/amazon-watcher-taglib.tld">
+	
+	<jsp:directive.attribute name="observation" type="de.nosebrain.amazon.watcher.model.Observation" required="true" />
+   	
+   	<c:set var="pattern" value="dd.MM.yyyy HH:mm" />
+   	
+   	<c:set var="item" value="${observation.item}" />
+   	<c:set var="itemUrl" value="${aw:getUrl(item)}" />
+   	
+   	<c:set var="historyLength" value="${fn:length(item.priceHistories)}" />
+   	<c:set var="lastUpdated" value="0" />
+   	<c:if test="${historyLength > 0}">
+   		<c:set var="lastUpdated" value="${item.priceHistories[historyLength - 1].date.time}" />
+   	</c:if>
+   	
+   	<c:set var="observationName" value="${observation.name}" />
+   	
+	<div class="item item_small span2" data-lastUpdate="${lastUpdated}" data-name="${fn:escapeXml(observationName)}" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
+		<c:set var="lastItem" value="${item.priceHistories[historyLength - 1]}" />
+		<!-- style for over/under limit -->
+		<c:if test="${observation.mode eq 'PRICE_LIMIT'}">
+			<c:choose>
+				<c:when test="${lastItem.value &lt; observation.limit}">
+					<c:set var="limitClass" value=" badge-success" />
+				</c:when>
+				<c:otherwise>
+					<c:set var="limitClass" value=" badge-error" />
+				</c:otherwise>
+			</c:choose>
+		</c:if>
+		<fmt:formatDate value="${lastItem.date}" pattern="${pattern}" var="date" />
+		
+			<span class="badge ${limitClass}" title="${date}">
+				<fmt:formatNumber value="${lastItem.value}" maxFractionDigits="2" minFractionDigits="2" /><c:out value="${item.site.currency}" />
+			</span>
+		<a href="${itemUrl}" class="itempicture" title="${observationName}"><img src="${aw:getImageUrl(item)}" /></a>
+		
+		<c:set var="id" value="${item.asin}${item.site}" />
+		
+		<div style="text-align:center;">
+			<span class="btn-group btn-group-center">
+				<a class="btn btn-mini" data-toggle="modal" href="${'#'}${id}"><i class="icon-list-alt"><!-- keep me --></i></a>
+				<a class="btn btn-mini"><i class="icon-pencil"><!-- keep me --></i></a>
+				<a class="btn btn-mini"><i class="icon-trash"><!-- keep me --></i></a>
+			</span>
+		</div>
+		
+		<div class="modal hidden item_modal" id="${id}">
+  			<div class="modal-header">
+    			<a class="close" data-dismiss="modal">×</a>
+    			<h3><c:out value="${observationName}" /></h3>
+  			</div>
+  			<div class="modal-body">
+    			<div class="histogram" style="width:520px;height:130px;"><!-- keep me --></div>
+			
+				<!-- TODO: handle no history -->
+				<ul class="history">
+					<c:forEach var="history" items="${item.priceHistories}">
+						<c:set var="price" value="${history.value}" />
+						<c:set var="date" value="${history.date}" />
+						<li data-date="${date.time}" data-price="${price}"><fmt:formatNumber value="${price}" maxFractionDigits="2" minFractionDigits="2" /><c:out value=" ${amazon.currency}" /> (<fmt:formatDate value="${date}" pattern="${pattern}" />)</li>
+					</c:forEach>
+				</ul>
+  			</div>
+		</div>
+	</div>	
+</jsp:root>

@@ -26,105 +26,136 @@ $(function() {
 		return false;
 	});
 	
+	var viewMode = $('#items').data('viewmode');
+	if (viewMode != 'gallery') {
+		plotAllHistograms();
+	}
+	
+	$('.item_modal').on('shown', function () {
+		plotHistory($(this).parent().parent(), '.gallery_histogram');
+	});
+	
+	$('#viewMode button').click(function() {
+		if (!$(this).hasClass('active')) {
+			// row -> gallery span3
+			$('.item').toggleClass('gallery').toggleClass('row').toggleClass('span3');
+			// parent one
+			$('.item').parent().toggleClass('row');
+			
+			if (viewMode == 'gallery') {
+				if (!$('#items').data('loaded')) {
+					$('#items').data('loaded', true);
+					plotAllHistograms();
+				}
+			}
+		}
+	});
+	
+	$('.itempicture').tooltip();
+});
+
+function plotAllHistograms() {
 	/*
 	 * plot graphs
 	 */
-	var now = new Date().getTime();
 	$('.item').each(function() {
-		var item = $(this);
-		var histogram = item.find('.histogram');
-		var currency = item.data('currency');
-		var historyDataSource = item.find('ul.history');
+		plotHistory($(this), '.histogram');
+	});
+}
+
+function plotHistory(element, histogramselector) {
+	var now = new Date().getTime();
+	var item = $(element);
+	var histogram = item.find(histogramselector);
+	var currency = item.data('currency');
+	var historyDataSource = item.find('ul.history');
+	
+	if (historyDataSource.find('li').length == 0) {
+		histogram.text("no history found"); // TODO: i18n
+		return;
+	}
+	
+	var historyData = getHistoryData(historyDataSource, now);
+	var dataToPlot = new Array();
+	
+	if (item.data('mode') == "PRICE_LIMIT") {
+		var limit = item.data('limit');
+		var firstDate = historyData[0][0];
+		var lastPrice = historyData[historyData.length - 1][1];
 		
-		if (historyDataSource.find('li').length == 0) {
-			histogram.text("no history found"); // TODO: i18n
-			return;
+		var colorLimit = COLOR_RED;
+		
+		if (lastPrice < limit) {
+			colorLimit = COLOR_GREEN;
 		}
 		
-		var historyData = getHistoryData(historyDataSource, now);
-		var dataToPlot = new Array();
-		
-		if (item.data('mode') == "PRICE_LIMIT") {
-			var limit = item.data('limit');
-			var firstDate = historyData[0][0];
-			var lastPrice = historyData[historyData.length - 1][1];
-			
-			var colorLimit = COLOR_RED;
-			
-			if (lastPrice < limit) {
-				colorLimit = COLOR_GREEN;
-			}
-			
-			dataToPlot.push({
-				data: [[firstDate, limit], [now, limit]],
-				color: colorLimit,
-				hoverable: false,
-				shadowSize: 0
-			});
+		dataToPlot.push({
+			data: [[firstDate, limit], [now, limit]],
+			color: colorLimit,
+			hoverable: false,
+			shadowSize: 0
+		});
+	}
+	
+	dataToPlot.push({ 
+		data: historyData, 
+		color: PRICE_COLOR,
+		shadowSize: 0,
+		hoverable: true,
+		points: {
+			show: false,
+        	fill: true,
+        	fillColor: PRICE_COLOR
 		}
-		
-		dataToPlot.push({ 
-			data: historyData, 
-			color: PRICE_COLOR,
-			shadowSize: 0,
-			hoverable: true,
-			points: {
-				show: false,
-            	fill: true,
-            	fillColor: PRICE_COLOR
-			}
-		});
-		
-		$.plot(histogram, dataToPlot, {
-			xaxis: {
-				mode: "time",
-		        timeformat: TIME_FORMAT,
-		        alignTicksWithAxis: 1
-			}, 
-			yaxis: {
-				tickDecimals: 2,
-				tickFormatter: currencyFormatter
-			},
-			series: {
-                lines: {
-                	show: true
-                }
-            },
-            grid: {
-            	hoverable: true
-            }
-		});
-		
-		function currencyFormatter(v, axis) {
-		    return v.toFixed(axis.tickDecimals) + currency;
-		}
-		
-		histogram.bind("plothover", function(event, pos, item) {
-		   if (item) {
-		      if (previousPoint != item.dataIndex) {
-		          previousPoint = item.dataIndex;
-		          
-		          // alert("hover");
-		          $("#tooltip").remove();
-		          // TODO: why +1d
-		          var x = $.plot.formatDate(new Date(item.datapoint[0]), TIME_FORMAT, []);
-		          var y = item.datapoint[1].toFixed(2);
-		                    
-		          showTooltip(item.pageX, item.pageY, x + "<br />" + y + currency);
-		      }
-		   } else {
-		      $("#tooltip").remove();
-		      previousPoint = null;            
-		   }
-		});
-		
-		item.find('a.showHistory').click(function() {
-			histogram.toggle();
-			return false;
-		});
 	});
 	
-});
+	$.plot(histogram, dataToPlot, {
+		xaxis: {
+			mode: "time",
+	        timeformat: TIME_FORMAT,
+	        alignTicksWithAxis: 1
+		}, 
+		yaxis: {
+			tickDecimals: 2,
+			tickFormatter: currencyFormatter
+		},
+		series: {
+            lines: {
+            	show: true
+            }
+        },
+        grid: {
+        	hoverable: true
+        }
+	});
+	
+	function currencyFormatter(v, axis) {
+	    return v.toFixed(axis.tickDecimals) + currency;
+	}
+	
+	histogram.bind("plothover", function(event, pos, item) {
+	   if (item) {
+	      if (previousPoint != item.dataIndex) {
+	          previousPoint = item.dataIndex;
+	          
+	          $("#tooltip").remove();
+	          // TODO: why +1d
+	          var x = $.plot.formatDate(new Date(item.datapoint[0]), TIME_FORMAT, []);
+	          var y = item.datapoint[1].toFixed(2);
+	          
+	          showTooltip(item.pageX, item.pageY, x + "<br />" + y + currency);
+	      }
+	   } else {
+	      $("#tooltip").remove();
+	      previousPoint = null;            
+	   }
+	});
+	
+	item.find('a.showHistory').click(function() {
+		histogram.toggle();
+		return false;
+	});
+}
 
 function getHistoryData(historyDataUl, now) {
 	var data = [];
@@ -158,7 +189,8 @@ function showTooltip(x, y, contents) {
         padding: '5px',
         'background-color': '#000',
         'color' : '#fff',
-        opacity: 0.75
+        opacity: 0.75,
+        'z-index': 1110
     }).appendTo("body").fadeIn(200);
 }
 

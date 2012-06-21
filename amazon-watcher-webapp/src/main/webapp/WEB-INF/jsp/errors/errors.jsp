@@ -15,10 +15,11 @@
    	<basic:layout pageTitle="${pageTitle}">
    		<jsp:attribute name="content">
    			
-   			<div class="hero-unit">
+   			<div id="globalerrors" class="hero-unit">
    				<h1><c:out value="${pageTitle}" /></h1>
    				<p><fmt:message key="system.errors.${status}.description"></fmt:message></p>
    			</div>
+   			
    		</jsp:attribute>
    	</basic:layout>
 </jsp:root>

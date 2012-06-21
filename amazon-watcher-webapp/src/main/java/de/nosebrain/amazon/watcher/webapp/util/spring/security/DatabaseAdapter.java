@@ -2,6 +2,8 @@ package de.nosebrain.amazon.watcher.webapp.util.spring.security;
 
 import static de.nosebrain.util.ValidationUtils.present;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,11 +18,13 @@ import de.nosebrain.amazon.watcher.model.User;
  * @author nosebrain
  */
 public class DatabaseAdapter implements UserDetailsService {
+	private static Logger log = LoggerFactory.getLogger(DatabaseAdapter.class);
 
 	private AdminAmazonWatcherService adminService;
 
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {
+		log.debug("trying to get user details for " + username);
 		final User userInDb = this.adminService.getUserByName(username);
 		if (!present(userInDb)) {
 			throw new UsernameNotFoundException("user " + username + " not found");

@@ -8,7 +8,11 @@ body {
 }
 
 #introduction {
-	margin-top: 25px;	
+	margin-top: 25px;
+}
+
+.itemmenu {
+	margin-top: 25px;
 }
 
 ul.history {
@@ -16,21 +20,89 @@ ul.history {
 }
 
 .item {
-	padding-top: 35px;
+	margin-bottom: 20px;
+	margin-top: 20px;
 }
 
-.item .info {
-	padding-bottom: 5px;
+.itempicture {
+	height: 160px;
+	float: right;
 }
 
-.item .itempicture {
-	padding-top: 15px;
-}
-
-.item .itemName {
+.itemName {
 	font-weight: bold;
 	font-size: 120%;
-	padding-right: 20px;
+}
+
+.watchedActions {
+	float: right;
+}
+
+.histogram {
+	margin: 15px;
+}
+
+.info {
+	border-bottom: 1px solid #EEE;
+	padding-bottom: 7px;
+	padding-right: 15px;
+	margin-left: 15px;
+}
+
+.gallery .info {
+	border: none;
+	padding: 0px;
+	margin: 0px;
+	margin-left: -20px;
+}
+
+.info .span5 {
+	margin-left: 0px;
+}
+
+.gallery a.itemName, .gallery span.lastUpdateDate, .gallery .histogram, .gallery .btn-title, a.btn-details {
+	display: none;
+}
+
+.gallery .itempicture {
+	margin-right: 40px;
+	width: 160px;
+	text-align: center;
+}
+
+.gallery .span2, .gallery .span10 {
+	width: 100%;
+}
+
+.gallery .price {
+	position: relative;
+	top: -170px;
+	right: -130px;
+	width: 50px;
+}
+
+.gallery .watchedActions {
+	float: none;
+	text-align: center;
+	margin-left: 60px;
+}
+
+.btn-group .btn-first {
+	margin-right: -1px;
+	-webkit-border-radius: 3px 0 0 3px;
+	-moz-border-radius: 3px 0 0 3px;
+	border-radius: 3px 0 0 3px;
+}
+
+.gallery .btn-group .btn-first {
+	margin-right: 0px;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+}
+
+.gallery a.btn-details {
+	display: block;
 }
 
 .hidden {
@@ -43,4 +115,12 @@ ul.history {
 
 #systemMessage {
 	margin-top: 15px;
+}
+
+.usermenu {
+	width: 200px;
+}
+
+#globalerrors {
+	margin-top: 40px;
 }

@@ -7,14 +7,18 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
+import de.nosebrain.amazon.watcher.model.ItemViewMode;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.webapp.services.UpdaterService;
+import de.nosebrain.amazon.watcher.webapp.util.ControllerUtils;
 import de.nosebrain.amazon.watcher.webapp.view.Views;
 
 /**
@@ -22,42 +26,8 @@ import de.nosebrain.amazon.watcher.webapp.view.Views;
  * @author nosebrain
  */
 @Controller
+@Scope("request")
 public class HomepageController {
-
-	private static final String SESSION_MESSAGE = "message";
-	private static final String SESSION_MESSAGE_PARAM = "messageParam";
-
-	/**
-	 * TODO: refactor (list of message Params and optional)
-	 * 
-	 * @param session
-	 * @param message
-	 * @param messageParam
-	 */
-	public static void setMessage(final HttpSession session, final String message, final String messageParam) {
-		session.setAttribute(SESSION_MESSAGE, message);
-		session.setAttribute(SESSION_MESSAGE_PARAM, messageParam);
-	}
-
-	/**
-	 * TODO: refactor
-	 * 
-	 * @param model
-	 * @param session
-	 */
-	public static void copyMessage(final Model model, final HttpSession session) {
-		final String message = (String) session.getAttribute(SESSION_MESSAGE);
-		if (present(message)) {
-			model.addAttribute(SESSION_MESSAGE, message);
-			model.addAttribute(SESSION_MESSAGE_PARAM, session.getAttribute(SESSION_MESSAGE_PARAM));
-
-			/*
-			 * clear session
-			 */
-			setMessage(session, null, null);
-		}
-	}
-
 
 	@Autowired
 	private AmazonWatcherService service;
@@ -72,14 +42,14 @@ public class HomepageController {
 	 * @return the homepage
 	 */
 	@RequestMapping(value = {"/", "/index"})
-	public String home(final Model model, final HttpSession session, final Authentication principal) {
+	public String home(@RequestParam(value = "viewmode", required = false) final ItemViewMode viewMode, final Model model, final HttpSession session, final Authentication principal) {
 		if (present(principal)) {
 			final List<Observation> observations = this.service.getObservations();
 			model.addAttribute("observations", observations);
 			// TODO: inform about next update
 			model.addAttribute("lastUpdateDate", this.updaterService.getLastUpdateDate());
-
-			copyMessage(model, session);
+			model.addAttribute("requestedViewMode", viewMode);
+			ControllerUtils.copyMessage(model, session);
 		}
 
 		return Views.HOME;

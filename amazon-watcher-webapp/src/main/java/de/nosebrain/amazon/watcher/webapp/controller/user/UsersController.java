@@ -2,10 +2,13 @@ package de.nosebrain.amazon.watcher.webapp.controller.user;
 
 import static de.nosebrain.util.ValidationUtils.present;
 
+import java.util.LinkedList;
+
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,15 +22,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import de.nosebrain.amazon.watcher.AdminAmazonWatcherService;
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.User;
-import de.nosebrain.amazon.watcher.webapp.validation.UserValidator;
+import de.nosebrain.amazon.watcher.webapp.command.user.UserCommand;
+import de.nosebrain.amazon.watcher.webapp.validation.UserCommandValidator;
+import de.nosebrain.authentication.Authority;
+import de.nosebrain.authentication.PasswordAuthority;
 import de.nosebrain.authentication.Role;
+import de.nosebrain.util.StringUtils;
 
 /**
  * 
  * @author nosebrain
  */
 @Controller
+@Scope("request")
 public class UsersController {
+
+	private static final String REGISTER_VIEW = "services/register";
 
 	@Autowired
 	private AmazonWatcherService service;
@@ -37,7 +47,7 @@ public class UsersController {
 
 	@InitBinder
 	protected void initBinder(final WebDataBinder binder) {
-		binder.setValidator(new UserValidator());
+		binder.setValidator(new UserCommandValidator());
 	}
 
 	@RequestMapping("/login")
@@ -57,35 +67,46 @@ public class UsersController {
 	}
 
 	@RequestMapping("/register")
-	public String regiser(@Valid final User user, final BindingResult result, final Model model) {
-		model.addAttribute(user);
-		return "services/register";
+	public String regiser(@Valid final UserCommand userCommand, final BindingResult result, final Model model) {
+		model.addAttribute(userCommand);
+		return REGISTER_VIEW;
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String registerNewUser(@Valid final User user, final BindingResult result, @RequestParam("password") final String password, @RequestParam("retype") final String retype, final Model model) {
+	public String registerNewUser(@Valid final UserCommand command, final BindingResult result, final Model model) {
+		final User user = command.getUser();
 		final String userName = user.getName();
 		final User userInDd = this.adminService.getUserByName(userName);
 		if (present(userInDd)) {
-			result.rejectValue("name", "user.name.invalid.duplicate");
+			result.rejectValue("user.name", "user.name.invalid.duplicate");
 		}
 
 		/*
 		 * if there are errors show register form
 		 */
 		if (result.hasErrors()) {
-			return "services/register";
+			return REGISTER_VIEW;
 		}
 
 		user.setRole(Role.DEFAULT);
+		final LinkedList<Authority> authorities = new LinkedList<Authority>();
+		user.setAuthorities(authorities);
+		final String password = command.getPassword();
+		if (present(password)) {
+			final PasswordAuthority passwordAuth = new PasswordAuthority();
+			passwordAuth.setPassword(StringUtils.md5(password));
+			authorities.add(passwordAuth);
+		}
+
 		this.adminService.createUser(user);
 
 		return "services/welcome";
 	}
 
 	@RequestMapping("/settings")
-	public String settingsPage(final Model model) {
-		model.addAttribute(this.service.getLoggedInUser());
+	public String settingsPage(final UserCommand command, final Model model) {
+		command.setUser(this.service.getLoggedInUser());
+		model.addAttribute(command);
 		return "services/settings";
 	}
 }

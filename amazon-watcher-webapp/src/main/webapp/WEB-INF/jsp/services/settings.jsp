@@ -49,10 +49,10 @@
 			   				<fmt:message key="settings.apiKey.info" />
 			   			</div>
 			   			
-			   			<form:form commandName="user" cssClass="form-horizontal">
-			   				<bootstrap:input labelMessageKey="user.mail" path="mail" />
+			   			<form:form commandName="userCommand" cssClass="form-horizontal">
+			   				<bootstrap:input labelMessageKey="user.mail" path="user.mail" />
 			   				
-			   				<bootstrap:input labelMessageKey="user.settings.minDelta" path="settings.minDelta" />
+			   				<bootstrap:input labelMessageKey="user.settings.minDelta" path="user.settings.minDelta" />
 			   			</form:form>
 		   			</section>
 		   			<section id="authorities" class="hidden">
@@ -63,7 +63,7 @@
 			   			</div>
 		   			
 		   				<c:forEach var="authority" items="${user.authorities}">
-		   					<c:url var="authIcon" value="/icons/authorities/${authority.method}.jpg" />
+		   					<c:url var="authIcon" value="${iconPath}/authorities/${authority.method}.png" />
 		   					<img src="${authIcon}" />
 		   					
 		   					<!-- TODO: delete button -->
@@ -74,7 +74,7 @@
 		   					<!-- TODO: remove non multiple -->
 		   					<div class="overview">
 			   					<c:forEach var="supportedAuthority" items="${properties['general.authorities']}">
-			   						<c:url var="authIcon" value="/icons/authorities/${supportedAuthority}.png" />
+			   						<c:url var="authIcon" value="${iconPath}/authorities/${supportedAuthority}.png" />
 			   						<fmt:message var="supportedAuthorityInfo" key="settings.authorities.${supportedAuthority}.add.description"/>
 			   						<img src="${authIcon}" class="iconSelector" title="${supportedAuthorityInfo}" />
 			   					</c:forEach>
@@ -104,7 +104,7 @@
 			   			<div class="infoServices">
 			   				<div class="overview">
 					   			<c:forEach var="infoService" items="${properties['information.services']}">
-					   				<c:url var="serviceIcon" value="icons/services/${infoService}.png" />
+					   				<c:url var="serviceIcon" value="${iconPath}/services/${infoService}.png" />
 					   				
 					   				<img src="${serviceIcon}" data-service="${infoService}" class="iconSelector" />
 					   			</c:forEach>

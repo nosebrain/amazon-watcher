@@ -3,6 +3,7 @@ package de.nosebrain.amazon.watcher.webapp.controller.items;
 import static de.nosebrain.util.ValidationUtils.present;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import de.nosebrain.amazon.watcher.webapp.util.Functions;
  * @author nosebrain
  */
 @Controller
+@Scope("request")
 public class ItemsController {
 
 	@Autowired

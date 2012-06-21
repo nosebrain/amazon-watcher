@@ -1,19 +1,23 @@
 package de.nosebrain.amazon.watcher.webapp.controller;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import de.nosebrain.amazon.watcher.webapp.view.Views;
 
 /**
  * 
  * @author nosebrain
  */
 @Controller
+@Scope("request")
 public class ErrorController {
 
 	private static String showError(final Model model, final int errorCode) {
 		model.addAttribute("status", errorCode);
-		return "errors/errors";
+		return Views.ERROR_VIEW;
 	}
 
 	/**
