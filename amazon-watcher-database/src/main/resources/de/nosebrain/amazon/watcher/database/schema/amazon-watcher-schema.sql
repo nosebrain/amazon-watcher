@@ -1,9 +1,10 @@
 DROP TABLE IF EXISTS `history`;
 CREATE TABLE `history` (
   `item_id` int(11) NOT NULL,
+  `condition` varchar(20) NOT NULL,
   `price` float NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY `item_id` (`item_id`)
+  KEY `item_condition_id` (`item_id`,`condition`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -33,7 +34,9 @@ CREATE TABLE `observations` (
   `item_id` int(11) DEFAULT NULL,
   `user_name` varchar(255) DEFAULT '',
   `name` varchar(255) DEFAULT '',
-  `mode` varchar(255) DEFAULT NULL,
+  `mode` varchar(25) DEFAULT NULL,
+  `condition` varchar(25) DEFAULT NULL,
+  `seller` varchar(25) DEFAULT NULL,
   `limit` float DEFAULT NULL,
   `change_date` timestamp NULL DEFAULT NULL,
   `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -45,5 +48,8 @@ CREATE TABLE `users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `mail` varchar(255) DEFAULT NULL,
+  `item_view_mode` varchar(25) DEFAULT 'GALLERY',
+  `min_delta` float DEFAULT '0.25',
+  `language` varchar(5) DEFAULT 'EN',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

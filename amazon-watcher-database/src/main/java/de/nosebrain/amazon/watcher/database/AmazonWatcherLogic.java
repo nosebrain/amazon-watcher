@@ -50,6 +50,12 @@ public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherSe
 		}
 	}
 
+	/**
+	 * get the observation of the current logged in user of the provided item
+	 * @param item		the item
+	 * @param session	the session to use
+	 * @return the observation (<code>null</code> iff user is not observing item)
+	 */
 	protected Observation getObservationByItem(final Item item, final SqlSession session) {
 		return super.getObservationByItem(item, this.loggedinUser.getName(), session);
 	}

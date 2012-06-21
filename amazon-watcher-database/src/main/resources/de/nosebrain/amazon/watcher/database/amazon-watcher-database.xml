@@ -25,7 +25,9 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<typeAlias	type="de.nosebrain.amazon.watcher.model.Amazon"				alias="Amazon" />
 		<typeAlias	type="de.nosebrain.amazon.watcher.model.ObservationMode"	alias="ObservationMode" />
 		<typeAlias	type="de.nosebrain.amazon.watcher.model.InfoService"		alias="InfoService" />
-	
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.ItemViewMode"		alias="ItemViewMode" />
+		<typeAlias	type="de.nosebrain.amazon.watcher.model.Seller" 			alias="Seller" />
+		<typeAlias  type="de.nosebrain.amazon.watcher.model.ItemCondition"		alias="ItemCondition"/>
 		<!-- params -->
 		<typeAlias 	type="de.nosebrain.amazon.watcher.database.util.ItemParam"			alias="itemParam" />
 		<typeAlias 	type="de.nosebrain.amazon.watcher.database.util.ObservationParam"	alias="observationParam" />

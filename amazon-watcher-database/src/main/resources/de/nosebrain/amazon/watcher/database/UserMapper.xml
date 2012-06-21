@@ -10,12 +10,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<association property="settings"	javaType="UserSettings">
 			<result 	column="min_delta"		property="minDelta" 	javaType="float" />
 			<result 	column="language"		property="language"		javaType="Locale"/>
+			<result		column="item_view_mode" property="viewMode" 	javaType="ItemViewMode" />
 			<collection	property="infoServices" resultMap="infoServiceResult" />
 		</association>
 	</resultMap>
 	
 	<resultMap type="User" id="fullUserResult" extends="userResult">
-		<collection 	property="authorities" resultMap="authority" />
+		<collection 	property="authorities">
+		    <discriminator javaType="int" column="kind">
+				<case value="1" resultMap="passwordAuthority" />
+			</discriminator>
+		</collection>
 	</resultMap>
 	
 	<resultMap type="InfoService" id="infoServiceResult">
@@ -23,18 +28,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result	column="settings"			property="settings" />
 	</resultMap>
 	
-	<resultMap type="Authority" id="authority">
-		<discriminator javaType="int" column="kind">
-			<case value="1" resultMap="passwordAuthority" />
-		</discriminator>
-	</resultMap>
-	
 	<resultMap type="PasswordAuthority" id="passwordAuthority">
 		<result	column="info"		property="password" />
 	</resultMap>
 	
 	<sql id="userAttributes">
-		u.name, u.role, u.mail, u.min_delta, u.language
+		u.name, u.role, u.mail, u.min_delta, u.language, u.item_view_mode
 	</sql>
 	
 	<select id="getUserByName" resultMap="fullUserResult" parameterType="string">
@@ -47,6 +46,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insertUser" parameterType="User">
 		INSERT INTO users (name, mail, role) VALUES (#{name}, #{mail}, #{role})
+	</insert>
+	
+	<insert id="insertAuthority" parameterType="Authority">
+	    INSERT INTO authorities (user_name, kind, info) VALUES (#{userName},
+	    <choose>
+	        <when test="authority.class.simpleName == 'PasswordAuthority'">	    
+	     		1, #{authority.password}
+	        </when>
+	    </choose>
+	    )	    
 	</insert>
 	
 	<delete id="deleteUser" parameterType="string">
