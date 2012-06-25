@@ -27,7 +27,7 @@ public class WebSiteUpdaterTest {
 		item.setSite(Amazon.DE);
 		item.setAsin("B00377ISA2");
 		final Float updateItem = UPDATER.updateItem(item);
-		assertEquals(10.99, updateItem, 0.1);
+		assertEquals(14.99, updateItem, 0.1);
 	}
 
 	/**
