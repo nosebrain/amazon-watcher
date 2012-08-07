@@ -57,6 +57,15 @@ public class WebSiteUpdater implements Updater {
 
 	@Override
 	public Float updateItem(final Item item) {
+		try {
+			return this.update(item);
+		} catch (final IOException e) {
+			log.error("error updating item " + item, e);
+		}
+		return Float.NaN;
+	}
+
+	private Float update(final Item item) throws IOException {
 		HttpEntity entity = null;
 		try {
 			final String url = getUrlForItem(item);
@@ -67,16 +76,9 @@ public class WebSiteUpdater implements Updater {
 			final InputStream content = entity.getContent();
 			final Map<ItemCondition, Float> amazon = extractPrice(item, content).get(Seller.AMAZON);
 			return amazon.get(ItemCondition.NEW);
-		} catch (final IOException e) {
-			// TODO: log exception
 		} finally {
-			try {
-				EntityUtils.consume(entity);
-			} catch (final IOException e) {
-				// TODO: handle exception
-			}
+			EntityUtils.consume(entity);
 		}
-		return Float.NaN;
 	}
 
 	private static Map<Seller, Map<ItemCondition, Float>> extractPrice(final Item item, final InputStream content) {
