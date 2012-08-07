@@ -59,7 +59,13 @@ public class Item {
 		this.priceHistories = priceHistories;
 	}
 
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "[asin=" + this.asin + ", site=" + this.site + "]";
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
