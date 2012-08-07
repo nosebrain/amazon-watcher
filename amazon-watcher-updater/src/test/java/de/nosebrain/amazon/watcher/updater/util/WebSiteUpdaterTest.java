@@ -45,6 +45,19 @@ public class WebSiteUpdaterTest {
 
 	/**
 	 * tests {@link WebSiteUpdater#updateItem(Item)}
+	 * with multiple pages
+	 */
+	@Test
+	public void testGermanSite3() {
+		final Item item = new Item();
+		item.setSite(Amazon.DE);
+		item.setAsin("B005YYTHZG");
+		final Float updateItem = UPDATER.updateItem(item);
+		assertEquals(Float.NaN, updateItem, 0.1);
+	}
+
+	/**
+	 * tests {@link WebSiteUpdater#updateItem(Item)}
 	 */
 	@Test
 	public void testUSSite() {

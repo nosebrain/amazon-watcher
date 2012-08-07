@@ -138,7 +138,7 @@ public class WebSiteUpdater implements Updater {
 
 				@Override
 				public String cleanPriceString(final String priceString) {
-					return priceString.replace("EUR", "").trim().replace(',', '.');
+					return priceString.replace("EUR", "").trim().replace(".", "").replace(',', '.');
 				}
 
 				@Override
