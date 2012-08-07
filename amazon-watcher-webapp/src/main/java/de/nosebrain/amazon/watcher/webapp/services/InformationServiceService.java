@@ -18,7 +18,6 @@ import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 import de.nosebrain.amazon.watcher.services.InformationService;
-import de.nosebrain.amazon.watcher.services.InformationServiceFactory;
 
 /**
  * TODO: rename
@@ -30,7 +29,7 @@ public class InformationServiceService {
 
 
 	private AdminAmazonWatcherService service;
-	private Map<String, InformationServiceFactory> informationServiceFactories;
+	private InformationServiceBuilder builder;
 
 	/**
 	 * informs all user of all updated items
@@ -56,8 +55,6 @@ public class InformationServiceService {
 		// User => observations
 		for (final Entry<User, List<Observation>> entry : userObservations.entrySet()) {
 			final User user = entry.getKey();
-			final List<InfoService> informationServicesForUser = user.getSettings().getInfoServices();
-			final List<InformationService> userInformationServices = this.createUserInformationServices(informationServicesForUser);
 			final List<Observation> observations = new LinkedList<Observation>();
 			for (final Observation observation : entry.getValue()) {
 				final Item item = observation.getItem();
@@ -80,8 +77,12 @@ public class InformationServiceService {
 			}
 
 			if (present(observations)) {
-				for (final InformationService informationService : userInformationServices) {
+				/*
+				 * inform the user with all configurated user settings
+				 */
+				for (final InfoService infoService : user.getSettings().getInfoServices()) {
 					try {
+						final InformationService informationService = this.builder.createInformationServiceFromInfoService(infoService);
 						informationService.inform(observations);
 					} catch (final Exception e) {
 						log.error("error while informing user", e);
@@ -92,27 +93,6 @@ public class InformationServiceService {
 		}
 	}
 
-	private List<InformationService> createUserInformationServices(final List<InfoService> informationServicesForUser) {
-		final List<InformationService> informationServices = new LinkedList<InformationService>();
-		for (final InfoService infoService : informationServicesForUser) {
-			final String infoServiceId = infoService.getInfoServiceKey();
-			if (this.informationServiceFactories.containsKey(infoServiceId)) {
-				final InformationServiceFactory factory = this.informationServiceFactories.get(infoServiceId);
-				final InformationService informationService = factory.createInformationService(infoService.getSettings());
-
-				if (informationService != null) {
-					informationServices.add(informationService);
-				} else {
-					// TODO: log
-				}
-			} else {
-				// TODO: log
-			}
-		}
-
-		return informationServices;
-	}
-
 	/**
 	 * @param service the service to set
 	 */
@@ -121,10 +101,9 @@ public class InformationServiceService {
 	}
 
 	/**
-	 * @param informationServiceFactories the informationServiceFactories to set
+	 * @param builder the builder to set
 	 */
-	public void setInformationServiceFactories(
-			final Map<String, InformationServiceFactory> informationServiceFactories) {
-		this.informationServiceFactories = informationServiceFactories;
+	public void setBuilder(final InformationServiceBuilder builder) {
+		this.builder = builder;
 	}
 }

@@ -27,6 +27,20 @@ public class ProwlInfoService implements InformationService {
 	private ProwlClient client;
 
 	@Override
+	public void testService() {
+		try {
+			final Notification notification = new NotificationBuilder()
+			.application("Amazon Watcher") // TODO: config
+			.event("Test Notification")
+			.description("Here is your requested test notification")
+			.build();
+			this.client.sendNotification(notification, this.apiKeys);
+		} catch (final IOException e) {
+			log.error("error while sending notification", e);
+		}
+	}
+
+	@Override
 	public void inform(final List<Observation> observations) {
 		for (final Observation observation : observations) {
 			try {

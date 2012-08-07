@@ -65,6 +65,10 @@
 	
 	<util:map id="infoServiceFactoriesMap" key-type="java.lang.String" value-type="de.nosebrain.amazon.watcher.services.InformationServiceFactory" />
 	
+	<bean id="informationServiceBuilder" class="de.nosebrain.amazon.watcher.webapp.services.InformationServiceBuilder" depends-on="infoServiceConfigurator">
+	    <property name="serviceFactories" ref="infoServiceFactoriesMap" />
+	</bean>
+	
 	<bean id="infoServiceConfigurator" class="de.nosebrain.amazon.watcher.webapp.util.config.InformationServiceConfigurator" init-method="init">
 		<property name="serviceNames" value="${information.services}" />
 		<property name="serviceFactories" ref="infoServiceFactoriesMap" />
@@ -72,7 +76,7 @@
 	
 	<bean id="informationServiceService" class="de.nosebrain.amazon.watcher.webapp.services.InformationServiceService">
 		<property name="service" ref="adminDatabaseLogic" />
-		<property name="informationServiceFactories" ref="infoServiceFactoriesMap" />
+		<property name="builder" ref="informationServiceBuilder" />
 	</bean>
 	
 	<!-- services -->

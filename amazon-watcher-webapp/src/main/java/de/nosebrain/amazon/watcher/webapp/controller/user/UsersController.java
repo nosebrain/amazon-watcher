@@ -37,6 +37,8 @@ import de.nosebrain.util.StringUtils;
 @Scope("request")
 public class UsersController {
 
+	private static final String WELCOME_VIEW = "services/welcome";
+	private static final String LOGIN_VIEW = "services/login";
 	private static final String REGISTER_VIEW = "services/register";
 
 	@Autowired
@@ -45,11 +47,21 @@ public class UsersController {
 	@Autowired
 	private AdminAmazonWatcherService adminService;
 
+	/**
+	 * inits the binder
+	 * @param binder
+	 */
 	@InitBinder
 	protected void initBinder(final WebDataBinder binder) {
 		binder.setValidator(new UserCommandValidator());
 	}
 
+	/**
+	 * for the login view
+	 * @param model
+	 * @param session
+	 * @return the login view
+	 */
 	@RequestMapping("/login")
 	public String login(final Model model, final HttpSession session) {
 		final Exception lastException = (Exception) session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
@@ -58,19 +70,29 @@ public class UsersController {
 			session.setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, null);
 		}
 
-		return "services/login";
+		return LOGIN_VIEW;
 	}
 
 	@RequestMapping("/doLogin")
 	public String callLoginService(@RequestParam("serviceId") final String loginServiceId) {
+		// TODO: implement me
 		return null;
 	}
 
+	/**
+	 * renders the register view
+	 * 
+	 * @param userCommand	the user command
+	 * @param result		the binding result
+	 * @param model			the model
+	 * @return the register view
+	 */
 	@RequestMapping("/register")
 	public String regiser(@Valid final UserCommand userCommand, final BindingResult result, final Model model) {
 		model.addAttribute(userCommand);
 		return REGISTER_VIEW;
 	}
+
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public String registerNewUser(@Valid final UserCommand command, final BindingResult result, final Model model) {
@@ -100,13 +122,6 @@ public class UsersController {
 
 		this.adminService.createUser(user);
 
-		return "services/welcome";
-	}
-
-	@RequestMapping("/settings")
-	public String settingsPage(final UserCommand command, final Model model) {
-		command.setUser(this.service.getLoggedInUser());
-		model.addAttribute(command);
-		return "services/settings";
+		return WELCOME_VIEW;
 	}
 }

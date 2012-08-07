@@ -6,6 +6,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
@@ -21,14 +24,29 @@ import de.nosebrain.util.Mailer;
  */
 public class MailInfoService implements InformationService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MailInfoService.class);
+
+
 	private Mailer mailer;
 	private InternetAddress address;
+
+	@Override
+	public void testService() throws Exception {
+		final MimeMessage message = this.mailer.createMessage();
+		message.setSubject("Amazon Watcher | test message"); // TODO: name
+		final StringBuilder content = new StringBuilder();
+		content.append("<html><body><p>");
+		content.append("If you can see this message everything works fine."); // TODO: i18n
+		content.append("</ul></body></html>");
+		message.setContent(content.toString(), "text/html; charset=utf-8");
+		this.mailer.sendMessage(message, this.address);
+	}
 
 	@Override
 	public void inform(final List<Observation> observations) {
 		try {
 			final MimeMessage message = this.mailer.createMessage();
-			message.setSubject("Amazon Watcher | Overview"); // TODO: name
+			message.setSubject("Amazon Watcher | report"); // TODO: name
 			final StringBuilder content = new StringBuilder();
 			content.append("<html><body><p>" + "Some of your watched items have changed." + "</p><ul>");
 

@@ -124,3 +124,14 @@ ul.history {
 #globalerrors {
 	margin-top: 40px;
 }
+
+/** settings page */
+
+img.infoServiceSelector {
+	padding: 0.5em;
+	cursor: pointer;
+}
+
+img.editorSelected {
+	border: 1px solid red;
+}

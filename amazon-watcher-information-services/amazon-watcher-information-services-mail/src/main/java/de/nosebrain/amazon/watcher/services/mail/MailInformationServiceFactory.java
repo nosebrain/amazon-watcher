@@ -13,7 +13,6 @@ import de.nosebrain.util.Mailer;
  *
  */
 public class MailInformationServiceFactory implements InformationServiceFactory {
-
 	private Mailer mailer;
 
 	@Override

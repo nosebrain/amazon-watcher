@@ -12,6 +12,7 @@
     <jsp:directive.page contentType="text/html; charset=utf-8" language="java" pageEncoding="UTF-8" session="true" />
    	
    	<fmt:message key="settings.title" var="pageTitle" />
+   	<c:set var="user" value="${userCommand.user}" />
    	
    	<basic:layout pageTitle="${pageTitle}">
    		<jsp:attribute name="content">
@@ -87,14 +88,35 @@
 		   					</c:forEach>
 		   				</div>
 		   			</section>
+		   			
+		   			
+		   			
 		   			<section id="infoServices" class="hidden">
 			   			<h2><fmt:message key="settings.infoServices"/></h2>
 			   			<div class="sectionInfo">
 			   				<fmt:message key="settings.infoServices.description" />
 			   			</div>
+			   			<c:set var="infoServices" value="${user.settings.infoServices}" />
+			   			<c:set var="hasInfoServices" value="${not empty infoServices}" />
+			   			
+			   			<c:if test="${hasInfoServices}">
+			   				<fmt:message key="settings.infoServices.current" />
+			   				<ul>
+					   			<c:forEach var="infoService" items="${infoServices}">
+					   				<c:url var="serviceIcon" value="${iconPath}/services/${infoService.infoServiceKey}.png" />
+					   				<li>
+					   					<img src="${serviceIcon}" data-service="${infoService}" class="iconSelector" /> - <c:out value="${infoService.settings}" />
+					   					<ul class="menu">
+					   						<li><fmt:message key="settings.infoServices.edit" /></li>
+					   						<li><fmt:message key="settings.infoServices.delete" /></li>
+					   					</ul>
+					   				</li>
+					   			</c:forEach>
+				   			</ul>
+			   			</c:if>
 			   			
 			   			<div>
-				   			<c:if test="${empty user.settings.infoServices}">
+				   			<c:if test="${!hasInfoServices }">
 				   				<fmt:message key="settings.infoServices.noServices" />
 				   			</c:if>
 				   			
@@ -106,14 +128,15 @@
 					   			<c:forEach var="infoService" items="${properties['information.services']}">
 					   				<c:url var="serviceIcon" value="${iconPath}/services/${infoService}.png" />
 					   				
-					   				<img src="${serviceIcon}" data-service="${infoService}" class="iconSelector" />
+					   				<img src="${serviceIcon}" data-service="${infoService}" class="infoServiceSelector" />
 					   			</c:forEach>
 				   			</div>
+				   			<c:url var="addService" value="/settings/infoServices" />
 				   			<c:forEach var="infoService" items="${properties['information.services']}">
-				   				<div id="service_${infoService}" class="hidden">
+				   				<div id="service_${infoService}" class="hidden infoServiceAddEditor">
 				   					<fmt:message key="settings.infoServices.${infoService}.info" />
 				   					<!-- TODO -->
-				   					<form action="" method="post">
+				   					<form action="${addService}" method="POST">
 				   						<input type="hidden" name="infoServiceKey" value="${infoService}"/>
 				   						<div>
 				   							<p>
@@ -123,7 +146,7 @@
 				   						</div>		
 				   						
 				   						<fmt:message key="settings.infoServices.${infoService}.add" var="addService" />
-				   						<input type="button" value="${addService}" />
+				   						<input type="submit" value="${addService}" />
 				   					</form>
 				   				</div>
 				   			</c:forEach>
