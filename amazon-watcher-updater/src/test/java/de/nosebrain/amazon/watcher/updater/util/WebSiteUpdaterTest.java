@@ -32,6 +32,19 @@ public class WebSiteUpdaterTest {
 
 	/**
 	 * tests {@link WebSiteUpdater#updateItem(Item)}
+	 * with multiple pages
+	 */
+	@Test
+	public void testGermanSite2() {
+		final Item item = new Item();
+		item.setSite(Amazon.DE);
+		item.setAsin("B000JQVE5U");
+		final Float updateItem = UPDATER.updateItem(item);
+		assertEquals(14.97, updateItem, 0.1);
+	}
+
+	/**
+	 * tests {@link WebSiteUpdater#updateItem(Item)}
 	 */
 	@Test
 	public void testUSSite() {
@@ -40,6 +53,6 @@ public class WebSiteUpdaterTest {
 		item.setAsin("B005L9E7J0");
 
 		final Float price = UPDATER.updateItem(item);
-		assertEquals(149.99, price, 0.1);
+		assertEquals(148.98, price, 0.1);
 	}
 }
