@@ -57,74 +57,78 @@ public class WebSiteUpdater implements Updater {
 
 	@Override
 	public Float updateItem(final Item item) {
-		try {
-			return this.update(item);
-		} catch (final IOException e) {
-			log.error("error updating item " + item, e);
+		final Map<Seller, Map<ItemCondition, Float>> extractPrices = this.extractPrice(item);
+		final Map<ItemCondition, Float> amazon = extractPrices.get(Seller.AMAZON);
+		if (!present(amazon)) {
+			return Float.NaN;
 		}
-		return Float.NaN;
+		return amazon.get(ItemCondition.NEW);
 	}
 
-	private Float update(final Item item) throws IOException {
-		HttpEntity entity = null;
-		try {
-			final String url = getUrlForItem(item);
-			final HttpGet get = new HttpGet(url);
-			final HttpResponse response = this.client.execute(get);
-
-			entity = response.getEntity();
-			final InputStream content = entity.getContent();
-			final Map<ItemCondition, Float> amazon = extractPrice(item, content).get(Seller.AMAZON);
-			return amazon.get(ItemCondition.NEW);
-		} finally {
-			EntityUtils.consume(entity);
-		}
-	}
-
-	private static Map<Seller, Map<ItemCondition, Float>> extractPrice(final Item item, final InputStream content) {
+	private Map<Seller, Map<ItemCondition, Float>> extractPrice(final Item item) {
 		final Map<Seller, Map<ItemCondition, Float>> prices = new HashMap<Seller, Map<ItemCondition,Float>>();
-
-		final ItemParser parser = getParser(item.getSite());
-
+		int index = 0;
 		try {
-			final Document offerPage = Jsoup.parse(content, "UTF-8", getHost(item));
-			final Elements offers = offerPage.select(".result");
-			for (final Element offer : offers) {
-				final Element priceElement = offer.select(".price").first();
-				final String rawText = parser.cleanPriceString(priceElement.text());
-				final float price = Float.parseFloat(rawText);
+			while (true) {
+				HttpEntity entity = null;
+				try {
+					final String baseUrl = getUrlForItem(item);
+					final String url = baseUrl + "?startIndex=" + index;
+					final HttpGet get = new HttpGet(url);
+					final HttpResponse response = this.client.execute(get);
 
-				Seller seller = Seller.THIRD_PARTY;
-				if (offer.select(".ratingHeader").size() == 0) {
-					seller = Seller.AMAZON;
-				}
+					entity = response.getEntity();
+					final InputStream content = entity.getContent();
+					final ItemParser parser = getParser(item.getSite());
 
-				ItemCondition condition = ItemCondition.NEW;
-				final Element conditionElement = offer.select(".condition").first();
-				if (present(conditionElement)) {
-					final String conditionString = conditionElement.text().trim().toLowerCase();
-					condition = parser.getCondition(conditionString);
-				}
 
-				Map<ItemCondition, Float> conditionMap = prices.get(seller);
-				if (!present(conditionMap)) {
-					conditionMap = new HashMap<ItemCondition, Float>();
-					prices.put(seller, conditionMap);
-				}
-
-				if (conditionMap.containsKey(condition)) {
-					final Float lastPrice = conditionMap.get(condition);
-					if (price < lastPrice) {
-						conditionMap.put(condition, price);
+					final Document offerPage = Jsoup.parse(content, "UTF-8", getHost(item));
+					final Elements offers = offerPage.select(".result");
+					if (offers.size() == 0) {
+						break;
 					}
-				} else {
-					conditionMap.put(condition, price);
+					for (final Element offer : offers) {
+						final Element priceElement = offer.select(".price").first();
+						final String rawText = parser.cleanPriceString(priceElement.text());
+						final float price = Float.parseFloat(rawText);
+
+						Seller seller = Seller.THIRD_PARTY;
+						if (offer.select(".ratingHeader").size() == 0) {
+							seller = Seller.AMAZON;
+						}
+
+						ItemCondition condition = ItemCondition.NEW;
+						final Element conditionElement = offer.select(".condition").first();
+						if (present(conditionElement)) {
+							final String conditionString = conditionElement.text().trim().toLowerCase();
+							condition = parser.getCondition(conditionString);
+						}
+
+						Map<ItemCondition, Float> conditionMap = prices.get(seller);
+						if (!present(conditionMap)) {
+							conditionMap = new HashMap<ItemCondition, Float>();
+							prices.put(seller, conditionMap);
+						}
+
+						if (conditionMap.containsKey(condition)) {
+							final Float lastPrice = conditionMap.get(condition);
+							if (price < lastPrice) {
+								conditionMap.put(condition, price);
+							}
+						} else {
+							conditionMap.put(condition, price);
+						}
+					}
+				} finally {
+					EntityUtils.consume(entity);
 				}
+				index += 15;
 			}
 
 		} catch (final IOException e) {
 			log.error("can't parse offer site for item {}", item, e);
 		}
+
 		return prices;
 	}
 
