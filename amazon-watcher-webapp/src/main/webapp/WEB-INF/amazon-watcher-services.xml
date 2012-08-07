@@ -78,7 +78,7 @@
 	<!-- services -->
 	<bean id="updaterService" class="de.nosebrain.amazon.watcher.webapp.services.UpdaterService">
 		<property name="service" ref="adminDatabaseLogic" />
-		<property name="updater" ref="apiUpdater" />
+		<property name="updater" ref="${general.updater}Updater" />
 		<property name="informationServiceService" ref="informationServiceService"/>		
 	</bean>
 	
