@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	
 	<resultMap type="User" id="fullUserResult" extends="userResult">
-		<collection 	property="authorities">
+		<collection property="authorities">
 		    <discriminator javaType="int" column="kind">
 				<case value="1" resultMap="passwordAuthority" />
 			</discriminator>
@@ -24,8 +24,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	
 	<resultMap type="InfoService" id="infoServiceResult">
-		<id		column="info_service_id"	property="infoServiceKey" />
-		<result	column="settings"			property="settings" />
+		<id			column="hash"				property="hash" />
+		<result		column="info_service_id"	property="infoServiceKey" />
+		<result		column="settings"			property="settings" />
 	</resultMap>
 	
 	<resultMap type="PasswordAuthority" id="passwordAuthority">
@@ -36,8 +37,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		u.name, u.role, u.mail, u.min_delta, u.language, u.item_view_mode
 	</sql>
 	
+	<sql id="infoServiceAttributes">
+	    i.info_service_id, i.settings, i.hash
+	</sql>
+	
 	<select id="getUserByName" resultMap="fullUserResult" parameterType="string">
-		SELECT <include refid="userAttributes" />, i.info_service_id, i.settings, a.kind, a.info
+		SELECT <include refid="userAttributes" />, <include refid="infoServiceAttributes" />, a.kind, a.info
 			FROM users u
 			LEFT JOIN information_services i ON (u.name = i.user_name)
 			LEFT JOIN authorities a ON (u.name = a.user_name)
@@ -59,6 +64,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 	
 	<delete id="deleteUser" parameterType="string">
-		DELETE FROM users u WHERE u.name = #{name}
+		DELETE
+			FROM users u
+			WHERE u.name = #{name}
 	</delete>
+	
+	<select id="getInfoServiceByHash" resultMap="infoServiceResult">
+	    SELECT <include refid="infoServiceAttributes" />
+	    	FROM information_services i
+	    	WHERE user_name = #{userName} AND hash = #{hash}
+	</select>
+	
+	<insert id="insertInfoService">
+	    INSERT INTO information_services (user_name, info_service_id, settings, hash)
+	    VALUES (
+	    #{userName},
+	    #{infoService.infoServiceKey},
+	    #{infoService.settings},
+	    #{infoService.hash}
+	    )
+	</insert>
 </mapper>

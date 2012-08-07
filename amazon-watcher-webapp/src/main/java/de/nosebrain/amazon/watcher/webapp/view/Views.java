@@ -9,6 +9,9 @@ import de.nosebrain.amazon.watcher.model.util.ItemUtils;
  */
 public class Views {
 
+	/**
+	 * redirect prefix
+	 */
 	public static final String REDIRECT = "redirect:";
 
 	/**
@@ -21,6 +24,9 @@ public class Views {
 	 */
 	public static final String HOME = "home";
 
+	/**
+	 * observation view
+	 */
 	public static final String OBSERVATIONS = "observations";
 
 	public static final String OBSERVATION_EDIT = OBSERVATIONS + "/edit";

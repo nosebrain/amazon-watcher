@@ -67,6 +67,8 @@ public interface AmazonWatcherService {
 	 */
 	public boolean removeAuthority(final Authority authority);
 
+	public InfoService getInfoService(final String hash);
+
 	/**
 	 * @param infoService
 	 * @return <code>true</code> if info service was added

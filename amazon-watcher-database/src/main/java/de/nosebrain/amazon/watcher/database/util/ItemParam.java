@@ -6,12 +6,11 @@ import de.nosebrain.amazon.watcher.model.Item;
  * 
  * @author nosebrain
  */
-public class ItemParam {
+public class ItemParam extends UserAwareParam {
 
 	private final Item item;
 	private float price;
 	private int id;
-	private String userName;
 
 	/**
 	 * default constructor
@@ -47,20 +46,6 @@ public class ItemParam {
 	 */
 	public Item getItem() {
 		return this.item;
-	}
-
-	/**
-	 * @return the userName
-	 */
-	public String getUserName() {
-		return this.userName;
-	}
-
-	/**
-	 * @param userName the userName to set
-	 */
-	public void setUserName(final String userName) {
-		this.userName = userName;
 	}
 
 	/**

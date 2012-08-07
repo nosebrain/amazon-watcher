@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import de.nosebrain.amazon.watcher.AdminAmazonWatcherService;
 import de.nosebrain.amazon.watcher.database.util.AuthorityParam;
 import de.nosebrain.amazon.watcher.database.util.ItemParam;
+import de.nosebrain.amazon.watcher.model.InfoService;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.User;
@@ -83,6 +84,12 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 				param.setAuthority(authority);
 				session.insert("insertAuthority", param);
 			}
+
+			final InfoService defaultInfoService = new InfoService();
+			defaultInfoService.setInfoServiceKey("mail"); // TODO: config
+			defaultInfoService.setSettings(user.getMail());
+
+			this.createInfoService(defaultInfoService, session);
 			session.commit();
 
 			return true;

@@ -283,7 +283,6 @@ $(function() {
 				console.debug(data);
 			}
 		});
-		alert('change');
 	});
 });
 
@@ -295,3 +294,14 @@ function modeChange() {
 		limit.parent().hide();
 	}
 }
+
+// settings page
+$(function() {
+	$('.infoServiceSelector').click(function() {
+		var service = $(this).data('service');
+		$('.infoServiceSelector').removeClass('editorSelected');
+		$(this).addClass('editorSelected');
+		$('.infoServiceAddEditor').hide();
+		$('#service_' + service).show();
+	});
+});

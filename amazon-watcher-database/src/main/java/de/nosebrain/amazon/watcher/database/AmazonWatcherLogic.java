@@ -1,12 +1,15 @@
 package de.nosebrain.amazon.watcher.database;
 
+
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
+import de.nosebrain.amazon.watcher.database.util.InfoServiceParam;
 import de.nosebrain.amazon.watcher.database.util.ItemParam;
 import de.nosebrain.amazon.watcher.database.util.ObservationParam;
+import de.nosebrain.amazon.watcher.database.util.UserAwareParam;
 import de.nosebrain.amazon.watcher.model.InfoService;
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
@@ -128,7 +131,7 @@ public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherSe
 			if (this.getObservationByItem(item, session) == null) {
 				return false;
 			}
-			final ItemParam param = new ItemParam(item);
+			final UserAwareParam param = new ItemParam(item);
 			param.setUserName(this.loggedinUser.getName());
 
 			session.delete("deleteObservation", param);
@@ -159,9 +162,28 @@ public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherSe
 	}
 
 	@Override
+	public InfoService getInfoService(final String hash) {
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			final InfoServiceParam param = new InfoServiceParam();
+			param.setHash(hash);
+			param.setUserName(this.loggedinUser.getName());
+			return this.getInfoServiceByHash(session, param);
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
 	public boolean addInformationService(final InfoService infoService) {
-		// TODO Auto-generated method stub
-		return false;
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			final boolean created = this.createInfoService(infoService, session);
+			session.commit();
+			return created;
+		} finally {
+			session.close();
+		}
 	}
 
 	@Override
