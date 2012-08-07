@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import de.nosebrain.amazon.watcher.model.User;
@@ -35,10 +35,10 @@ public class UserAdapter implements UserDetails {
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		final Collection<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
-		authorities.add(new GrantedAuthorityImpl(USER_AUTHORITY));
+		authorities.add(new SimpleGrantedAuthority(USER_AUTHORITY));
 
 		if (Role.ADMIN.equals(this.user.getRole())) {
-			authorities.add(new GrantedAuthorityImpl(ADMIN_AUTHORITY));
+			authorities.add(new SimpleGrantedAuthority(ADMIN_AUTHORITY));
 		}
 
 		return authorities;
