@@ -30,6 +30,15 @@ public class DatabaseAdapter implements UserDetailsService {
 			throw new UsernameNotFoundException("user " + username + " not found");
 		}
 
+		return this.createUserAdapter(userInDb);
+	}
+
+	/**
+	 * method to override by subclasses
+	 * @param userInDb
+	 * @return the {@link UserAdapter} for the user in the database
+	 */
+	protected UserAdapter createUserAdapter(final User userInDb) {
 		return new UserAdapter(userInDb);
 	}
 

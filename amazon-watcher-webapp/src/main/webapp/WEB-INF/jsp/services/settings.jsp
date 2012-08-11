@@ -11,11 +11,13 @@
         	
     <jsp:directive.page contentType="text/html; charset=utf-8" language="java" pageEncoding="UTF-8" session="true" />
    	
+   	
    	<fmt:message key="settings.title" var="pageTitle" />
    	<c:set var="user" value="${userCommand.user}" />
    	
    	<basic:layout pageTitle="${pageTitle}">
    		<jsp:attribute name="content">
+   			<c:out value="${active_tab}" />
    			<div class="page-header">
    				<h1><c:out value="${pageTitle}" /></h1>
    			</div>
@@ -89,9 +91,7 @@
 		   				</div>
 		   			</section>
 		   			
-		   			
-		   			
-		   			<section id="infoServices" class="hidden">
+		   			<section id="infoServices" class="${active_tab eq 'infoService' ? '' : 'hidden'}">
 			   			<h2><fmt:message key="settings.infoServices"/></h2>
 			   			<div class="sectionInfo">
 			   				<fmt:message key="settings.infoServices.description" />
@@ -104,11 +104,13 @@
 			   				<ul>
 					   			<c:forEach var="infoService" items="${infoServices}">
 					   				<c:url var="serviceIcon" value="${iconPath}/services/${infoService.infoServiceKey}.png" />
-					   				<li>
+					   				<li class="ajaxDelete">
 					   					<img src="${serviceIcon}" data-service="${infoService}" class="iconSelector" /> - <c:out value="${infoService.settings}" />
 					   					<ul class="menu">
+					   						<li><fmt:message key="settings.infoServices.test" /></li>
 					   						<li><fmt:message key="settings.infoServices.edit" /></li>
-					   						<li><fmt:message key="settings.infoServices.delete" /></li>
+					   						<c:url var="serviceUrl" value="/settings/infoServices/${infoService.hash}" />
+					   						<li><a href="${serviceUrl}?_method=DELETE" class="ajaxDeleteLink"><fmt:message key="settings.infoServices.delete" /></a></li>
 					   					</ul>
 					   				</li>
 					   			</c:forEach>
@@ -122,7 +124,6 @@
 				   			
 				   			<fmt:message key="settings.infoServices.add" />
 			   			</div>
-			   			
 			   			<div class="infoServices">
 			   				<div class="overview">
 					   			<c:forEach var="infoService" items="${properties['information.services']}">
@@ -131,12 +132,12 @@
 					   				<img src="${serviceIcon}" data-service="${infoService}" class="infoServiceSelector" />
 					   			</c:forEach>
 				   			</div>
-				   			<c:url var="addService" value="/settings/infoServices" />
+				   			<c:url var="addServiceUrl" value="/settings/infoServices" />
 				   			<c:forEach var="infoService" items="${properties['information.services']}">
 				   				<div id="service_${infoService}" class="hidden infoServiceAddEditor">
 				   					<fmt:message key="settings.infoServices.${infoService}.info" />
 				   					<!-- TODO -->
-				   					<form action="${addService}" method="POST">
+				   					<form action="${addServiceUrl}" method="POST">
 				   						<input type="hidden" name="infoServiceKey" value="${infoService}"/>
 				   						<div>
 				   							<p>

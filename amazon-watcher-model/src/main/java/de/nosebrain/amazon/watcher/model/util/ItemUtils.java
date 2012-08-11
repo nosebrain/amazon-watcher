@@ -135,4 +135,11 @@ public final class ItemUtils {
 
 		return before < limit && current >= limit;
 	}
+
+	public static Item extractItem(final URL url) {
+		final Item item = new Item();
+		item.setAsin(extractASIN(url));
+		item.setSite(extractAmazon(url));
+		return item;
+	}
 }

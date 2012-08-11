@@ -11,7 +11,7 @@ $(function() {
 	/*
 	 * delete function
 	 */
-	$('a.deleteObservation').click(function() {
+	$('.ajaxDelete a.ajaxDeleteLink').click(function() {
 		var link = $(this);
 		var deleteUrl = link.attr('href');
 		$.ajax({
@@ -19,7 +19,7 @@ $(function() {
 			type:		'POST',
 			success:	function(data) {
 							// TODO: add success message
-							link.parents('div.item').remove();
+							link.closest('.ajaxDelete').remove();
 						}
 			// TODO: add error method
 		});
@@ -271,9 +271,15 @@ $(function() {
 		var self = $(this);
 		
 		var url = self.val();
-		var amazonUrl = encodeURIComponent(url.substring(0, url.indexOf('?')));
+		url = url.substring(0, url.indexOf('?'));
+		var amazonUrl = encodeURIComponent(url);
 		
-		$('#img').empty().append($('<img></img>').attr('src', '/amazon-watcher/items/' + amazonUrl + "/image"));
+		var img = $('<img></img>');
+		img.attr('src', '/amazon-watcher/items/image?url=' + amazonUrl);
+		var link = $('<a></a>');
+		link.attr('href', url);
+		link.append(img);
+		$('#img').empty().append(link);
 		
 		$.ajax({
 			// TODO: remove! amazon-watcher
@@ -287,11 +293,11 @@ $(function() {
 });
 
 function modeChange() {
-	var limit = $('#limit').parent();
+	var limit = $('#limit').parent().parent();
 	if ($('#mode').val() == "PRICE_LIMIT") {
-		limit.parent().show();
+		limit.show();
 	} else {
-		limit.parent().hide();
+		limit.hide();
 	}
 }
 

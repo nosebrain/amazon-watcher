@@ -1,6 +1,8 @@
 package de.nosebrain.amazon.watcher.database;
 
 
+import static de.nosebrain.util.ValidationUtils.present;
+
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -194,8 +196,23 @@ public class AmazonWatcherLogic extends DatabaseLogic implements AmazonWatcherSe
 
 	@Override
 	public boolean removeInformationService(final String hash) {
-		// TODO Auto-generated method stub
-		return false;
+		final SqlSession session = this.sessionFactory.openSession();
+		try {
+			final InfoServiceParam param = new InfoServiceParam();
+			param.setUserName(this.loggedinUser.getName());
+			param.setHash(hash);
+			final InfoService infoServiceInDB = this.getInfoServiceByHash(session, param);
+			if (!present(infoServiceInDB)) {
+				return false;
+			}
+
+			session.delete("deleteInfoServiceByHash", param);
+			session.commit();
+
+			return true;
+		} finally {
+			session.close();
+		}
 	}
 
 	@Override
