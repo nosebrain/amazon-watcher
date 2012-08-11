@@ -20,10 +20,10 @@ public class StringToItemConverterTest {
 
 	@Test
 	public void testConvert() {
-		final Item convert2 = CONVERTER.convert("http%3A%2F%2Famazon.com%2Fgp%2Fproduct%2FB0051VVOB2");
+		final Item convert2 = CONVERTER.convert("US_B0051VVOB2");
 
 		assertNotNull(convert2);
-		final Item convert3 = CONVERTER.convert("http://amazon.de/gp/product/B0051VVOB2");
+		final Item convert3 = CONVERTER.convert("DE_B0051VVOB2");
 
 		assertNotNull(convert3);
 		assertEquals(Amazon.DE, convert3.getSite());
