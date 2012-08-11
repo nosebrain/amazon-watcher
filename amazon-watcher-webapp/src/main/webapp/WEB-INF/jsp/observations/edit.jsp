@@ -12,7 +12,8 @@
 	<!-- TODO: global errors -->
     <jsp:directive.page contentType="text/html; charset=utf-8" language="java" pageEncoding="UTF-8" session="true" />
    	
-   	<c:set var="newItem" value="${empty observation.item}" />
+   	<c:set var="item" value="${observation.item}" />
+   	<c:set var="newItem" value="${empty item}" />
    	<c:choose>
 		<c:when test="${newItem}">
 			<c:url value="/observations" var="actionUrl"/>
@@ -23,7 +24,7 @@
 		<c:otherwise>
 			<fmt:message key="observation.edit.action" var="actionValue" />
 			<c:set var="pageTitle" value="${observation.name}" />  						
-			<c:url value="/observations/${aw:encodeURI(aw:getUrl(observation.item))}" var="actionUrl" />
+			<c:url value="/observations/${item.site}_${item.asin}" var="actionUrl" />
 		</c:otherwise>
 	</c:choose>
    	
@@ -41,10 +42,12 @@
    				<h1>
    			<c:choose>
    				<c:when test="${newItem}">
-   					observe new item
+   					<fmt:message key="observation.create.header" />
    				</c:when>
    				<c:otherwise>
-   					edit observation
+   					<fmt:message key="observation.edit.header">
+   						<fmt:param value="${observation.name}" />
+   					</fmt:message>
    				</c:otherwise>
    			</c:choose>
    				</h1>
@@ -54,6 +57,9 @@
    			
    			<div id="img" class="span2">
    				<!-- fill me -->
+   				<c:if test="${not newItem}">
+   					<a href="${aw:getUrl(item)}"><img src="${aw:getImageUrl(item)}" /></a>
+   				</c:if>
    			</div>
    			
    			<div class="span6">
@@ -77,7 +83,7 @@
    				<div class="form-actions">
    					<!-- TODO: referer -->
    					<c:url var="homeurl" value="/" />
-   					<button href="${homeurl}" class="btn">Cancel</button>
+   					<button href="${homeurl}" class="btn"><fmt:message key="cancel" /></button>
    					
    					<input type="submit" value="${actionValue}" class="btn btn-primary" />
    				</div>
@@ -86,7 +92,7 @@
    			
    				<div class="span4">
    					<div class="alert alert-warning">
-   						Why not using the bookmarklet for your browser?
+   						<fmt:message key="tips.bookmarklet" />
    					</div>
    				</div>
    			</div>

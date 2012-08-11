@@ -50,17 +50,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<insert id="insertUser" parameterType="User">
-		INSERT INTO users (name, mail, role) VALUES (#{name}, #{mail}, #{role})
+		INSERT INTO users (name, mail, role, api_key) VALUES (#{name}, #{mail}, #{role}, #{apiKey})
 	</insert>
 	
 	<insert id="insertAuthority" parameterType="Authority">
-	    INSERT INTO authorities (user_name, kind, info) VALUES (#{userName},
-	    <choose>
-	        <when test="authority.class.simpleName == 'PasswordAuthority'">	    
-	     		1, #{authority.password}
-	        </when>
-	    </choose>
-	    )	    
+	    INSERT INTO authorities (user_name, kind, info)
+	    	VALUES (
+	    		#{userName},
+			    <choose>
+			        <when test="authority.class.simpleName == 'PasswordAuthority'">	    
+			     		1, #{authority.password}
+			        </when>
+			    </choose>
+	    	)	    
 	</insert>
 	
 	<delete id="deleteUser" parameterType="string">
@@ -72,16 +74,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getInfoServiceByHash" resultMap="infoServiceResult">
 	    SELECT <include refid="infoServiceAttributes" />
 	    	FROM information_services i
-	    	WHERE user_name = #{userName} AND hash = #{hash}
+	    	WHERE i.user_name = #{userName} AND i.hash = #{hash}
 	</select>
 	
 	<insert id="insertInfoService">
 	    INSERT INTO information_services (user_name, info_service_id, settings, hash)
-	    VALUES (
-	    #{userName},
-	    #{infoService.infoServiceKey},
-	    #{infoService.settings},
-	    #{infoService.hash}
-	    )
+	    	VALUES (
+	    		#{userName},
+	    		#{infoService.infoServiceKey},
+	    		#{infoService.settings},
+	    		#{infoService.hash}
+	    	)
 	</insert>
+	
+	<delete id="deleteInfoServiceByHash">
+	    DELETE
+	    	FROM information_services
+	    	WHERE user_name = #{userName} AND hash = #{hash}
+	</delete>
 </mapper>

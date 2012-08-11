@@ -1,5 +1,9 @@
 package de.nosebrain.amazon.watcher.database;
 
+import static de.nosebrain.util.ValidationUtils.present;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -21,6 +25,7 @@ import de.nosebrain.mybatis.MyBatisUtils;
  *
  */
 public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazonWatcherService {
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	@Override
 	public List<Item> getItems() {
@@ -75,16 +80,25 @@ public class AdminAmazonWatcherLogic extends DatabaseLogic implements AdminAmazo
 			if (getUserByName(name, session) != null) {
 				return false;
 			}
-
+			// set default settings
 			user.setSettings(UserSettings.getDefaultSettings());
+			// generate api key
+			user.setApiKey(new BigInteger(130, RANDOM).toString(32));
 			session.insert("insertUser", user);
+
+			final List<Authority> authorities = user.getAuthorities();
+			if (!present(authorities)) {
+				throw new IllegalStateException("no authority given");
+			}
 			final AuthorityParam param = new AuthorityParam();
 			param.setUserName(name);
-			for (final Authority authority : user.getAuthorities()) {
+			// add all authorities
+			for (final Authority authority : authorities) {
 				param.setAuthority(authority);
 				session.insert("insertAuthority", param);
 			}
 
+			// add a default info service
 			final InfoService defaultInfoService = new InfoService();
 			defaultInfoService.setInfoServiceKey("mail"); // TODO: config
 			defaultInfoService.setSettings(user.getMail());

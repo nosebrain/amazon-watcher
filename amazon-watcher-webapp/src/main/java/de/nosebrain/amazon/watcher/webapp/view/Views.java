@@ -1,7 +1,6 @@
 package de.nosebrain.amazon.watcher.webapp.view;
 
 import de.nosebrain.amazon.watcher.model.Item;
-import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 
 /**
  * 
@@ -34,6 +33,19 @@ public class Views {
 	public static final String ERROR_VIEW = "errors/errors";
 
 	public static final String getObservationEditUrl(final Item item) {
-		return REDIRECT + OBSERVATIONS + "/" + ItemUtils.generateUrlForItem(item) + "/edit";
+		return REDIRECT + OBSERVATIONS + "/" + item.getSite() + "_" + item.getAsin() + "/edit";
 	}
+
+	public static final String SESSION_MESSAGE = "message";
+
+	public static final String SESSION_MESSAGE_PARAMS = "messageParams";
+
+	// TODO: move
+	public static final String SETTINGS = "services/settings";
+
+	public static final String SETTINGS_PATH = "/settings";
+
+	public static final String SETTINGS_REDIRECT = REDIRECT + SETTINGS_PATH;
+
+	public static final String INFO_SERVICES_PATH = SETTINGS_PATH + "/infoServices";
 }

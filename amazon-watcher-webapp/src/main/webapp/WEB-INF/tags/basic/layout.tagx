@@ -30,6 +30,7 @@
  			<c:url var="cssMainUrl" value="${cssPath}/main.css" />
  			<link href="${cssMainUrl}" type="text/css" rel="stylesheet" />
  			
+ 			<!-- TODO: merge javascript files -->
  			<c:url var="jqueryUrl" value="${libraryPath}/jquery/jquery.js" />
  			<c:url var="flotUrl" value="${libraryPath}/jquery/plugins/flot/jquery.flot.js" />
  			<c:url var="mainJSUrl" value="${javascriptPath}/main.js" />
@@ -39,7 +40,9 @@
  			<script type="text/javascript" src="${flotUrl}"><!-- keep me --></script>
  			<script type="text/javascript" src="${bootstrapJS}"><!-- keep me --></script>
  			<script type="text/javascript" src="${mainJSUrl}"><!-- keep me --></script>
- 			
+ 			<script type="text/javascript">
+				var contextPath = '${pageContext.request.contextPath}';
+			</script>
  		</head>
  		<body>
  			<div class="container">
@@ -51,6 +54,18 @@
     						
     						
     						<ul class="nav pull-right">
+    							<sec:authorize access="hasRole('ADMIN')">
+    								<li class="dropdown">
+    									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    										<fmt:message key="general.administration" />
+    										<b class="caret"><!-- keep me --></b>
+    									</a>
+    									<ul class="dropdown-menu adminmenu">
+    										<c:url var="itemsUrl" value="/admin/items" />
+    										<li><a href="${itemsUrl}"><fmt:message key="general.administration.items" /></a></li>
+    									</ul>
+    								</li>
+    							</sec:authorize>
     							<c:if test="${not hideLogin}">
 	    							<sec:authorize access="isAnonymous()">
 		 								<c:url var="loginUrl" value="/login" />

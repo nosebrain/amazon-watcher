@@ -20,11 +20,12 @@
 		<security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')" />
 		<!-- everything else -->
 		<security:intercept-url pattern="/" access="permitAll" />
+		<security:intercept-url pattern="/index.*" access="permitAll" />
 		<security:intercept-url pattern="/**" access="isAuthenticated()" />
 		
 		<security:custom-filter ref="form-login" position="FORM_LOGIN_FILTER"/>
+		<security:remember-me services-ref="rememberMeService" key="${general.key}" />
 		
-		<!-- TODO: use api key as password -->
 		<security:http-basic />
 		
 		<security:logout logout-url="/logout" logout-success-url="/" />
@@ -32,6 +33,7 @@
 	
 	<security:authentication-manager alias="internalAuthenticationManager">
 		<security:authentication-provider ref="databaseAuthenticator" />
+		<security:authentication-provider ref="databaseAPIAuthenticator" />
 	</security:authentication-manager>
 	
 	<bean id="loginUrl" class="java.lang.String">
@@ -43,6 +45,7 @@
 	</bean>
 	
 	<bean id="form-login" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="rememberMeServices" ref="rememberMeService" />
 		<property name="filterProcessesUrl" value="/login_internal" />
 		<property name="authenticationManager" ref="internalAuthenticationManager" />
 		<property name="authenticationFailureHandler" ref="failureHandler" />
@@ -63,8 +66,16 @@
 		<property name="adminService" ref="adminDatabaseLogic" />
 	</bean>
 	
+	<bean id="databaseUserAPIService" class="de.nosebrain.amazon.watcher.webapp.util.spring.security.DatabaseAdapterAPI">
+	    <property name="adminService" ref="adminDatabaseLogic" />	    
+	</bean>
+	
 	<bean id="contextRepository" class="de.nosebrain.spring.security.UsernameContextRepository">
 		<property name="service" ref="databaseUserService" />
+	</bean>
+	
+	<bean id="databaseAPIAuthenticator" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="databaseUserService" />
 	</bean>
 	
 	<bean id="databaseAuthenticator" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
@@ -76,5 +87,12 @@
 	
 	<bean id="entryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
 		<property name="loginFormUrl" ref="loginUrl" />
+	</bean>
+	
+	<bean id="rememberMeService" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+	    <constructor-arg value="${general.key}" />
+	    <constructor-arg ref="databaseUserService" />
+	    <property name="alwaysRemember" value="true" />
+	    <property name="cookieName" value="user" />
 	</bean>
 </beans>

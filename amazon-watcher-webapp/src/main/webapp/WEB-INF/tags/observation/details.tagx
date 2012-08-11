@@ -64,8 +64,7 @@
 						<fmt:message key="observation.edit" var="editTitle" />
 						<c:set var="id" value="${item.asin}${item.site}" />
 						
-						<c:set var="encodedItemUrl" value="${aw:encodeURI(itemUrl)}" />
-						<c:url var="observationUrl" value="/observations/${encodedItemUrl}" />
+						<c:url var="observationUrl" value="/observations/${item.site}_${item.asin}" />
 						
 						<c:set var="editUrl" value="${observationUrl}/edit" />
 						<a class="btn btn-mini btn-details" data-toggle="modal" href="${'#'}${id}"><i class="icon-list-alt"><!-- keep me --></i></a>

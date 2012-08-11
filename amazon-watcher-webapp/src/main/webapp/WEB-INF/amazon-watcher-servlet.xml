@@ -47,23 +47,7 @@
 	</bean>
 	
 	<!-- config -->
-	
-	<bean id="mvchandler" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name="urlDecode" value="false" />
-		<property name="alwaysUseFullPath" value="true" />
-		<property name="webBindingInitializer">
-            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-                <property name="conversionService" ref="conversionService"/>
-            </bean>
-        </property>
-	</bean>
-	
-	<!--  <mvc:annotation-driven conversion-service="conversionService" /> -->
-	
-	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="urlDecode" value="false" />
-		<property name="alwaysUseFullPath" value="true" />
-	</bean>
+	<mvc:annotation-driven conversion-service="conversionService" />
 	
 	<mvc:resources mapping="/assets/**" location="/WEB-INF/assets/" />
 	

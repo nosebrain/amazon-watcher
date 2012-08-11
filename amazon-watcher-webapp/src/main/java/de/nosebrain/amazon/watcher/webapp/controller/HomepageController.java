@@ -4,8 +4,6 @@ import static de.nosebrain.util.ValidationUtils.present;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -18,7 +16,6 @@ import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.ItemViewMode;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.webapp.services.UpdaterService;
-import de.nosebrain.amazon.watcher.webapp.util.ControllerUtils;
 import de.nosebrain.amazon.watcher.webapp.view.Views;
 
 /**
@@ -36,20 +33,19 @@ public class HomepageController {
 	private UpdaterService updaterService;
 
 	/**
+	 * @param viewMode the view mode
 	 * @param model the model to fill
-	 * @param session the session to get the message
 	 * @param principal the logged in user
 	 * @return the homepage
 	 */
 	@RequestMapping(value = {"/", "/index"})
-	public String home(@RequestParam(value = "viewmode", required = false) final ItemViewMode viewMode, final Model model, final HttpSession session, final Authentication principal) {
+	public String home(@RequestParam(value = "viewmode", required = false) final ItemViewMode viewMode, final Model model, final Authentication principal) {
 		if (present(principal)) {
 			final List<Observation> observations = this.service.getObservations();
 			model.addAttribute("observations", observations);
 			// TODO: inform about next update
 			model.addAttribute("lastUpdateDate", this.updaterService.getLastUpdateDate());
 			model.addAttribute("requestedViewMode", viewMode);
-			ControllerUtils.copyMessage(model, session);
 		}
 
 		return Views.HOME;
