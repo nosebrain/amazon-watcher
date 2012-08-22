@@ -62,5 +62,6 @@ CREATE TABLE `users` (
   `item_view_mode` varchar(25) DEFAULT 'GALLERY',
   `min_delta` float DEFAULT '0.25',
   `language` varchar(5) DEFAULT 'EN',
+  `api_key` varchar(33) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<id 	column="name"		property="name"		javaType="string" />
 		<result column="mail"		property="mail"		javaType="string" />
 		<result column="role"		property="role"		javaType="Role" />
+		<result column="api_key"	property="apiKey"	javaType="string" />
 		<association property="settings"	javaType="UserSettings">
 			<result 	column="min_delta"		property="minDelta" 	javaType="float" />
 			<result 	column="language"		property="language"		javaType="Locale"/>
@@ -34,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	
 	<sql id="userAttributes">
-		u.name, u.role, u.mail, u.min_delta, u.language, u.item_view_mode
+		u.name, u.role, u.mail, u.min_delta, u.language, u.item_view_mode, u.api_key
 	</sql>
 	
 	<sql id="infoServiceAttributes">
