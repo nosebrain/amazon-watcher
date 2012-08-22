@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,7 +74,7 @@ public class ObservationsEditController {
 	 * @return the view to render
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS, method = RequestMethod.POST)
-	public String createObservation(@Valid final Observation observation, final BindingResult result, final RedirectAttributes redirectAttributes) {
+	public String createObservation(@Valid final Observation observation, final Errors result, final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return Views.OBSERVATION_EDIT;
 		}
@@ -103,25 +103,6 @@ public class ObservationsEditController {
 	}
 
 	/**
-	 * edit an existing item (view)
-	 * @param item the item
-	 * @param model the model to use
-	 * @return the item form
-	 * @throws ResourceNotFoundException
-	 */
-	@RequestMapping(value="/" + Views.OBSERVATIONS + "/{item}", method = RequestMethod.GET)
-	public String getItem(@PathVariable final Item item, final Model model) throws ResourceNotFoundException {
-		final Item itemDetails = this.service.getItemDetails(item);
-
-		if (!present(itemDetails)) {
-			throw new ResourceNotFoundException();
-		}
-
-		model.addAttribute(itemDetails);
-		return Views.HOME_REDIRECT;
-	}
-
-	/**
 	 * edit an existing observation
 	 * 
 	 * @param item the item to update
@@ -132,7 +113,9 @@ public class ObservationsEditController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS + "/{item}", method = RequestMethod.PUT)
-	public String updateObservation(@PathVariable final Item item, @Valid final Observation observation, final BindingResult errors, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
+	public String updateObservation(@PathVariable final Item item, @Valid final Observation observation, final Errors errors, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
+		// TODO: check item
+
 		if (errors.hasErrors()) {
 			return Views.OBSERVATION_EDIT;
 		}
