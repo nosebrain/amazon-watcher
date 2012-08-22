@@ -1,5 +1,7 @@
 package de.nosebrain.amazon.watcher.model;
 
+import java.util.Locale;
+
 /**
  * 
  * @author nosebrain
@@ -9,19 +11,21 @@ public enum Amazon {
 	/**
 	 * Amazon Germany
 	 */
-	DE("de", "€"),
+	DE("de", "€", Locale.GERMAN),
 
 	/**
 	 * Amazon USA
 	 */
-	US("com", "$");
+	US("com", "$", Locale.US);
 
 	private final String tld;
 	private final String currency;
+	private final Locale numberFormatLocale;
 
-	private Amazon(final String tld, final String currency) {
+	private Amazon(final String tld, final String currency, final Locale numberFormatLocale) {
 		this.tld = tld;
 		this.currency = currency;
+		this.numberFormatLocale = numberFormatLocale;
 	}
 
 	/**
@@ -38,6 +42,12 @@ public enum Amazon {
 		return this.currency;
 	}
 
+	/**
+	 * @return the numberFormatLocale
+	 */
+	public Locale getNumberFormatLocale() {
+		return this.numberFormatLocale;
+	}
 
 	/**
 	 * @param site

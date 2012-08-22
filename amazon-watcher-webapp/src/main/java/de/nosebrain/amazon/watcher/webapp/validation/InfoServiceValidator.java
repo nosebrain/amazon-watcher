@@ -19,9 +19,14 @@ public class InfoServiceValidator implements Validator {
 
 	@Override
 	public void validate(final Object target, final Errors errors) {
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "infoServiceKey", "");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "settings", "");
-
-		// TODO: check settings for valid values
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "infoServiceKey", "infoService.infoServiceKey.invalid");
+		
+		if (!errors.hasErrors()) {
+			final InfoService infoService = (InfoService) target;
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "settings", "infoService." + infoService.getInfoServiceKey() + ".settings.invalid");
+	
+			final String settings = infoService.getSettings();
+			// TODO: check settings for valid values
+		}
 	}
 }

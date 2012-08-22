@@ -107,9 +107,9 @@
 					   				<li class="ajaxDelete">
 					   					<img src="${serviceIcon}" data-service="${infoService}" class="iconSelector" /> - <c:out value="${infoService.settings}" />
 					   					<ul class="menu">
-					   						<li><fmt:message key="settings.infoServices.test" /></li>
-					   						<li><fmt:message key="settings.infoServices.edit" /></li>
 					   						<c:url var="serviceUrl" value="/settings/infoServices/${infoService.hash}" />
+					   						<li><a href="${serviceUrl}/test"><fmt:message key="settings.infoServices.test" /></a></li>
+					   						<li><fmt:message key="settings.infoServices.edit" /></li>
 					   						<li><a href="${serviceUrl}?_method=DELETE" class="ajaxDeleteLink"><fmt:message key="settings.infoServices.delete" /></a></li>
 					   					</ul>
 					   				</li>

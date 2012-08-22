@@ -1,7 +1,5 @@
 package de.nosebrain.amazon.watcher.webapp.validation;
 
-import static de.nosebrain.util.ValidationUtils.present;
-
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -24,11 +22,6 @@ public class ObservationValidator implements Validator {
 	@Override
 	public void validate(final Object target, final Errors errors) {
 		final Observation observation = (Observation) target;
-
-		if (!present(observation.getItem())) {
-			errors.rejectValue("item", "observation.item.invalid");
-			// TODO: test item
-		}
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "observation.name.invalid");
 		ValidationUtils.rejectIfEmpty(errors, "mode", "observation.mode.invalid");

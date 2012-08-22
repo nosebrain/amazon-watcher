@@ -41,7 +41,7 @@
  			<script type="text/javascript" src="${bootstrapJS}"><!-- keep me --></script>
  			<script type="text/javascript" src="${mainJSUrl}"><!-- keep me --></script>
  			<script type="text/javascript">
-				var contextPath = '${pageContext.request.contextPath}';
+				var contextPath = '${pageContext.request.contextPath}/';
 			</script>
  		</head>
  		<body>

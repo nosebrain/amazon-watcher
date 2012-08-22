@@ -9,9 +9,9 @@
 							http://www.springframework.org/schema/context 
                           	http://www.springframework.org/schema/context/spring-context.xsd
                           	http://www.springframework.org/schema/util 
-	                    	http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	                    	http://www.springframework.org/schema/util/spring-util-3.1.xsd
                           	http://www.springframework.org/schema/mvc
-			    			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+			    			http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
 	<!-- properties -->
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -42,8 +42,17 @@
 		<property name="conversionService" ref="conversionService" />
 	</bean>
 	
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basename" value="messages/messages" />
+	<bean id="messageSource" class="de.nosebrain.amazon.watcher.webapp.util.spring.ReloadableMultiResourceBundleMessageSource">
+		<property name="basenames">
+		  <list>
+		      <value>classpath:/messages/messages</value>
+		      <value>classpath:/services/**/messages/service</value>
+		  </list>
+		</property>
+		<property name="cacheSeconds" value="${dev.messagesource.cache}" />
+		<property name="resourceLoader">
+		    <bean class="org.springframework.core.io.support.PathMatchingResourcePatternResolver" />
+		</property>
 	</bean>
 	
 	<!-- config -->
