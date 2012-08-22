@@ -39,12 +39,16 @@ public class HomepageController {
 	 * @return the homepage
 	 */
 	@RequestMapping(value = {"/", "/index"})
-	public String home(@RequestParam(value = "viewmode", required = false) final ItemViewMode viewMode, final Model model, final Authentication principal) {
+	public String home(@RequestParam(value = "viewmode", required = false) ItemViewMode viewMode, final Model model, final Authentication principal) {
 		if (present(principal)) {
 			final List<Observation> observations = this.service.getObservations();
 			model.addAttribute("observations", observations);
 			// TODO: inform about next update
 			model.addAttribute("lastUpdateDate", this.updaterService.getLastUpdateDate());
+
+			if (!present(viewMode)) {
+				viewMode = this.service.getLoggedInUser().getSettings().getViewMode();
+			}
 			model.addAttribute("requestedViewMode", viewMode);
 		}
 
