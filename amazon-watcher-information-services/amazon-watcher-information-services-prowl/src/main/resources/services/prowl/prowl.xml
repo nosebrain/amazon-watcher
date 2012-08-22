@@ -33,12 +33,23 @@
 		<property name="conversionService" ref="conversionService" />
 	</bean>
 	
+	<bean id="prowlMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource" lazy-init="true">
+		<property name="basename" value="classpath:/services/prowl/messages/service" />
+		<property name="cacheSeconds" value="${dev.messagesource.cache}" />
+	</bean>
+	
 	<bean id="prowlClient" class="de.nosebrain.prowl.ProviderProwlClient">
 		<constructor-arg value="prowl:{prowl.providerKey}" />
 	</bean>
 	
+	<bean id="prowlInfoService" class="de.nosebrain.amazon.watcher.services.prowl.ProwlInfoService" scope="prototype">
+	    <property name="systemName" value="${general.name}" />
+	    <property name="client" ref="prowlClient" />
+	    <property name="messageSource" ref="prowlMessageSource" />
+	</bean>
+	
 	<!-- factory -->
 	<bean id="prowlFactory" class="de.nosebrain.amazon.watcher.services.prowl.ProwlInformationServiceFactory">
-		<property name="client" ref="prowlClient" />
+		<lookup-method name="createService" bean="prowlInfoService" />
 	</bean>
 </beans>

@@ -2,8 +2,6 @@ package de.nosebrain.amazon.watcher.webapp.controller.user.settings;
 
 import static de.nosebrain.util.ValidationUtils.present;
 
-import java.security.Principal;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -22,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.InfoService;
+import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.amazon.watcher.services.InformationService;
 import de.nosebrain.amazon.watcher.webapp.services.InformationServiceBuilder;
 import de.nosebrain.amazon.watcher.webapp.validation.InfoServiceValidator;
@@ -110,13 +109,12 @@ public class InfoServiceController {
 	 * method for testing the info service
 	 * 
 	 * @param hash
-	 * @param principal
 	 * @param redirectAttributes
 	 * @return the settings page
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value = Views.INFO_SERVICES_PATH + "/{hash}/test")
-	public String testInfoService(@PathVariable final String hash, final Principal principal, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
+	public String testInfoService(@PathVariable final String hash, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
 		final InfoService infoService = this.service.getInfoService(hash);
 
 		if (!present(infoService)) {
@@ -124,11 +122,12 @@ public class InfoServiceController {
 			throw new ResourceNotFoundException();
 		}
 
+		final User loggedinUser = this.service.getLoggedInUser();
 		try {
 			final InformationService informationService = this.builder.createInformationServiceFromInfoService(infoService);
-			informationService.testService();
+			informationService.testService(loggedinUser.getSettings().getLanguage());
 		} catch (final Exception e) {
-			LOGGER.error("error while testing info service '" + hash + "'for user '" + principal.getName() + "'", hash, e);
+			LOGGER.error("error while testing info service '" + hash + "'for user '" + loggedinUser.getName() + "'", hash, e);
 		}
 
 		redirectAttributes.addFlashAttribute(ACTIVE_TAB, INFOSERVICE_TAB);

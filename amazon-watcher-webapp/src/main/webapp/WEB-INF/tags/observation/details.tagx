@@ -28,7 +28,7 @@
    	
    	<c:set var="observationName" value="${observation.name}" />
    	
-	<div class="item ${cssClassMain}" data-lastUpdate="${lastUpdated}" data-name="${fn:escapeXml(observationName)}" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
+	<div class="item ${cssClassMain} ajaxDelete" data-lastUpdate="${lastUpdated}" data-name="${fn:escapeXml(observationName)}" data-currency="${item.site.currency}" data-mode="${observation.mode}" data-limit="${observation.limit}">
 		<div class="span2">
 			<a href="${itemUrl}" rel="tooltip" class="itempicture" title="${observationName}"><img src="${aw:getImageUrl(item)}" /></a>
 		</div>
@@ -68,11 +68,11 @@
 						
 						<c:set var="editUrl" value="${observationUrl}/edit" />
 						<a class="btn btn-mini btn-details" data-toggle="modal" href="${'#'}${id}"><i class="icon-list-alt"><!-- keep me --></i></a>
-						<a href="${editUrl}" class="btn btn-mini btn-first" title="${editTitle}"><i class="icon-pencil"><!-- keep me --></i><span class="btn-title"> edit</span></a>
+						<a href="${editUrl}" class="btn btn-mini btn-first" title="${editTitle}"><i class="icon-pencil"><!-- keep me --></i> <span class="btn-title"><fmt:message key="general.edit" /></span></a>
 						<fmt:message key="observation.unwatch" var="unwatchTitle">
 							<fmt:param value="${observationName}"/>
 						</fmt:message>
-						<a href="${observationUrl}?_method=DELETE" title="${unwatchTitle}" class="btn btn-mini deleteObservation"><i class="icon-trash"><!-- keep me --></i><span class="btn-title"> delete</span></a>
+						<a href="${observationUrl}?_method=DELETE" title="${unwatchTitle}" class="btn btn-mini ajaxDeleteLink"><i class="icon-trash"><!-- keep me --></i> <span class="btn-title"><fmt:message key="general.delete" /></span></a>
 					</div>
 				</div>
 			</div>

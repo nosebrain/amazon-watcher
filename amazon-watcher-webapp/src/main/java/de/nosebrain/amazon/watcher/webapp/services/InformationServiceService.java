@@ -83,7 +83,7 @@ public class InformationServiceService {
 				for (final InfoService infoService : user.getSettings().getInfoServices()) {
 					try {
 						final InformationService informationService = this.builder.createInformationServiceFromInfoService(infoService);
-						informationService.inform(observations);
+						informationService.inform(observations, user.getSettings().getLanguage());
 					} catch (final Exception e) {
 						log.error("error while informing user", e);
 					}

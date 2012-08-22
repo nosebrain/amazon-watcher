@@ -38,7 +38,12 @@
 		<property name="properties" value="mail:{smtp.settings}" />
 	</bean>
 	
+	<bean id="mailInfoService" class="de.nosebrain.amazon.watcher.services.mail.MailInfoService" scope="prototype">
+	    <property name="systemName" value="${general.name}" />
+	    <property name="mailer" ref="mailer" />
+	</bean>
+	
 	<bean id="mailFactory" class="de.nosebrain.amazon.watcher.services.mail.MailInformationServiceFactory">
-		<property name="mailer" ref="mailer" />
+		<lookup-method name="createService" bean="mailInfoService"/>
 	</bean>
 </beans>

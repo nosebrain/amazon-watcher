@@ -70,6 +70,7 @@
 	</bean>
 	
 	<bean id="infoServiceConfigurator" class="de.nosebrain.amazon.watcher.webapp.util.config.InformationServiceConfigurator" init-method="init">
+		<property name="configurer" ref="propertyConfigurer" />
 		<property name="serviceNames" value="${information.services}" />
 		<property name="serviceFactories" ref="infoServiceFactoriesMap" />
 	</bean>

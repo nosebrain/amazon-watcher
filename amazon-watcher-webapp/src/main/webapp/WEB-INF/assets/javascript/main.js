@@ -280,15 +280,6 @@ $(function() {
 		link.attr('href', url);
 		link.append(img);
 		$('#img').empty().append(link);
-		
-		$.ajax({
-			// TODO: remove! amazon-watcher
-			url: "/amazon-watcher/items/" + amazonUrl + "/recommandation.json",
-			datatype: "json",
-			success: function(data) {
-				console.debug(data);
-			}
-		});
 	});
 });
 
