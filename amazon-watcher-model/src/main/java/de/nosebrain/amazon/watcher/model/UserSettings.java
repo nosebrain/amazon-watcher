@@ -7,14 +7,13 @@ import java.util.Locale;
 /**
  * 
  * @author nosebrain
- *
  */
 public class UserSettings {
 
 	public static UserSettings getDefaultSettings() {
 		final UserSettings settings = new UserSettings();
-		settings.setMinDelta(0.25f);
-		settings.setLanguage(Locale.GERMAN);
+		settings.setMinDelta(0.05f);
+		settings.setLanguage(Locale.ENGLISH);
 		settings.setViewMode(ItemViewMode.GALLERY);
 		return settings;
 	}
