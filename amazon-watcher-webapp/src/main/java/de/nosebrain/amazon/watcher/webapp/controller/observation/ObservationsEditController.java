@@ -4,8 +4,6 @@ import static de.nosebrain.util.ValidationUtils.present;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -28,11 +26,7 @@ import de.nosebrain.common.exception.ResourceNotFoundException;
  * @author nosebrain
  */
 @Controller
-@Scope("request")
 public class ObservationsEditController {
-
-	@Autowired
-	private AmazonWatcherService service;
 
 	/**
 	 * adds {@link ObservationValidator} to the binder
@@ -62,8 +56,8 @@ public class ObservationsEditController {
 	 * @throws ResourceNotFoundException if the observation could not be found
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS + "/{item}/edit", method = RequestMethod.GET)
-	public String editObservationForm(@PathVariable final Item item, final Model model) throws ResourceNotFoundException {
-		final Observation observation = this.getObservationByItem(item);
+	public String editObservationForm(final AmazonWatcherService service, @PathVariable final Item item, final Model model) throws ResourceNotFoundException {
+		final Observation observation = this.getObservationByItem(service, item);
 		return this.observationEditForm(observation, model);
 	}
 
@@ -74,28 +68,28 @@ public class ObservationsEditController {
 	 * @return the view to render
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS, method = RequestMethod.POST)
-	public String createObservation(@Valid final Observation observation, final Errors result, final RedirectAttributes redirectAttributes) {
+	public String createObservation(final AmazonWatcherService service, @Valid final Observation observation, final Errors result, final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return Views.OBSERVATION_EDIT;
 		}
 
 		final Item item = observation.getItem();
-		final Observation observationInDB = this.service.getObservationByItem(item);
+		final Observation observationInDB = service.getObservationByItem(item);
 
 		if (present(observationInDB)) {
 			result.reject("observation.duplicate");
 			return Views.getObservationEditUrl(item);
 		}
 
-		this.service.addObservation(observation);
+		service.addObservation(observation);
 
 		redirectAttributes.addFlashAttribute(Views.SESSION_MESSAGE, "observation.create.success");
 		redirectAttributes.addFlashAttribute(Views.SESSION_MESSAGE_PARAMS, observation.getName());
 		return Views.HOME_REDIRECT;
 	}
 
-	private Observation getObservationByItem(final Item item) throws ResourceNotFoundException {
-		final Observation observation = this.service.getObservationByItem(item);
+	private Observation getObservationByItem(final AmazonWatcherService service, final Item item) throws ResourceNotFoundException {
+		final Observation observation = service.getObservationByItem(item);
 		if (observation == null) {
 			throw new ResourceNotFoundException();
 		}
@@ -113,7 +107,7 @@ public class ObservationsEditController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS + "/{item}", method = RequestMethod.PUT)
-	public String updateObservation(@PathVariable final Item item, @Valid final Observation observation, final Errors errors, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
+	public String updateObservation(final AmazonWatcherService service, @PathVariable final Item item, @Valid final Observation observation, final Errors errors, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
 		// TODO: check item
 
 		if (errors.hasErrors()) {
@@ -122,8 +116,8 @@ public class ObservationsEditController {
 		/*
 		 * check if user has observation for item
 		 */
-		this.getObservationByItem(item);
-		this.service.updateObservation(item, observation);
+		this.getObservationByItem(service, item);
+		service.updateObservation(item, observation);
 
 		redirectAttributes.addFlashAttribute(Views.SESSION_MESSAGE, "observation.edit.success");
 		redirectAttributes.addFlashAttribute(Views.SESSION_MESSAGE_PARAMS, observation.getName());
@@ -140,11 +134,11 @@ public class ObservationsEditController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value="/" + Views.OBSERVATIONS + "/{item}", method = RequestMethod.DELETE)
-	public String deleteObservation(@PathVariable final Item item, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
-		final Observation observation = this.getObservationByItem(item);
+	public String deleteObservation(final AmazonWatcherService service, @PathVariable final Item item, final RedirectAttributes redirectAttributes) throws ResourceNotFoundException {
+		final Observation observation = this.getObservationByItem(service, item);
 
 		if (present(observation)) {
-			this.service.removeObservation(item);
+			service.removeObservation(item);
 			redirectAttributes.addFlashAttribute(Views.SESSION_MESSAGE, "observation.delete.success");
 			redirectAttributes.addFlashAttribute(Views.SESSION_MESSAGE_PARAMS, observation.getName());
 			return Views.HOME_REDIRECT;

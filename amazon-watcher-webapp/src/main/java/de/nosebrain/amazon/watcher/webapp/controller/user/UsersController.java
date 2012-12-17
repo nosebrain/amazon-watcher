@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import de.nosebrain.amazon.watcher.AdminAmazonWatcherService;
-import de.nosebrain.amazon.watcher.AmazonWatcherService;
 import de.nosebrain.amazon.watcher.model.User;
 import de.nosebrain.amazon.watcher.webapp.command.user.UserCommand;
 import de.nosebrain.amazon.watcher.webapp.validation.UserCommandValidator;
@@ -34,15 +32,12 @@ import de.nosebrain.util.StringUtils;
  * @author nosebrain
  */
 @Controller
-@Scope("request")
 public class UsersController {
 
 	private static final String WELCOME_VIEW = "services/welcome";
 	private static final String LOGIN_VIEW = "services/login";
 	private static final String REGISTER_VIEW = "services/register";
-
-	@Autowired
-	private AmazonWatcherService service;
+	private static final String REGISTER_PATH = "/register";
 
 	@Autowired
 	private AdminAmazonWatcherService adminService;
@@ -87,14 +82,14 @@ public class UsersController {
 	 * @param model			the model
 	 * @return the register view
 	 */
-	@RequestMapping("/register")
+	@RequestMapping(REGISTER_PATH)
 	public String regiser(@Valid final UserCommand userCommand, final BindingResult result, final Model model) {
 		model.addAttribute(userCommand);
 		return REGISTER_VIEW;
 	}
 
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	@RequestMapping(value = REGISTER_PATH, method = RequestMethod.POST)
 	public String registerNewUser(@Valid final UserCommand command, final BindingResult result, final Model model) {
 		final User user = command.getUser();
 		final String userName = user.getName();

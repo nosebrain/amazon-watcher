@@ -46,7 +46,7 @@
 		<property name="basenames">
 		  <list>
 		      <value>classpath:/messages/messages</value>
-		      <value>classpath:/services/**/messages/service</value>
+		      <value>classpath*:/services/**/messages/service</value>
 		  </list>
 		</property>
 		<property name="cacheSeconds" value="${dev.messagesource.cache}" />
@@ -56,13 +56,17 @@
 	</bean>
 	
 	<!-- config -->
-	<mvc:annotation-driven conversion-service="conversionService" />
+	<mvc:annotation-driven conversion-service="conversionService">
+	    <mvc:argument-resolvers>
+	        <bean class="de.nosebrain.amazon.watcher.webapp.util.spring.argumentresolver.AmazonWatcherServiceArgumentResolver">
+	            <lookup-method name="createAmazonWatcherService" bean="mainLogic" />
+	        </bean>
+	    </mvc:argument-resolvers>
+	</mvc:annotation-driven>
 	
 	<mvc:resources mapping="/assets/**" location="/WEB-INF/assets/" />
 	
-	<context:component-scan base-package="de.nosebrain.amazon.watcher.webapp.controller">
-		<context:include-filter type="annotation" expression="org.aspectj.lang.annotation.Aspect" />
-	</context:component-scan>
+	<context:component-scan base-package="de.nosebrain.amazon.watcher.webapp.controller" />
 	
 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<property name="mediaTypes">

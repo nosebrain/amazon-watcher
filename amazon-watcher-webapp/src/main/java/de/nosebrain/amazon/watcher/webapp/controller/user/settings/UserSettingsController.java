@@ -1,7 +1,5 @@
 package de.nosebrain.amazon.watcher.webapp.controller.user.settings;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +13,9 @@ import de.nosebrain.amazon.watcher.webapp.view.Views;
  * @author nosebrain
  */
 @Controller
-@Scope("request")
-public class UserSettingsController {
+public class UserSettingsController extends AbstractSettingsController {
 
-	@Autowired
-	private AmazonWatcherService service;
+	public static final String ACTIVE_TAB = "active_tab";
 
 	/**
 	 * shows the settings page
@@ -28,9 +24,7 @@ public class UserSettingsController {
 	 * @return the settings view
 	 */
 	@RequestMapping(Views.SETTINGS_PATH)
-	public String settingsPage(final UserCommand command, final Model model) {
-		command.setUser(this.service.getLoggedInUser());
-		model.addAttribute(command);
-		return Views.SETTINGS;
+	public String settingsPage(final AmazonWatcherService service, final UserCommand command, final Model model) {
+		return this.internalRenderSettingsView(service, command, model);
 	}
 }
