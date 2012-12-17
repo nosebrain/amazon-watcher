@@ -120,7 +120,7 @@ public final class ItemUtils {
 		final float current = priceHistories.get(size - 1).getValue();
 		final float before = priceHistories.get(size - 2).getValue();
 
-		return before >= limit && current < limit;
+		return (before >= limit) && (current < limit);
 	}
 
 	public static boolean overLimit(final Item item, final float limit) {
@@ -133,7 +133,7 @@ public final class ItemUtils {
 		final float current = priceHistories.get(size - 1).getValue();
 		final float before = priceHistories.get(size - 2).getValue();
 
-		return before < limit && current >= limit;
+		return (before < limit) && (current >= limit);
 	}
 
 	public static Item extractItem(final URL url) {
@@ -141,5 +141,25 @@ public final class ItemUtils {
 		item.setAsin(extractASIN(url));
 		item.setSite(extractAmazon(url));
 		return item;
+	}
+
+	public static float getCurrentPrice(final Item item) {
+		final int size = item.getPriceHistories().size();
+		if (size > 0) {
+			return item.getPriceHistories().get(size - 1).getValue();
+		}
+		
+		log.error("illegal item state (currentPrice) for item (asin = {}, site = {})", item.getAsin(), item.getSite());
+		return -1.0f;
+	}
+
+	public static float getLastPrice(final Item item) {
+		final int size = item.getPriceHistories().size();
+		if (size > 1) {
+			return item.getPriceHistories().get(size - 2).getValue();
+		}
+		
+		log.error("illegal item state (lastPrice) for item (asin = {}, site = {})", item.getAsin(), item.getSite());
+		return -1.0f;
 	}
 }
