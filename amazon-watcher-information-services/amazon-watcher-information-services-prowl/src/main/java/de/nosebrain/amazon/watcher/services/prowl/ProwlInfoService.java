@@ -1,18 +1,20 @@
 package de.nosebrain.amazon.watcher.services.prowl;
 
+import static de.nosebrain.util.ValidationUtils.present;
+
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
 import de.nosebrain.amazon.watcher.model.Item;
 import de.nosebrain.amazon.watcher.model.Observation;
 import de.nosebrain.amazon.watcher.model.util.ItemUtils;
 import de.nosebrain.amazon.watcher.services.InformationService;
+import de.nosebrain.common.exception.ContainerException;
 import de.nosebrain.prowl.Notification;
 import de.nosebrain.prowl.Notification.NotificationBuilder;
 import de.nosebrain.prowl.ProwlClient;
@@ -23,8 +25,7 @@ import de.nosebrain.prowl.ProwlClient;
  * @author nosebrain
  */
 public class ProwlInfoService implements InformationService {
-	private static final Logger log = LoggerFactory.getLogger(ProwlInfoService.class);
-
+	
 	private MessageSource messageSource;
 	private String systemName;
 	private List<String> apiKeys;
@@ -41,7 +42,8 @@ public class ProwlInfoService implements InformationService {
 	}
 
 	@Override
-	public void inform(final List<Observation> observations, final Locale locale) {
+	public void inform(final List<Observation> observations, final Locale locale) throws Exception {
+		final List<IOException> exceptions = new LinkedList<IOException>();
 		for (final Observation observation : observations) {
 			try {
 				final Notification notification = this.createNotification(observation, locale);
@@ -49,9 +51,11 @@ public class ProwlInfoService implements InformationService {
 					this.client.sendNotification(notification, this.apiKeys);
 				}
 			} catch (final IOException e) {
-				// TODO: collect exceptions and throw exception later to move logging
-				log.error("error while sending notification", e);
+				exceptions.add(e);
 			}
+		}
+		if (present(exceptions)) {
+			throw new ContainerException("at least sending one nofication failed", exceptions);
 		}
 	}
 
@@ -65,23 +69,8 @@ public class ProwlInfoService implements InformationService {
 		final NumberFormat numberFormat = NumberFormat.getNumberInstance(item.getSite().getNumberFormatLocale());
 		numberFormat.setMinimumFractionDigits(2);
 		
-		final int size = item.getPriceHistories().size();
-
-		final float currentPrice;
-		if (size > 0) {
-			currentPrice = item.getPriceHistories().get(size - 1).getValue();
-		} else {
-			log.error("illegal item state (currentPrice) for item (asin = {}, site = {})", item.getAsin(), item.getSite());
-			currentPrice = -1.0f;
-		}
-
-		final float lastPrice;
-		if (size > 1) {
-			lastPrice = item.getPriceHistories().get(size - 2).getValue();
-		} else {
-			log.error("illegal item state (lastPrice) for item (asin = {}, site = {})", item.getAsin(), item.getSite());
-			lastPrice = -1.0f;
-		}
+		final float currentPrice = ItemUtils.getCurrentPrice(item);
+		final float lastPrice = ItemUtils.getLastPrice(item);
 
 		final String currency = item.getSite().getCurrency();
 		final String description;
