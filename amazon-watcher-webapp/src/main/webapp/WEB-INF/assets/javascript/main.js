@@ -28,7 +28,7 @@ $(function() {
 	
 	var viewMode = $('#items').data('viewmode');
 	if (viewMode != 'gallery') {
-		plotAllHistograms();
+		setTimeout("plotAllHistograms()", 100);
 	}
 	
 	$('.item_modal').on('shown', function () {
@@ -45,7 +45,7 @@ $(function() {
 			if (viewMode == 'gallery') {
 				if (!$('#items').data('loaded')) {
 					$('#items').data('loaded', true);
-					plotAllHistograms();
+					setTimeout("plotAllHistograms()", 100);
 				}
 			}
 		}

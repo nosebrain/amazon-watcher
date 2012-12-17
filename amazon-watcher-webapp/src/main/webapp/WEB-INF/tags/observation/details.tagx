@@ -77,7 +77,11 @@
 				</div>
 			</div>
 			
-			<div class="histogram" style="width:700px;height:130px;"><!-- keep me --></div>
+			<div class="histogram" style="width:700px;height:130px;">
+				<!-- keep me -->
+				<c:url var="loading" value="/assets/icons/loading.gif" />
+				<img src="${loading}" style="margin-left:325px;margin-top:15px"/>
+			</div>
 			
 			<div class="item_modal modal hidden" id="${id}">
 				<div class="modal-header">

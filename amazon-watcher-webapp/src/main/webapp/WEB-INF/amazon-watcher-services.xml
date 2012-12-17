@@ -36,9 +36,7 @@
 		<property name="sessionFactory" ref="mainSqlSessionFactory" />
 	</bean>
 	
-	<bean id="mainLogic" class="de.nosebrain.amazon.watcher.database.AmazonWatcherLogic" parent="databaseLogic">
-		<property name="loggedinUser" ref="loginUser" />
-	</bean>
+	<bean id="mainLogic" class="de.nosebrain.amazon.watcher.database.AmazonWatcherLogic" parent="databaseLogic" scope="prototype" />
 	
 	<bean id="admin" class="de.nosebrain.amazon.watcher.model.User">
 		<property name="role" value="ADMIN" />
@@ -85,10 +83,6 @@
 		<property name="service" ref="adminDatabaseLogic" />
 		<property name="updater" ref="${general.updater}Updater" />
 		<property name="informationServiceService" ref="informationServiceService"/>		
-	</bean>
-	
-	<bean id="loginUser" class="de.nosebrain.amazon.watcher.webapp.util.spring.LoginUserFactory" scope="request">
-		<aop:scoped-proxy />
 	</bean>
 	
 	<task:scheduled-tasks>

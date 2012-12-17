@@ -5,7 +5,6 @@ import static de.nosebrain.util.ValidationUtils.present;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,11 +22,7 @@ import de.nosebrain.amazon.watcher.webapp.view.Views;
  * @author nosebrain
  */
 @Controller
-@Scope("request")
 public class HomepageController {
-
-	@Autowired
-	private AmazonWatcherService service;
 
 	@Autowired
 	private UpdaterService updaterService;
@@ -39,15 +34,15 @@ public class HomepageController {
 	 * @return the homepage
 	 */
 	@RequestMapping(value = {"/", "/index"})
-	public String home(@RequestParam(value = "viewmode", required = false) ItemViewMode viewMode, final Model model, final Authentication principal) {
+	public String home(final AmazonWatcherService service, @RequestParam(value = "viewmode", required = false) ItemViewMode viewMode, final Model model, final Authentication principal) {
 		if (present(principal)) {
-			final List<Observation> observations = this.service.getObservations();
+			final List<Observation> observations = service.getObservations();
 			model.addAttribute("observations", observations);
 			// TODO: inform about next update
 			model.addAttribute("lastUpdateDate", this.updaterService.getLastUpdateDate());
 
 			if (!present(viewMode)) {
-				viewMode = this.service.getLoggedInUser().getSettings().getViewMode();
+				viewMode = service.getLoggedInUser().getSettings().getViewMode();
 			}
 			model.addAttribute("requestedViewMode", viewMode);
 		}

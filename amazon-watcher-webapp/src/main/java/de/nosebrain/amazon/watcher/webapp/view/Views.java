@@ -26,7 +26,7 @@ public class Views {
 	/**
 	 * observation view
 	 */
-	public static final String OBSERVATIONS = "observations";
+	public static final String OBSERVATIONS = "/observations";
 
 	public static final String OBSERVATION_EDIT = OBSERVATIONS + "/edit";
 
@@ -37,7 +37,6 @@ public class Views {
 	}
 
 	public static final String SESSION_MESSAGE = "message";
-
 	public static final String SESSION_MESSAGE_PARAMS = "messageParams";
 
 	// TODO: move

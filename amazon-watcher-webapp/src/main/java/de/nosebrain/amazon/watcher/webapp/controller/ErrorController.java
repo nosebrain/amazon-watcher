@@ -1,6 +1,5 @@
 package de.nosebrain.amazon.watcher.webapp.controller;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,6 @@ import de.nosebrain.amazon.watcher.webapp.view.Views;
  * @author nosebrain
  */
 @Controller
-@Scope("request")
 public class ErrorController {
 
 	/**

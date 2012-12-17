@@ -15,6 +15,7 @@
    	
    	<basic:layout hideLogin="${true}">
    		<jsp:attribute name="content">
+   			<c:set var="projectName" value="${properties['general.name']}" />
    			<sec:authorize access="isAuthenticated()">   				
    				<sec:authentication property="principal.user.settings.viewMode" var="viewMode" />
    				
@@ -23,30 +24,6 @@
    				</c:if>
    				<c:set var="viewMode" value="${fn:toLowerCase(viewMode) }" />
    				
-   				<!-- 
-   				<div class="page-header">
-   					<h1>
-   						<fmt:message key="home.header" /><c:out value=" " />
-   						<small>
-	   					<c:choose>
-							<c:when test="${not empty lastUpdateDate}">
-								<fmt:formatNumber value="${(now.time - lastUpdateDate.time) / (36000)}" maxFractionDigits="0" var="minutes" />
-								<c:set var="messageKey" value="updater.lastupdated.minutes" />
-								<c:if test="${minutes == 1}">
-									<c:set var="messageKey" value="updater.lastupdated.minutes" />
-								</c:if>
-								<fmt:message key="${messageKey}">
-									<fmt:param value="${minutes}" />
-								</fmt:message>
-							</c:when>
-			 				<c:otherwise>
-			 					<fmt:message key="updater.notupdated" />
-			 				</c:otherwise>
-		 					
-						</c:choose>
-	   					</small>
-   					</h1>
-   				</div>-->
    				<div class="row itemmenu">
    					<div class="span2 offset9">
    						<div class="btn-group pull-right" data-toggle="buttons-radio" id="viewMode">
@@ -63,6 +40,31 @@
    				<c:if test="${viewMode eq 'gallery' }">
    					<c:set var="cssClass" value="row" />
    				</c:if>
+   				<c:if test="${welcome}">
+   					<div class="hero-unit span8" style="height: 300px">
+	   					<h1>
+	   						<fmt:message key="help.header">
+	   							<fmt:param value="${projectName}" />
+	   						</fmt:message>
+	   					</h1>
+	   					
+	   					<p style="margin-top:2em;">
+	   						<fmt:message key="help.intro.first">
+	   							<fmt:param value="${projectName}" />
+	   						</fmt:message>
+	   					</p>
+	   					
+	   					<p>
+	   						<fmt:message key="help.intro.second">
+	   							<fmt:param value="${projectName}" />
+	   						</fmt:message>
+	   					</p>
+	   					<!-- TODO add tour -->
+	   					<a href="#step1" class="btn btn-primary pull-right">Take a tour »</a>
+	   				</div>
+   				</c:if>
+   				
+   				<!-- TODO: handle no items -->
 	   			<div id="items" class="${cssClass}" data-viewmode="${viewMode}">
 		   			<c:forEach var="watchedItem" items="${observations}">
 		   				<observations:details observation="${watchedItem}" viewMode="${viewMode}" />
@@ -79,7 +81,7 @@
 	   					
 	   					<p>
 	   						<fmt:message key="system.about">
-	   							<fmt:param value="${properties['general.name']}"/>
+	   							<fmt:param value="${projectName}"/>
 	   						</fmt:message>
 	   					</p>
 	   					<c:url var="register" value="/register" />
@@ -87,7 +89,11 @@
 	   				</div>
 	   				</div>
 	   				<div class="span4">
-	   					<h3>Sign in to ${projectName}</h3>
+	   					<h3>
+	   						<fmt:message key="home.signin.header">
+	   							<fmt:param value="${projectName}" />
+	   						</fmt:message>
+	   					</h3>
 	   					<c:url var="loginUrl" value="/login_internal" />
    						<form action="${loginUrl}" method="post" class="form-horizontal">
    							<div class="control-group">
