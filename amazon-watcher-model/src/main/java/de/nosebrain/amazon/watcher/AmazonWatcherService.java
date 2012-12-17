@@ -102,5 +102,9 @@ public interface AmazonWatcherService {
 	 * @return the current logged in user
 	 */
 	public User getLoggedInUser();
-
+	
+	/**
+	 * @param user the user to set
+	 */
+	public void setLoggedinUser(final User user);
 }
